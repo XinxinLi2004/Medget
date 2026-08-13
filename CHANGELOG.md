@@ -1,5 +1,33 @@
 # CHANGELOG
 
+2026-08-14 00:50 · 功能 · 人体图重绘 + 接入扫码/后台提醒原生插件
+- 文件清单：index.html、www/index.html、package.json、package-lock.json、android/app/capacitor.build.gradle、android/capacitor.settings.gradle、android/app/src/main/AndroidManifest.xml
+- 人体图：SVG 人体轮廓重绘（渐变填充+圆润线条），营养素改为环形进度圈展示（达标绿/不足橙/超标红）
+- 扫码：接入 @capacitor-mlkit/barcode-scanning@8.1.0（ML Kit，本地识别、国产机可用），原生走 startScan+barcodesScanned 监听，网页保留 BarcodeDetector 兜底；AndroidManifest 加 CAMERA 权限 + ML Kit meta-data
+- 提醒：接入 @capacitor/local-notifications@8.2.1，原生用本地通知每天重复调度（后台/锁屏可提醒），网页保留 setInterval 兜底；纯 HTML 通过 window.Capacitor.Plugins 访问
+- 部署标记：[前端]（改代码 push 后云端重构建出 APK）
+
+2026-08-14 00:23 · 功能 · 首个安卓 APK 云端构建成功
+- 结果：GitHub Actions 成功构建 app-debug.apk（Medget 仓库），用户已下载安装包
+- 过程修复：Node 20→22（Capacitor 8.5 要求≥22）、Java 17→21（invalid source release）、交互式 rebase 卡死（--abort）、GitHub 密码认证改 PAT、去掉重复的 cap add android
+- 部署标记：[云端资源] 已构建
+
+2026-08-14 00:16 · 修复 · workflow Java 版本 17 → 21
+- 文件清单：.github/workflows/android.yml
+- 原因：Capacitor 8.5 android 库用 Java 21 编译，此前 setup-java 用 17 导致 `invalid source release: 21`
+- 部署标记：[云端资源] 已推送，重新触发构建
+
+2026-08-14 00:13 · 修复 · workflow Node 版本 20 → 22
+- 文件清单：.github/workflows/android.yml
+- 原因：Capacitor 8.5 CLI 要求 NodeJS >=22，此前 setup-node 用 node-version:20 导致 `npx cap sync android` 报 fatal
+- 部署标记：[云端资源] 已推送，重新触发构建
+
+2026-08-14 00:10 · 配置 · 推送代码到 GitHub 并修复云端构建 workflow
+- 文件清单：index.html、package.json、capacitor.config.json、android/、.github/workflows/android.yml 等已推送到 `XinxinLi2004/Medget`（main 分支）
+- 处理：中止卡住的交互式 rebase（git 状态混乱）→ merge 远程 LICENSE（--allow-unrelated-histories）→ push 成功；workflow 去掉 `cap add android`（android 工程已在仓库，避免重复添加报错）
+- 部署标记：[云端资源]（push 到 main 自动触发 GitHub Actions 构建 APK）；已推送
+- 说明：GitHub MCP 连接器仅读权限无法代推，最终由用户本地 git 完成认证与推送
+
 2026-08-13 20:30 · 配置 · git 初始化 + workflow 补 web 资源生成步骤
 - 文件清单：git init + 首次提交（64 文件）；workflow 增加 Prepare web assets（云端 cp index.html → www）；.gitignore 增加 .workbuddy/
 - 说明：本地已提交到 main 分支（commit d688290），推送到 GitHub 后即可触发云端构建 APK；git 身份用的是临时占位（lixueyou），push 前可自行修改

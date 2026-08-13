@@ -97,7 +97,9 @@
   .btn:disabled{background:rgba(60,60,67,.18);color:rgba(255,255,255,.9);cursor:default}
   .btn.destructive{background:var(--red)}
   .btn.plain{background:none;color:var(--blue);font-size:15px;padding:8px}
+  .btn.plain.sm{font-size:13px;padding:6px 10px;border:1px solid var(--sep, rgba(0,0,0,.12));border-radius:8px}
   .btn.block{width:100%}
+  .tag-on{display:inline-block;font-size:13px;font-weight:600;color:#fff;background:var(--green);padding:4px 10px;border-radius:8px}
   .btn.block + .btn.block{margin-top:10px}
 
   .meter{height:6px;background:rgba(60,60,67,.1);border-radius:3px;overflow:hidden}
@@ -203,6 +205,12 @@
   .scan-frame::after{content:"";position:absolute;left:10%;right:10%;top:50%;height:2px;background:var(--blue);box-shadow:0 0 12px var(--blue)}
   .scan-hint{position:relative;text-align:center;color:#fff;padding:14px 16px 24px;font-size:14px;line-height:1.5}
 
+  /* 原生扫码：让 WebView 透明，露出插件相机预览 */
+  html.scanner-active, html.scanner-active body{background:transparent!important}
+  html.scanner-active .scan-wrap{background:transparent}
+  html.scanner-active .scan-top, html.scanner-active .scan-hint{background:rgba(0,0,0,.45)}
+  html.scanner-active .scan-body video{display:none}
+
   .toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-8px);
     background:rgba(28,28,30,.9);color:#fff;padding:10px 18px;border-radius:14px;font-size:14px;
     z-index:70;opacity:0;pointer-events:none;transition:all .28s var(--ease);max-width:84vw;text-align:center;line-height:1.4;
@@ -215,20 +223,19 @@
   .ai-preset:active{opacity:.6}
 
   /* ============ 人体营养图 ============ */
-  .human-card{padding:16px}
-  .human-layout{display:flex;align-items:stretch;gap:8px}
-  .human-col{flex:1;display:flex;flex-direction:column;gap:8px}
-  .human-col.center{flex:0 0 108px;align-items:center;justify-content:center}
-  .human{width:100%;height:auto;max-height:300px}
-  .human .body{fill:rgba(0,122,255,.06);stroke:rgba(0,122,255,.5)}
-  .human .line{stroke:rgba(0,122,255,.3);stroke-width:1}
-  .nut{background:rgba(255,255,255,.5);border-radius:10px;padding:7px 9px;border:1px solid rgba(60,60,67,.08)}
-  .dark .nut{background:rgba(60,60,67,.3)}
-  .nut .n{font-size:11.5px;font-weight:600}
+  .human-card{padding:16px 12px 14px}
+  .human-layout{display:flex;align-items:center;gap:8px}
+  .human-col{flex:1;display:flex;flex-direction:column;gap:9px;min-width:0}
+  .human-col.center{flex:0 0 116px;display:flex;justify-content:center;align-items:center}
+  .human{width:100%;max-height:300px}
+  .nut{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:12px;
+    background:rgba(255,255,255,.55);border:1px solid rgba(60,60,67,.06)}
+  .dark .nut{background:rgba(60,60,67,.28)}
+  .nut .ring{flex:0 0 auto;display:block}
+  .nut .tx{flex:1;min-width:0}
+  .nut .n{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .nut .v{font-size:10.5px;color:var(--label2);font-variant-numeric:tabular-nums;margin-top:1px}
-  .nut .mini{height:3px;background:rgba(60,60,67,.1);border-radius:2px;overflow:hidden;margin-top:4px}
-  .nut .mini i{display:block;height:100%;border-radius:2px}
-  .legend{display:flex;gap:14px;justify-content:center;margin-top:12px;font-size:11px;color:var(--label2)}
+  .legend{display:flex;gap:16px;justify-content:center;margin-top:14px;font-size:11px;color:var(--label2)}
   .legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
 
   @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -287,6 +294,10 @@ const I18N = {
     manualAdd:"手动添加", custom:"自定义补剂", joinStack:"加入我的补剂",
     settings:"设置", aiSection:"AI 识别（视觉模型）", baseUrl:"API 地址（Base URL）",
     apiKey:"API Key", model:"模型名", saveAI:"保存",
+    aiProviders:"AI 服务商", addProvider:"添加服务商", editProvider:"编辑", useProvider:"使用", deleteProvider:"删除", providerName:"名称", activeProvider:"当前使用",
+    sysPrompt:"识别提示词（系统角色）", sysPromptDesc:"自定义 AI 识别补剂时的角色设定与输出格式；留空则用默认专家提示词。", savePrompt:"保存提示词",
+    noProvider:"尚未配置任何 AI 服务商，点击下方添加。", cancel:"取消", confirmDel:"确定删除该服务商？",
+    aiPhotoPrompt:"请根据图片中的补剂包装或成分表，返回评估 JSON。", aiOffPrompt:"以下是 Open Food Facts 查到的产品信息，据此生成 JSON：", aiCodePrompt:"请根据条码给出最可能的补剂评估（条码通常无法精确反查，可基于常识推断；完全不确定则 name 填「未知补剂」）：",
     language:"语言", appearance:"外观", followSystem:"跟随系统", light:"浅色", dark:"深色",
     motion:"动效", motionDesc:"减少动态效果",
     data:"数据", exportData:"导出数据", clearData:"清空数据", dataCleared:"数据已清空",
@@ -317,7 +328,7 @@ const I18N = {
     querying:"查询商品库…", aiGen:"AI 生成评估…", aiQuery:"AI 查询中…", aiRecognizing:"AI 识别成分表中…",
     needAIKey:"请先在「设置」配置 AI Key", aiFail:"识别失败", noCamera:"无法访问摄像头", noScan:"当前浏览器不支持扫码，请用安卓 Chrome 真机测试",
     saved:"已保存", aiNoResult:"AI 无返回内容", aiNoParse:"未能解析识别结果", aiHttp:"AI 请求失败（HTTP ",
-    notifTitle:"该吃药了"
+    notifTitle:"该吃药了", notifPerm:"需要通知权限才能后台提醒"
   },
   en: {
     today:"Today", stack:"Supps", lib:"Library", cost:"Cost", know:"Notes",
@@ -325,6 +336,10 @@ const I18N = {
     manualAdd:"Add manually", custom:"Custom", joinStack:"Add to my supplements",
     settings:"Settings", aiSection:"AI Recognition (Vision)", baseUrl:"Base URL",
     apiKey:"API Key", model:"Model", saveAI:"Save",
+    aiProviders:"AI Providers", addProvider:"Add provider", editProvider:"Edit", useProvider:"Use", deleteProvider:"Delete", providerName:"Name", activeProvider:"Active",
+    sysPrompt:"Recognition prompt (system role)", sysPromptDesc:"Customize the AI's role and output format for supplement recognition. Leave blank to use the default expert prompt.", savePrompt:"Save prompt",
+    noProvider:"No AI provider configured yet. Tap below to add one.", cancel:"Cancel", confirmDel:"Delete this provider?",
+    aiPhotoPrompt:"Identify the supplement from this image and return the evaluation JSON.", aiOffPrompt:"Product info from Open Food Facts; generate the JSON accordingly:", aiCodePrompt:"Give the most likely supplement evaluation for this barcode (barcodes often can't be reverse-looked-up; infer from common sense if needed; if fully uncertain, set name to \"Unknown supplement\"):",
     language:"Language", appearance:"Appearance", followSystem:"System", light:"Light", dark:"Dark",
     motion:"Motion", motionDesc:"Reduce motion",
     data:"Data", exportData:"Export data", clearData:"Clear data", dataCleared:"Data cleared",
@@ -355,7 +370,7 @@ const I18N = {
     querying:"Looking up product…", aiGen:"AI evaluating…", aiQuery:"AI querying…", aiRecognizing:"AI reading label…",
     needAIKey:"Set your AI key in Settings first", aiFail:"Recognition failed", noCamera:"Cannot access camera", noScan:"Barcode scanning not supported here; try Android Chrome",
     saved:"Saved", aiNoResult:"AI returned no content", aiNoParse:"Could not parse result", aiHttp:"AI request failed (HTTP ",
-    notifTitle:"Time for your supplement"
+    notifTitle:"Time for your supplement", notifPerm:"Notification permission required"
   }
 };
 const SET_KEY = "gaichiyao_settings";
@@ -533,6 +548,19 @@ function reportHTML(l, dose=1){
 }
 
 /* ============ 人体营养图 ============ */
+function ringSVG(pct, color, label){
+  const r = 15, c = 2*Math.PI*r;
+  const v = Math.max(0, Math.min(pct, 1.5));
+  const off = c*(1 - Math.min(v, 1));
+  return `<svg class="ring" width="36" height="36" viewBox="0 0 36 36">
+    <circle cx="18" cy="18" r="${r}" fill="none" stroke="rgba(60,60,67,.12)" stroke-width="4.5"/>
+    <circle cx="18" cy="18" r="${r}" fill="none" stroke="var(--${color})" stroke-width="4.5"
+      stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+      transform="rotate(-90 18 18)" style="transition:stroke-dashoffset .6s var(--ease)"/>
+    <text x="18" y="22" text-anchor="middle" font-size="10.5" font-weight="700"
+      fill="var(--label)" font-family="var(--font-num)">${label}</text>
+  </svg>`;
+}
 function bodyChartHTML(){
   const d = today();
   const intake = state.intake[d]||{};
@@ -541,25 +569,31 @@ function bodyChartHTML(){
     const val = intake[n]||0;
     const pct = r.rda>0 ? val/r.rda : 0;
     const cls = val<=0 ? "orange" : (pct>1 ? "red" : (pct>=0.8 ? "green" : "orange"));
-    return {n, val, rda:r.rda, unit:r.unit, pct, cls};
+    const label = val<=0 ? "0" : (pct>1.2 ? ">120" : Math.round(pct*100));
+    return {n, val, rda:r.rda, unit:r.unit, pct, cls, label};
   });
   const half = Math.ceil(entries.length/2);
   const left = entries.slice(0,half), right = entries.slice(half);
-  const nut = e=>`<div class="nut"><div class="n">${e.n}</div>
-    <div class="v">${e.val} / ${e.rda}${e.unit}</div>
-    <div class="mini"><i style="width:${Math.min(e.pct*100,100)}%;background:var(--${e.cls})"></i></div></div>`;
+  const nut = e=>`<div class="nut">${ringSVG(e.pct, e.cls, e.label)}
+    <div class="tx"><div class="n">${e.n}</div>
+    <div class="v">${e.val} / ${e.rda}${e.unit}</div></div></div>`;
   return `<div class="sec-head">${t("bodyChart")}</div>
   <div class="card human-card" style="margin-top:0">
     <div class="human-layout">
       <div class="human-col">${left.map(nut).join("")}</div>
       <div class="human-col center">
-        <svg class="human" viewBox="0 0 120 300">
-          <circle cx="60" cy="34" r="22" class="body"/>
-          <path d="M60 58 C 42 62, 36 88, 36 120 L 36 150 C 36 158, 42 164, 50 164 L 70 164 C 78 164, 84 158, 84 150 L 84 120 C 84 88, 78 62, 60 58 Z" class="body"/>
-          <path d="M42 72 C 30 90, 28 116, 32 140" class="line"/>
-          <path d="M78 72 C 90 90, 92 116, 88 140" class="line"/>
-          <path d="M50 164 L 46 210 L 42 252" class="line"/>
-          <path d="M70 164 L 74 210 L 78 252" class="line"/>
+        <svg class="human" viewBox="0 0 140 340">
+          <defs><linearGradient id="bodyG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="rgba(0,122,255,.18)"/>
+            <stop offset="1" stop-color="rgba(0,122,255,.03)"/>
+          </linearGradient></defs>
+          <circle cx="70" cy="40" r="25" fill="url(#bodyG)" stroke="rgba(0,122,255,.5)" stroke-width="2"/>
+          <path d="M70 67 C 49 73, 41 100, 41 131 L 41 156 C 41 165, 48 172, 57 172 L 83 172 C 92 172, 99 165, 99 156 L 99 131 C 99 100, 91 73, 70 67 Z"
+            fill="url(#bodyG)" stroke="rgba(0,122,255,.5)" stroke-width="2"/>
+          <path d="M45 84 C 33 102, 31 128, 37 151" fill="none" stroke="rgba(0,122,255,.5)" stroke-width="11" stroke-linecap="round"/>
+          <path d="M95 84 C 107 102, 109 128, 103 151" fill="none" stroke="rgba(0,122,255,.5)" stroke-width="11" stroke-linecap="round"/>
+          <path d="M55 170 L 51 218 L 47 262" fill="none" stroke="rgba(0,122,255,.5)" stroke-width="13" stroke-linecap="round"/>
+          <path d="M85 170 L 89 218 L 93 262" fill="none" stroke="rgba(0,122,255,.5)" stroke-width="13" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="human-col">${right.map(nut).join("")}</div>
@@ -657,15 +691,35 @@ function openStackDetail(uid){
     <button class="btn block" style="margin-top:14px" data-saveusage="${s.uid}">${t("save")}</button>
     <button class="btn destructive block" style="margin-top:10px" data-del="${s.uid}">${t("removeArchive")}</button>`);
 }
+const capLN = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+async function scheduleNativeReminder(name, remindAt){
+  const LN = capLN(); if(!LN) return;
+  try{
+    const perm = await LN.requestPermissions();
+    if(!perm || perm.display !== 'granted'){ toast(t("notifPerm")); return; }
+    const p = remindAt.split(':').map(Number);
+    const next = new Date();
+    next.setHours(p[0]||0, p[1]||0, 0, 0);
+    if(next.getTime() <= Date.now()) next.setDate(next.getDate()+1);
+    await LN.schedule({ notifications: [{
+      id: Math.floor(Date.now()/1000) % 1000000000,
+      title: t("notifTitle"),
+      body: name,
+      schedule: { at: next, every: 'day' }
+    }]});
+  }catch(e){}
+}
 function saveUsage(uid){
   const s = state.stack.find(x=>x.uid===uid); if(!s) return;
   const active = document.querySelector("[data-usage].on");
   if(active) s.usage = active.dataset.usage;
   s.remindAt = $("#f_remind").value || "";
-  if(s.remindAt && "Notification" in window && Notification.permission==="default"){
-    Notification.requestPermission();
+  save();
+  if(s.remindAt){
+    if(capLN()) scheduleNativeReminder(s.name, s.remindAt);
+    else if("Notification" in window && Notification.permission==="default") Notification.requestPermission();
   }
-  save(); closeSheet(); setTab(curTab);
+  closeSheet(); setTab(curTab);
 }
 
 /* ============ 页面：知识库 ============ */
@@ -806,6 +860,7 @@ function notify(name){
 }
 function startReminderCheck(){
   if(remindTimer) clearInterval(remindTimer);
+  if(capLN()) return;  // 原生环境用本地通知调度，无需轮询
   remindTimer = setInterval(()=>{
     const now = new Date();
     const hhmm = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
@@ -856,9 +911,21 @@ document.addEventListener("click", e=>{
   const manual = tgt.closest("[data-manual]");
   if(manual){ closeSheet(); openConfig(null); return; }
   const preset = tgt.closest("[data-preset]");
-  if(preset){ try{const p=JSON.parse(preset.dataset.preset); const b=$("#ai_base"),m=$("#ai_model"); if(b)b.value=p.baseUrl; if(m)m.value=p.model;}catch(e){} return; }
-  const saveai = tgt.closest("[data-saveai]");
-  if(saveai){ saveAI(); return; }
+  if(preset){ try{const p=JSON.parse(preset.dataset.preset); showProvForm({name:p.name, baseUrl:p.baseUrl, model:p.model});}catch(e){} return; }
+  const pnew = tgt.closest("[data-aipnew]");
+  if(pnew){ showProvForm(); return; }
+  const pcancel = tgt.closest("[data-aicancel]");
+  if(pcancel){ hideProvForm(); return; }
+  const pedit = tgt.closest("[data-aiedit]");
+  if(pedit){ editProv(pedit.dataset.aiedit); return; }
+  const puse = tgt.closest("[data-aiuse]");
+  if(puse){ useProv(puse.dataset.aiuse); return; }
+  const pdel = tgt.closest("[data-aidel]");
+  if(pdel){ delProv(pdel.dataset.aidel); return; }
+  const psave = tgt.closest("[data-aisave]");
+  if(psave){ saveProv(); return; }
+  const psavep = tgt.closest("[data-aisaveprompt]");
+  if(psavep){ saveSysPrompt(); return; }
   const langBtn = tgt.closest("[data-lang]");
   if(langBtn){ selectSeg(langBtn); setLang(langBtn.dataset.lang); return; }
   const themeBtn = tgt.closest("[data-theme]");
@@ -903,8 +970,24 @@ function toast(msg){
 
 /* ============ AI ============ */
 const AI_KEY = "gaichiyao_ai";
-function getAI(){try{return JSON.parse(localStorage.getItem(AI_KEY))||{};}catch(e){return {};}}
-function setAI(o){localStorage.setItem(AI_KEY, JSON.stringify(o));}
+function uid(){return "p"+Math.random().toString(36).slice(2,9);}
+function getAIState(){
+  try{const raw=JSON.parse(localStorage.getItem(AI_KEY)); if(raw&&Array.isArray(raw.profiles)) return raw;}catch(e){}
+  // 兼容旧版单对象格式（baseUrl/apiKey/model）
+  try{
+    const old=JSON.parse(localStorage.getItem(AI_KEY));
+    if(old && typeof old==="object" && old.baseUrl!==undefined){
+      const p={id:uid(), name:"我的 AI", baseUrl:old.baseUrl||"", apiKey:old.apiKey||"", model:old.model||""};
+      return {profiles:[p], active:p.id, sysPrompt:AI_SCHEMA};
+    }
+  }catch(e){}
+  return {profiles:[], active:null, sysPrompt:AI_SCHEMA};
+}
+function setAIState(o){localStorage.setItem(AI_KEY, JSON.stringify(o));}
+function getActiveProfile(){
+  const s=getAIState();
+  return s.profiles.find(p=>p.id===s.active) || s.profiles[0] || null;
+}
 const AI_PRESETS = [
   {name:"OpenAI", baseUrl:"https://api.openai.com/v1", model:"gpt-4o-mini"},
   {name:"智谱 GLM", baseUrl:"https://open.bigmodel.cn/api/paas/v4", model:"glm-4v-flash"},
@@ -932,15 +1015,19 @@ function normalizeLib(o){
   };
 }
 async function callAI(prompt, imageDataUrl){
-  const c = getAI();
-  if(!c.apiKey) throw new Error(t("needAIKey"));
-  if(!c.baseUrl) throw new Error("Base URL");
-  const content = [{type:"text", text:prompt}];
-  if(imageDataUrl) content.push({type:"image_url", image_url:{url:imageDataUrl}});
-  const res = await fetch(c.baseUrl.replace(/\/+$/,"")+"/chat/completions",{
+  const p = getActiveProfile();
+  if(!p || !p.apiKey) throw new Error(t("needAIKey"));
+  if(!p.baseUrl) throw new Error("Base URL");
+  const sys = (getAIState().sysPrompt || AI_SCHEMA || "").trim();
+  const userContent = [{type:"text", text:prompt}];
+  if(imageDataUrl) userContent.push({type:"image_url", image_url:{url:imageDataUrl}});
+  const messages = [];
+  if(sys) messages.push({role:"system", content:sys});
+  messages.push({role:"user", content:userContent});
+  const res = await fetch(p.baseUrl.replace(/\/+$/,"")+"/chat/completions",{
     method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+c.apiKey},
-    body: JSON.stringify({model:c.model||"gpt-4o-mini", messages:[{role:"user",content}], temperature:0.2})
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+p.apiKey},
+    body: JSON.stringify({model:p.model||"gpt-4o-mini", messages, temperature:0.2})
   });
   if(!res.ok) throw new Error(t("aiHttp")+res.status+"）");
   const data = await res.json();
@@ -953,14 +1040,14 @@ async function callAI(prompt, imageDataUrl){
 /* ============ 拍照识别 ============ */
 function fileToDataURL(f){return new Promise((ok,err)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=err;r.readAsDataURL(f);});}
 function pickImage(){
-  if(!getAI().apiKey){ toast(t("needAIKey")); openSettings(); return; }
+  const ap=getActiveProfile(); if(!ap||!ap.apiKey){ toast(t("needAIKey")); openSettings(); return; }
   const input = document.createElement("input");
   input.type = "file"; input.accept = "image/*"; input.capture = "environment";
   input.onchange = async e=>{
     const f = e.target.files[0]; if(!f) return;
     toast(t("aiRecognizing"));
     try{
-      const lib = await callAI(AI_SCHEMA, await fileToDataURL(f));
+      const lib = await callAI(t("aiPhotoPrompt"), await fileToDataURL(f));
       if(!lib) throw new Error(t("aiNoParse"));
       closeSheet(); openConfig(normalizeLib(lib));
     }catch(err){ toast(err.message||t("aiFail")); }
@@ -970,16 +1057,46 @@ function pickImage(){
 
 /* ============ 扫码识别 ============ */
 let scanStream=null, scanDetector=null;
+const capBS = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.BarcodeScanner;
 function openScan(){ $("#scanWrap").classList.add("on"); }
 function closeScan(){
   $("#scanWrap").classList.remove("on");
+  document.documentElement.classList.remove("scanner-active");
   if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
   scanDetector=null;
+  const BS = capBS(); if(BS){ try{ BS.stopScan(); }catch(e){} }
 }
 $("#scanClose").addEventListener("click", closeScan);
 async function startScan(){
+  closeSheet();
+  const BS = capBS();
+  if(BS){
+    let listener = null;
+    try{
+      const perm = await BS.requestPermissions();
+      if(!perm || (perm.camera !== 'granted' && perm.camera !== 'limited')){
+        toast(t("noCamera")); return;
+      }
+      openScan();
+      document.documentElement.classList.add("scanner-active");
+      listener = await BS.addListener('barcodesScanned', (ev) => {
+        if(ev && ev.barcodes && ev.barcodes.length){
+          const code = ev.barcodes[0].rawValue || ev.barcodes[0].displayValue;
+          closeScan();
+          if(listener && listener.remove){ try{listener.remove();}catch(e){} }
+          if(code) onCode(code);
+        }
+      });
+      await BS.startScan();
+    }catch(err){
+      if(listener && listener.remove){ try{listener.remove();}catch(e){} }
+      closeScan();
+      toast(t("noCamera"));
+    }
+    return;
+  }
   if(!("BarcodeDetector" in window)){ toast(t("noScan")); return; }
-  closeSheet(); openScan();
+  openScan();
   try{
     scanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
     $("#scanVideo").srcObject = scanStream;
@@ -1016,9 +1133,9 @@ function onCode(code){
         ing: product.ingredients_text || "",
         qty: product.quantity || ""
       };
-      if(getAI().apiKey){
+      const _ap=getActiveProfile(); if(_ap&&_ap.apiKey){
         toast(t("aiGen"));
-        callAI(AI_SCHEMA+"\n以下是 Open Food Facts 查到的产品信息，据此生成 JSON：\n名称："+lastFound.name+"\n品牌："+lastFound.brand+"\n成分表："+(lastFound.ing||"（无）")+"\n规格："+(lastFound.qty||"（无）"), null)
+        callAI(t("aiOffPrompt")+"\n名称："+lastFound.name+"\n品牌："+lastFound.brand+"\n成分表："+(lastFound.ing||"（无）")+"\n规格："+(lastFound.qty||"（无）"), null)
         .then(lib=>{ if(lib){ openConfig(normalizeLib(lib)); return; } showOffFound(code); })
         .catch(()=>showOffFound(code));
         return;
@@ -1053,16 +1170,66 @@ function showNotFound(code){
 async function aiFromCode(code){
   toast(t("aiQuery"));
   try{
-    const lib = await callAI(AI_SCHEMA+"\n用户提供的条码号："+code+"。条码通常无法精确反查产品，请基于常识给出最可能的补剂信息；若完全不确定则 name 填「未知补剂」。", null);
+    const lib = await callAI(t("aiCodePrompt")+"\n用户提供的条码号："+code+"。条码通常无法精确反查产品，请基于常识给出最可能的补剂信息；若完全不确定则 name 填「未知补剂」。", null);
     if(!lib) throw new Error(t("aiNoParse"));
     closeSheet(); openConfig(normalizeLib(lib));
   }catch(err){ toast(err.message||t("aiFail")); }
 }
 
 /* ============ 设置 ============ */
-function saveAI(){
-  setAI({baseUrl:$("#ai_base").value.trim(), apiKey:$("#ai_key").value.trim(), model:$("#ai_model").value.trim()});
-  toast(t("saved")); closeSheet();
+function showProvForm(prefill){
+  prefill = prefill || {id:"", name:"", baseUrl:"", apiKey:"", model:""};
+  $("#ai_pname").value = prefill.name||"";
+  $("#ai_pbase").value = prefill.baseUrl||"";
+  $("#ai_pkey").value = prefill.apiKey||"";
+  $("#ai_pmodel").value = prefill.model||"";
+  $("#ai_pedit").value = prefill.id||"";
+  $("#ai_provform").style.display = "block";
+}
+function hideProvForm(){ $("#ai_provform").style.display = "none"; }
+function saveProv(){
+  const name = $("#ai_pname").value.trim() || t("providerName");
+  const baseUrl = $("#ai_pbase").value.trim();
+  const apiKey = $("#ai_pkey").value.trim();
+  const model = $("#ai_pmodel").value.trim();
+  const editId = $("#ai_pedit").value.trim();
+  const s = getAIState();
+  if(editId){
+    const p = s.profiles.find(x=>x.id===editId);
+    if(p){ p.name=name; p.baseUrl=baseUrl; p.apiKey=apiKey; p.model=model; }
+  } else {
+    const p = {id:uid(), name, baseUrl, apiKey, model};
+    s.profiles.push(p);
+    if(!s.active) s.active = p.id;
+  }
+  setAIState(s);
+  openSettings();
+}
+function editProv(id){
+  const s = getAIState();
+  const p = s.profiles.find(x=>x.id===id);
+  if(!p) return;
+  openSettings();
+  showProvForm(p);
+}
+function useProv(id){
+  const s = getAIState();
+  s.active = id; setAIState(s);
+  openSettings();
+}
+function delProv(id){
+  if(!confirm(t("confirmDel"))) return;
+  const s = getAIState();
+  s.profiles = s.profiles.filter(x=>x.id!==id);
+  if(s.active===id) s.active = s.profiles[0] ? s.profiles[0].id : null;
+  setAIState(s);
+  openSettings();
+}
+function saveSysPrompt(){
+  const s = getAIState();
+  s.sysPrompt = $("#ai_sys").value;
+  setAIState(s);
+  toast(t("saved"));
 }
 function setLang(l){ settings.lang=l; lang=l; saveSettings(); applyLang(); views[curTab](); }
 function setTheme(m){ settings.theme=m; saveSettings(); applyTheme(); }
@@ -1085,7 +1252,7 @@ function selectSeg(btn){
   positionSegThumb(seg);
 }
 function exportData(){
-  const blob = new Blob([JSON.stringify({state, settings, ai:getAI()}, null, 2)], {type:"application/json"});
+  const blob = new Blob([JSON.stringify({state, settings, ai:getAIState()}, null, 2)], {type:"application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = "gaichiyao-backup-"+today()+".json"; a.click();
   URL.revokeObjectURL(a.href);
@@ -1095,8 +1262,22 @@ function clearData(){
   state.stack=[]; state.intake={}; save(); closeSheet(); toast(t("dataCleared")); setTab("today");
 }
 function openSettings(){
-  const c = getAI();
+  const ai = getAIState();
   const presets = AI_PRESETS.map(p=>`<button class="ai-preset" data-preset='${JSON.stringify(p)}'>${p.name}</button>`).join("");
+  const provList = ai.profiles.length ? ai.profiles.map(p=>`
+    <div class="card" style="margin-bottom:8px">
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title" style="font-size:15px">${escapeHtml(p.name)}</div>
+          <div class="row-sub" style="font-size:12px;word-break:break-all">${escapeHtml((p.model||"")+(p.baseUrl?(" · "+p.baseUrl):""))}</div>
+        </div>
+        ${p.id===ai.active?`<span class="tag-on">${t("activeProvider")}</span>`:`<button class="btn plain" data-aiuse="${p.id}">${t("useProvider")}</button>`}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn plain sm" data-aiedit="${p.id}">${t("editProvider")}</button>
+        <button class="btn plain sm" data-aidel="${p.id}" style="color:var(--red)">${t("deleteProvider")}</button>
+      </div>
+    </div>`).join("") : `<div class="row-sub" style="padding:4px 2px">${t("noProvider")}</div>`;
   const segLang = ["zh","en"].map(l=>`<button data-lang="${l}" class="${lang===l?"on":""}">${l==="zh"?"中文":"English"}</button>`).join("");
   const segTheme = ["auto","light","dark"].map(m=>`<button data-theme="${m}" class="${(settings.theme||"auto")===m?"on":""}">${t(m==="auto"?"followSystem":m)}</button>`).join("");
   openSheet(`<button class="x" data-x>×</button><h2>${t("settings")}</h2>
@@ -1109,10 +1290,21 @@ function openSettings(){
       <div class="row"><div class="row-main"><div class="row-title" style="font-size:15px;color:var(--red)">${t("clearData")}</div></div><button class="btn plain" data-clear style="color:var(--red)">${t("clearData")}</button></div></div>
     <div class="sec-head" style="padding:8px 0 6px">${t("aiSection")}</div>
     <div class="ai-presets">${presets}</div>
-    <div class="field"><label>${t("baseUrl")}</label><input id="ai_base" value="${c.baseUrl||""}" placeholder="https://api.openai.com/v1"></div>
-    <div class="field"><label>${t("apiKey")}</label><input id="ai_key" type="password" value="${c.apiKey||""}" placeholder="sk-..."></div>
-    <div class="field"><label>${t("model")}</label><input id="ai_model" value="${c.model||""}" placeholder="gpt-4o-mini / glm-4v-flash"></div>
-    <button class="btn block" style="margin-top:8px" data-saveai>${t("saveAI")}</button>
+    <div id="ai_provlist" style="margin-top:6px">${provList}</div>
+    <button class="btn block" style="margin-top:6px" data-aipnew>${t("addProvider")}</button>
+    <div id="ai_provform" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--sep, rgba(0,0,0,.12))">
+      <div class="field"><label>${t("providerName")}</label><input id="ai_pname" placeholder="如 agens ai / 我的本地模型"></div>
+      <div class="field"><label>${t("baseUrl")}</label><input id="ai_pbase" placeholder="https://api.openai.com/v1"></div>
+      <div class="field"><label>${t("apiKey")}</label><input id="ai_pkey" type="password" placeholder="sk-..."></div>
+      <div class="field"><label>${t("model")}</label><input id="ai_pmodel" placeholder="gpt-4o-mini / glm-4v-flash"></div>
+      <input type="hidden" id="ai_pedit" value="">
+      <button class="btn block" data-aisave>${t("save")}</button>
+      <button class="btn plain block" data-aicancel>${t("cancel")}</button>
+    </div>
+    <div class="sec-head" style="padding:18px 0 6px">${t("sysPrompt")}</div>
+    <div class="row-sub" style="padding:0 2px 6px;line-height:1.5">${t("sysPromptDesc")}</div>
+    <textarea id="ai_sys" rows="9" spellcheck="false" style="width:100%;box-sizing:border-box;border:1px solid var(--sep, rgba(0,0,0,.12));border-radius:10px;padding:10px;font-size:13px;line-height:1.5;background:var(--bg);color:var(--text);font-family:inherit;resize:vertical">${escapeHtml(ai.sysPrompt||AI_SCHEMA)}</textarea>
+    <button class="btn block" style="margin-top:8px" data-aisaveprompt>${t("savePrompt")}</button>
     <div class="sec-head" style="padding:18px 0 6px">${t("about")}</div>
     <div class="card"><div class="row"><div class="row-main"><div class="row-sub" style="line-height:1.6">${t("disclaimer")}</div></div></div></div>`);
   requestAnimationFrame(()=>document.querySelectorAll(".seg").forEach(positionSegThumb));
