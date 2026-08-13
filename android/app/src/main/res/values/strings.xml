@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">该吃药了</string>
+    <string name="title_activity_main">该吃药了</string>
+    <string name="package_name">com.lixueyou.gaichiyao</string>
+    <string name="custom_url_scheme">com.lixueyou.gaichiyao</string>
+</resources>

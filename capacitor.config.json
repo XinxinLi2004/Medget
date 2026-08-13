@@ -1,0 +1,8 @@
+{
+  "appId": "com.lixueyou.gaichiyao",
+  "appName": "该吃药了",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

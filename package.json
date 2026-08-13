@@ -1,0 +1,16 @@
+{
+  "name": "gaichiyao",
+  "version": "0.1.0",
+  "description": "该吃药了 · 补剂处方管家（识别/评估/打卡/花费）",
+  "private": true,
+  "scripts": {
+    "sync": "cap sync android",
+    "add:android": "cap add android",
+    "open:android": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0"
+  }
+}

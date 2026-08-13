@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#f2f2f7">
+<title>该吃药了 · 补剂管家</title>
+<style>
+  @font-face{font-family:'Manrope';font-style:normal;font-weight:400 800;font-display:swap;
+    src:url('https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/latin-wght-normal.woff2') format('woff2')}
+  :root{
+    --bg:#f2f2f7;
+    --card:rgba(255,255,255,.66);
+    --sep:rgba(60,60,67,.12);
+    --label:#1c1c1e;
+    --label2:rgba(60,60,67,.6);
+    --label3:rgba(60,60,67,.35);
+    --blue:#007aff;  --blue-soft:rgba(0,122,255,.12);
+    --green:#34c759; --green-soft:rgba(52,199,89,.14);
+    --red:#ff3b30;   --red-soft:rgba(255,59,48,.12);
+    --orange:#ff9500;--orange-soft:rgba(255,149,0,.14);
+    --seg-bg:rgba(118,118,128,.12);
+    --r:16px;
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    --font-num:'Manrope',-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+    --ease:cubic-bezier(.32,.72,0,1);
+    --spring:cubic-bezier(.34,1.56,.64,1);
+  }
+  .dark{
+    --bg:#000; --card:rgba(44,44,46,.66); --sep:rgba(84,84,88,.5);
+    --label:#fff; --label2:rgba(235,235,245,.62); --label3:rgba(235,235,245,.3);
+    --blue:#0a84ff;  --blue-soft:rgba(10,132,255,.26);
+    --green:#30d158; --green-soft:rgba(48,209,88,.26);
+    --red:#ff453a;   --red-soft:rgba(255,69,58,.26);
+    --orange:#ff9f0a;--orange-soft:rgba(255,159,10,.26);
+    --seg-bg:rgba(118,118,128,.24);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--label);font-family:var(--font);
+    font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;font-kerning:normal;
+    max-width:560px;margin:0 auto;min-height:100vh;
+    padding-bottom:calc(64px + env(safe-area-inset-bottom));transition:background .3s,color .3s}
+  .bg-orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+  .bg-orbs i{position:absolute;border-radius:50%;filter:blur(64px);transition:opacity .3s}
+  .dark .bg-orbs i{opacity:.5}
+
+  .nav{position:sticky;top:0;z-index:30;display:flex;align-items:flex-end;justify-content:space-between;
+    padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+    background:rgba(242,242,247,.72);
+    -webkit-backdrop-filter:saturate(200%) blur(28px);backdrop-filter:saturate(200%) blur(28px);
+    border-bottom:.5px solid rgba(60,60,67,.14);box-shadow:inset 0 -1px 0 rgba(255,255,255,.5)}
+  .dark .nav{background:rgba(22,22,24,.72);box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)}
+  .nav h1{font-size:34px;font-weight:800;letter-spacing:-.035em;margin:0;line-height:1.08}
+  .nav .add{font-size:16px;color:var(--blue);background:none;border:0;cursor:pointer;
+    font-family:var(--font);padding:6px 2px 6px 12px;font-weight:500;transition:opacity .15s}
+  .nav .add:active{opacity:.45}
+  main{padding:6px 16px 12px}
+  main.view-enter{animation:fadeUp .32s var(--ease)}
+
+  .card{background:var(--card);border-radius:var(--r);overflow:hidden;margin-top:14px;
+    border:1px solid rgba(255,255,255,.55);
+    -webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.65), 0 8px 28px rgba(0,0,0,.05)}
+  .dark .card{border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 8px 28px rgba(0,0,0,.3)}
+  .card.first{margin-top:8px}
+  .row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:.5px solid var(--sep)}
+  .row:last-child{border-bottom:none}
+  .row-main{flex:1;min-width:0}
+  .row-title{font-size:16px;font-weight:500}
+  .row-sub{font-size:13px;color:var(--label2);margin-top:2px}
+  .chev{color:rgba(60,60,67,.28);font-size:18px;flex:0 0 auto;margin-left:2px}
+  .dark .chev{color:rgba(235,235,245,.3)}
+  .sec-head{padding:22px 16px 8px;font-size:13px;color:var(--label2);text-transform:uppercase;letter-spacing:.03em}
+
+  .check{width:40px;height:40px;border-radius:50%;border:2px solid rgba(60,60,67,.22);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.4);
+    cursor:pointer;transition:border-color .2s var(--ease),background .2s var(--ease)}
+  .check svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;
+    stroke-linejoin:round;opacity:0;transform:scale(.4);transition:transform .4s var(--spring),opacity .2s}
+  .check.done{background:var(--green);border-color:var(--green)}
+  .check.done svg{opacity:1;transform:scale(1)}
+  .check:active{transform:scale(.9)}
+
+  .tag{display:inline-flex;align-items:center;font-size:12px;font-weight:600;
+    padding:3px 10px;border-radius:100px;line-height:1.3;white-space:nowrap}
+  .tag.green{background:var(--green-soft);color:var(--green)}
+  .tag.orange{background:var(--orange-soft);color:var(--orange)}
+  .tag.red{background:var(--red-soft);color:var(--red)}
+  .tag.blue{background:var(--blue-soft);color:var(--blue)}
+  .tag.gray{background:rgba(60,60,67,.08);color:var(--label2)}
+
+  .btn{appearance:none;border:0;cursor:pointer;font-family:var(--font);font-weight:600;
+    font-size:16px;border-radius:14px;padding:14px 16px;background:var(--blue);color:#fff;
+    text-align:center;transition:transform .12s var(--ease),opacity .15s,filter .15s}
+  .btn:active{transform:scale(.97);filter:brightness(.94)}
+  .btn:disabled{background:rgba(60,60,67,.18);color:rgba(255,255,255,.9);cursor:default}
+  .btn.destructive{background:var(--red)}
+  .btn.plain{background:none;color:var(--blue);font-size:15px;padding:8px}
+  .btn.block{width:100%}
+  .btn.block + .btn.block{margin-top:10px}
+
+  .meter{height:6px;background:rgba(60,60,67,.1);border-radius:3px;overflow:hidden}
+  .meter i{display:block;height:100%;border-radius:3px;transition:width .6s var(--ease)}
+  .meter.blue i{background:var(--blue)} .meter.green i{background:var(--green)}
+  .meter.orange i{background:var(--orange)} .meter.red i{background:var(--red)}
+  .dim{display:flex;justify-content:space-between;font-size:13px;margin-top:12px}
+  .dim b{font-weight:600;font-variant-numeric:tabular-nums}
+
+  .num,.big-num,.rep-hero .num,.total-num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+  .big-num{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .big-num .unit{font-size:16px;font-weight:400;color:var(--label2);margin-left:2px;font-family:var(--font)}
+
+  .empty{text-align:center;color:var(--label2);padding:60px 24px}
+  .empty .glyph{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:rgba(60,60,67,.08);
+    display:flex;align-items:center;justify-content:center;color:var(--label3);font-size:30px}
+  .empty a{color:var(--blue);text-decoration:none}
+
+  .rep-hero{display:flex;align-items:center;gap:18px;padding:20px 16px 16px}
+  .rep-hero .num{font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1}
+  .rep-hero .meta{flex:1}
+  .rep-hero .who{font-size:20px;font-weight:600}
+  .rep-hero .what{font-size:13px;color:var(--label2);margin-top:3px}
+
+  .tabbar{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;z-index:40;
+    display:flex;background:rgba(249,249,249,.72);
+    -webkit-backdrop-filter:saturate(200%) blur(28px);backdrop-filter:saturate(200%) blur(28px);
+    border-top:.5px solid rgba(60,60,67,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
+    padding-bottom:env(safe-area-inset-bottom)}
+  .dark .tabbar{background:rgba(22,22,24,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  .tabbar button{flex:1;border:0;background:none;padding:8px 4px 7px;display:flex;
+    flex-direction:column;align-items:center;gap:2px;color:rgba(60,60,67,.45);cursor:pointer;
+    font-family:var(--font);font-size:10px;font-weight:500;transition:color .18s}
+  .tabbar button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;
+    stroke-linecap:round;stroke-linejoin:round}
+  .tabbar button.on{color:var(--blue)}
+
+  .sheet-mask{position:fixed;inset:0;background:rgba(0,0,0,.32);opacity:0;pointer-events:none;
+    transition:opacity .28s var(--ease);z-index:50;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .sheet-mask.on{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;
+    background:rgba(248,248,250,.85);
+    -webkit-backdrop-filter:saturate(200%) blur(30px);backdrop-filter:saturate(200%) blur(30px);
+    border-radius:20px 20px 0 0;border-top:1px solid rgba(255,255,255,.6);
+    padding:10px 16px calc(18px + env(safe-area-inset-bottom));
+    max-height:88vh;overflow:auto;transform:translateY(100%);transition:transform .38s var(--ease);z-index:51}
+  .dark .sheet{background:rgba(28,28,30,.85);border-top-color:rgba(255,255,255,.08)}
+  .sheet.on{transform:translateY(0)}
+  .sheet .grip{width:38px;height:5px;background:rgba(60,60,67,.2);border-radius:3px;margin:4px auto 12px}
+  .sheet .x{position:absolute;right:14px;top:12px;width:28px;height:28px;border-radius:50%;
+    background:rgba(60,60,67,.08);color:var(--label2);border:0;cursor:pointer;font-size:15px;
+    font-family:var(--font);line-height:1;transition:background .15s}
+  .sheet .x:active{background:rgba(60,60,67,.15)}
+  .sheet h2{font-size:22px;font-weight:700;margin:4px 0 0;letter-spacing:-.02em}
+
+  .field{padding:2px 0}
+  .field label{display:block;font-size:13px;color:var(--label2);margin:12px 16px 4px}
+  .field input{width:100%;padding:12px 16px;border:none;border-top:.5px solid var(--sep);
+    border-bottom:.5px solid var(--sep);font-size:16px;font-family:var(--font);
+    background:rgba(255,255,255,.6);color:var(--label)}
+  .dark .field input{background:rgba(60,60,67,.3)}
+  .field input:focus{outline:none;background:rgba(255,255,255,.9)}
+  .dark .field input:focus{background:rgba(60,60,67,.5)}
+  .field:first-child label{margin-top:0}
+
+  .seg{position:relative;display:flex;background:var(--seg-bg);border-radius:9px;padding:2px;margin:0 16px 12px}
+  .seg .seg-thumb{position:absolute;top:2px;bottom:2px;left:0;width:0;border-radius:7px;
+    background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);
+    transition:left .28s var(--ease),width .28s var(--ease)}
+  .seg button{flex:1;border:0;background:transparent;padding:7px 4px;font-size:13px;border-radius:7px;
+    color:var(--label2);cursor:pointer;font-family:var(--font);transition:color .18s var(--ease);
+    position:relative;z-index:1;white-space:nowrap}
+  .seg button.on{color:var(--label);font-weight:600}
+  .switch-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:.5px solid var(--sep)}
+  .switch{width:51px;height:31px;border-radius:16px;background:rgba(120,120,128,.16);position:relative;
+    flex:0 0 auto;cursor:pointer;transition:background .2s var(--ease)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;
+    background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:left .2s var(--ease)}
+  .switch.on{background:var(--green)}
+  .switch.on::after{left:22px}
+
+  .nav-ico{background:none;border:0;cursor:pointer;color:var(--blue);padding:6px;border-radius:8px;transition:opacity .15s}
+  .nav-ico svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
+  .nav-ico:active{opacity:.45}
+
+  .big-action{display:flex;align-items:center;gap:13px;width:100%;
+    background:linear-gradient(135deg,#0a84ff,#007aff);color:#fff;border:0;border-radius:16px;
+    padding:15px 16px;font-size:16px;font-weight:600;font-family:var(--font);cursor:pointer;
+    text-align:left;margin-bottom:10px;box-shadow:0 6px 20px rgba(0,122,255,.28);
+    transition:transform .12s var(--ease),filter .15s}
+  .big-action svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .big-action .sub{font-size:12px;font-weight:400;opacity:.88;margin-top:2px}
+  .big-action:active{transform:scale(.97);filter:brightness(.94)}
+
+  .scan-wrap{position:fixed;inset:0;background:#000;z-index:60;display:none;flex-direction:column}
+  .scan-wrap.on{display:flex}
+  .scan-top{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;color:#fff}
+  .scan-top .t{font-size:16px;font-weight:600}
+  .scan-top button{background:rgba(255,255,255,.22);border:0;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;font-family:var(--font)}
+  .scan-body{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .scan-body video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .scan-frame{position:relative;width:min(72vw,280px);aspect-ratio:1;border:2px solid rgba(255,255,255,.9);border-radius:22px;box-shadow:0 0 0 4000px rgba(0,0,0,.45)}
+  .scan-frame::after{content:"";position:absolute;left:10%;right:10%;top:50%;height:2px;background:var(--blue);box-shadow:0 0 12px var(--blue)}
+  .scan-hint{position:relative;text-align:center;color:#fff;padding:14px 16px 24px;font-size:14px;line-height:1.5}
+
+  .toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-8px);
+    background:rgba(28,28,30,.9);color:#fff;padding:10px 18px;border-radius:14px;font-size:14px;
+    z-index:70;opacity:0;pointer-events:none;transition:all .28s var(--ease);max-width:84vw;text-align:center;line-height:1.4;
+    box-shadow:0 8px 24px rgba(0,0,0,.2)}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .ai-presets{display:flex;flex-wrap:wrap;gap:8px;padding:2px 16px 10px}
+  .ai-preset{background:var(--blue-soft);color:var(--blue);border:0;border-radius:100px;
+    padding:6px 13px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:opacity .15s}
+  .ai-preset:active{opacity:.6}
+
+  /* ============ 人体营养图 ============ */
+  .human-card{padding:16px}
+  .human-layout{display:flex;align-items:stretch;gap:8px}
+  .human-col{flex:1;display:flex;flex-direction:column;gap:8px}
+  .human-col.center{flex:0 0 108px;align-items:center;justify-content:center}
+  .human{width:100%;height:auto;max-height:300px}
+  .human .body{fill:rgba(0,122,255,.06);stroke:rgba(0,122,255,.5)}
+  .human .line{stroke:rgba(0,122,255,.3);stroke-width:1}
+  .nut{background:rgba(255,255,255,.5);border-radius:10px;padding:7px 9px;border:1px solid rgba(60,60,67,.08)}
+  .dark .nut{background:rgba(60,60,67,.3)}
+  .nut .n{font-size:11.5px;font-weight:600}
+  .nut .v{font-size:10.5px;color:var(--label2);font-variant-numeric:tabular-nums;margin-top:1px}
+  .nut .mini{height:3px;background:rgba(60,60,67,.1);border-radius:2px;overflow:hidden;margin-top:4px}
+  .nut .mini i{display:block;height:100%;border-radius:2px}
+  .legend{display:flex;gap:14px;justify-content:center;margin-top:12px;font-size:11px;color:var(--label2)}
+  .legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  @media (prefers-reduced-transparency: reduce){
+    .nav,.tabbar,.sheet,.card{backdrop-filter:none;-webkit-backdrop-filter:none}
+    .nav{background:#f2f2f7}.tabbar{background:#f9f9f9}.sheet{background:#f8f8fa}.card{background:#fff}
+    .dark .nav{background:#161618}.dark .tabbar{background:#161618}.dark .sheet{background:#1c1c1e}.dark .card{background:#2c2c2e}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <i style="width:280px;height:280px;background:rgba(0,122,255,.28);top:-80px;left:-60px"></i>
+  <i style="width:240px;height:240px;background:rgba(90,200,250,.30);top:120px;right:-70px"></i>
+  <i style="width:260px;height:260px;background:rgba(175,82,222,.18);top:420px;left:-90px"></i>
+  <i style="width:220px;height:220px;background:rgba(255,149,0,.16);bottom:60px;right:-50px"></i>
+  <i style="width:300px;height:300px;background:rgba(52,199,89,.14);bottom:-120px;left:20px"></i>
+</div>
+
+<div class="nav"><h1 id="navTitle">今日</h1>
+  <div style="display:flex;align-items:center;gap:2px">
+    <button class="nav-ico" data-goto="settings" aria-label="设置"><svg viewBox="0 0 24 24"><path d="M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8z"/><path d="M19.4 15a1.7 1.7 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.82-.33 1.7 1.7 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.51 1.7 1.7 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.51 1.7 1.7 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></button>
+    <button class="add" id="addBtn" data-goto="add">添加</button>
+  </div></div>
+
+<main id="view"></main>
+
+<nav class="tabbar" id="tabbar">
+  <button data-v="today" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="17" rx="4"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.6 14.3l2.4 2.4 4.4-4.4"/></svg><span class="tb">今日</span></button>
+  <button data-v="stack"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/><circle cx="8.5" cy="12" r=".9"/><circle cx="15.5" cy="12" r=".9"/></svg><span class="tb">补剂</span></button>
+  <button data-v="lib"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20"/><path d="M9 7.5h6"/></svg><span class="tb">知识库</span></button>
+  <button data-v="cost"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M14.3 8.6c-.4-.9-1.5-1.4-2.4-1.4-1.3 0-2.2.6-2.2 1.4 0 1.9 4.5 1 4.5 2.9 0 .8-.8 1.4-2.1 1.4-.9 0-2-.5-2.4-1.4"/><path d="M12 5.8v12.4"/></svg><span class="tb">花费</span></button>
+  <button data-v="know"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.3c.8.6 1.3 1.5 1.3 2.7h5.4c0-1.2.5-2.1 1.3-2.7A6 6 0 0 0 12 3z"/></svg><span class="tb">知识</span></button>
+</nav>
+
+<div class="sheet-mask" id="mask"></div>
+<div class="sheet" id="sheet"></div>
+
+<div class="scan-wrap" id="scanWrap">
+  <div class="scan-top"><span class="t" id="scanT">扫码识别</span><button id="scanClose">×</button></div>
+  <div class="scan-body"><video id="scanVideo" playsinline muted></video><div class="scan-frame"></div></div>
+  <div class="scan-hint" id="scanHint">将补剂条码对准取景框</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============ i18n ============ */
+const I18N = {
+  zh: {
+    today:"今日", stack:"补剂", lib:"知识库", cost:"花费", know:"知识",
+    add:"添加", save:"保存", removeArchive:"移除档案", takeOne:"吃一份", done:"完成",
+    manualAdd:"手动添加", custom:"自定义补剂", joinStack:"加入我的补剂",
+    settings:"设置", aiSection:"AI 识别（视觉模型）", baseUrl:"API 地址（Base URL）",
+    apiKey:"API Key", model:"模型名", saveAI:"保存",
+    language:"语言", appearance:"外观", followSystem:"跟随系统", light:"浅色", dark:"深色",
+    motion:"动效", motionDesc:"减少动态效果",
+    data:"数据", exportData:"导出数据", clearData:"清空数据", dataCleared:"数据已清空",
+    about:"关于", disclaimer:"数据仅保存在本机；评分与 AI 结果为信息辅助，不构成医疗建议。API Key 仅存本机浏览器。",
+    scoreParts:"评分构成", quality:"质量安全", efficacy:"功效循证", transparency:"透明度", value:"性价比",
+    ingredient:"成分", effRange:"有效范围", intakeNow:"本次摄入",
+    doseOk:"已达标", doseLow:"剂量不足", doseHigh:"超有效上限",
+    prefer:"优选", caution:"注意", tip:"提示",
+    bExcellent:"优秀", bGood:"良好", bFair:"一般", bCaution:"谨慎",
+    todayProgress:"今日进度", doneCount:"已完成", lowStock:"低库存", lowWarn:"偏低",
+    remaining:"余", servings:"份", days:"天", perServing:"单份", daily:"日",
+    monthly:"每月合计", avgDay:"日均", costBreakdown:"花费构成",
+    supplementList:"补剂清单", intakeToday:"今日摄入量", overLimit:"超上限",
+    addSupplement:"添加补剂", fromLibrary:"从知识库选择",
+    scanRec:"扫码识别", scanSub:"扫商品条码，查真实产品", photoRec:"拍照识别成分表", photoSub:"上传/拍摄成分表，AI 解析",
+    scanHint:"将补剂条码对准取景框",
+    empty1:"还没有补剂档案", empty2:"补剂档案为空", addFirst:"添加第一款补剂", addFirstShort:"添加第一款",
+    foundProduct:"已查到产品", name:"名称", brand:"品牌", fullName:"全名", storage:"储存方式", ingredients:"成分表", barcode:"条码",
+    ofNote:"数据来自 Open Food Facts，剂量与评分维度需补充。", completeSave:"完善剂量并保存", aiFill:"改用 AI 补全",
+    foundBarcode:"识别到条码", notFound:"本地库与 Open Food Facts 均未收录，可尝试 AI 补全或手动添加", aiFillInfo:"用 AI 补全信息",
+    fName:"名称", fPrice:"瓶价（¥）", fServ:"一瓶总份数（粒/勺）", fAmt:"每份剂量", fTakes:"每天几次", fDose:"每次几份",
+    evStrong:"强", evMid:"中", evWeak:"弱", formGood:"优", formMid:"中", formBad:"差",
+    customItem:"自定义补剂",
+    usage:"服用方式", uMeal:"随餐", uEmpty:"空腹", uBed:"睡前", uAny:"不限",
+    remind:"提醒时间", remindDesc:"到点提醒（App 打开时）", noRemind:"不提醒",
+    bodyChart:"营养摄入 vs 推荐", rda:"推荐", intakeS:"摄入", low:"不足", ok:"达标", over:"超标",
+    editSetup:"服用设置",
+    querying:"查询商品库…", aiGen:"AI 生成评估…", aiQuery:"AI 查询中…", aiRecognizing:"AI 识别成分表中…",
+    needAIKey:"请先在「设置」配置 AI Key", aiFail:"识别失败", noCamera:"无法访问摄像头", noScan:"当前浏览器不支持扫码，请用安卓 Chrome 真机测试",
+    saved:"已保存", aiNoResult:"AI 无返回内容", aiNoParse:"未能解析识别结果", aiHttp:"AI 请求失败（HTTP ",
+    notifTitle:"该吃药了"
+  },
+  en: {
+    today:"Today", stack:"Supps", lib:"Library", cost:"Cost", know:"Notes",
+    add:"Add", save:"Save", removeArchive:"Remove", takeOne:"Take", done:"Done",
+    manualAdd:"Add manually", custom:"Custom", joinStack:"Add to my supplements",
+    settings:"Settings", aiSection:"AI Recognition (Vision)", baseUrl:"Base URL",
+    apiKey:"API Key", model:"Model", saveAI:"Save",
+    language:"Language", appearance:"Appearance", followSystem:"System", light:"Light", dark:"Dark",
+    motion:"Motion", motionDesc:"Reduce motion",
+    data:"Data", exportData:"Export data", clearData:"Clear data", dataCleared:"Data cleared",
+    about:"About", disclaimer:"Data stays on this device. Scores and AI results are informational, not medical advice. Your API key is stored locally only.",
+    scoreParts:"Score breakdown", quality:"Quality", efficacy:"Evidence", transparency:"Transparency", value:"Value",
+    ingredient:"Ingredient", effRange:"Effective range", intakeNow:"Your intake",
+    doseOk:"Adequate", doseLow:"Underdosed", doseHigh:"Over limit",
+    prefer:"Preferred", caution:"Caution", tip:"Note",
+    bExcellent:"Excellent", bGood:"Good", bFair:"Fair", bCaution:"Caution",
+    todayProgress:"Today's progress", doneCount:"Done", lowStock:"Low stock", lowWarn:"low",
+    remaining:"Left", servings:"serv", days:"d", perServing:"/serving", daily:"/day",
+    monthly:"Monthly total", avgDay:"Daily avg", costBreakdown:"Cost breakdown",
+    supplementList:"Supplement list", intakeToday:"Today's intake", overLimit:"over limit",
+    addSupplement:"Add supplement", fromLibrary:"From library",
+    scanRec:"Scan barcode", scanSub:"Scan a barcode, look up the product", photoRec:"Photo ingredients", photoSub:"Upload/photo a label, AI parses it",
+    scanHint:"Point the barcode into the frame",
+    empty1:"No supplements yet", empty2:"No supplements", addFirst:"Add your first supplement", addFirstShort:"Add first",
+    foundProduct:"Product found", name:"Name", brand:"Brand", fullName:"Full name", storage:"Storage", ingredients:"Ingredients", barcode:"Barcode",
+    ofNote:"Data from Open Food Facts. Dose & scoring need completing.", completeSave:"Complete & save", aiFill:"Fill with AI instead",
+    foundBarcode:"Barcode scanned", notFound:"Not in local library or Open Food Facts. Try AI or add manually.", aiFillInfo:"Fill with AI",
+    fName:"Name", fPrice:"Price (¥)", fServ:"Servings per bottle", fAmt:"Dose per serving", fTakes:"Times per day", fDose:"Servings per time",
+    evStrong:"Strong", evMid:"Moderate", evWeak:"Weak", formGood:"Good", formMid:"Fair", formBad:"Poor",
+    customItem:"Custom supplement",
+    usage:"Usage", uMeal:"With meal", uEmpty:"Empty", uBed:"Bedtime", uAny:"Any",
+    remind:"Reminder", remindDesc:"Remind on time (while app open)", noRemind:"No reminder",
+    bodyChart:"Intake vs Recommended", rda:"RDA", intakeS:"Intake", low:"Low", ok:"OK", over:"Over",
+    editSetup:"Usage setup",
+    querying:"Looking up product…", aiGen:"AI evaluating…", aiQuery:"AI querying…", aiRecognizing:"AI reading label…",
+    needAIKey:"Set your AI key in Settings first", aiFail:"Recognition failed", noCamera:"Cannot access camera", noScan:"Barcode scanning not supported here; try Android Chrome",
+    saved:"Saved", aiNoResult:"AI returned no content", aiNoParse:"Could not parse result", aiHttp:"AI request failed (HTTP ",
+    notifTitle:"Time for your supplement"
+  }
+};
+const SET_KEY = "gaichiyao_settings";
+let settings = {lang:"zh", theme:"auto", reduceMotion:false};
+try{const s=JSON.parse(localStorage.getItem(SET_KEY)); if(s) settings=Object.assign(settings,s);}catch(e){}
+function saveSettings(){localStorage.setItem(SET_KEY, JSON.stringify(settings));}
+let lang = settings.lang;
+const t = k => (I18N[lang] && I18N[lang][k]) || I18N.zh[k] || k;
+const tev = v => ({强:t("evStrong"),中:t("evMid"),弱:t("evWeak"),优:t("formGood"),差:t("formBad")})[v] || v;
+const USAGES = ["any","meal","empty","bed"];
+const usageLabel = u => ({any:t("uAny"),meal:t("uMeal"),empty:t("uEmpty"),bed:t("uBed")})[u]||t("uAny");
+
+/* ============ 主题 ============ */
+function applyTheme(){
+  const m = settings.theme||"auto";
+  const dark = m==="dark" || (m==="auto" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark", dark);
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", dark?"#000":"#f2f2f7");
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>{if(settings.theme==="auto")applyTheme();});
+function applyReduceMotion(){
+  const red = settings.reduceMotion;
+  document.documentElement.style.setProperty("--ease", red?"linear":"cubic-bezier(.32,.72,0,1)");
+  document.documentElement.style.setProperty("--spring", red?"linear":"cubic-bezier(.34,1.56,.64,1)");
+}
+
+/* ============ 知识库（含品牌/全名/储存；示例数据非医疗建议） ============ */
+const LIB = [
+  {id:"vd3",name:"维生素 D3",fullName:"维生素 D3 软胶囊 2000 IU",brand:"Now Foods",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:89,serv:100,
+    ing:{name:"维生素 D3",amt:2000,unit:"IU",min:600,max:4000,ul:4000},
+    good:"油溶胶囊吸收更好",bad:"",note:"与 K2 同补利于钙归位；日照不足者常缺。"},
+  {id:"mag",name:"镁（甘氨酸盐）",fullName:"甘氨酸镁粉 200mg/份",brand:"Thorne",storage:"阴凉干燥处，防潮",cat:"矿物质",form:"优",ev:"强",trans:true,price:79,serv:120,
+    ing:{name:"镁",amt:200,unit:"mg",min:300,max:420,ul:700},
+    good:"甘氨酸盐/柠檬酸盐吸收好、不腹泻",bad:"避免氧化镁（吸收差、易腹泻）",note:"助眠、放松神经；随餐或睡前。"},
+  {id:"omega",name:"鱼油 Omega-3",fullName:"高纯鱼油 1000mg EPA/DHA",brand:"Sports Research",storage:"开封后冷藏保存",cat:"脂肪酸",form:"优",ev:"强",trans:true,price:129,serv:60,
+    ing:{name:"EPA+DHA",amt:1000,unit:"mg",min:250,max:2000},
+    good:"看 IFOS 认证、rTG 剂型",bad:"避免乙酯型（吸收差）",note:"关注 EPA+DHA 总量，而非鱼油重量。"},
+  {id:"vc",name:"维生素 C",fullName:"维生素 C 缓释片 500mg",brand:"Doctor's Best",storage:"阴凉干燥处",cat:"维生素",form:"中",ev:"强",trans:true,price:49,serv:100,
+    ing:{name:"维生素 C",amt:500,unit:"mg",min:100,max:1000,ul:2000},
+    good:"",bad:"",note:"高剂量可能腹泻；分次服用。"},
+  {id:"b12",name:"维生素 B12（甲钴胺）",fullName:"甲钴胺 B12 500mcg 含片",brand:"Jarrow Formulas",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"强",trans:true,price:39,serv:100,
+    ing:{name:"维生素 B12",amt:500,unit:"mcg",min:2.4,max:1000},
+    good:"甲钴胺优于氰钴胺",bad:"",note:"素食者、老年人易缺。"},
+  {id:"folate",name:"叶酸（5-MTHF）",fullName:"活性叶酸 5-MTHF 400mcg",brand:"Jarrow Formulas",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"中",trans:true,price:59,serv:90,
+    ing:{name:"叶酸",amt:400,unit:"mcg",min:400,max:1000},
+    good:"活性 5-MTHF 直接利用",bad:"MTHFR 突变者避免合成叶酸",note:"备孕/孕期关键。"},
+  {id:"creatine",name:"肌酸（一水）",fullName:"一水肌酸粉 5g/勺",brand:"Optimum Nutrition",storage:"阴凉干燥处，密封防潮",cat:"运动",form:"优",ev:"强",trans:true,price:99,serv:60,
+    ing:{name:"肌酸",amt:5000,unit:"mg",min:3000,max:5000},
+    good:"一水合物证据最充分",bad:"避免花哨复合肌酸",note:"需持续服用饱和，非即刻见效。"},
+  {id:"whey",name:"乳清蛋白",fullName:"乳清蛋白粉 25g/份",brand:"Optimum Nutrition",storage:"阴凉干燥处，密封",cat:"蛋白",form:"中",ev:"强",trans:true,price:199,serv:30,
+    ing:{name:"蛋白质",amt:25,unit:"g",min:20,max:40},
+    good:"",bad:"乳糖不耐选分离乳清",note:"按体重缺口补充。"},
+  {id:"zn",name:"锌（吡啶甲酸）",fullName:"吡啶甲酸锌 15mg",brand:"Thorne",storage:"阴凉干燥处",cat:"矿物质",form:"优",ev:"强",trans:true,price:45,serv:100,
+    ing:{name:"锌",amt:15,unit:"mg",min:8,max:40,ul:40},
+    good:"吡啶甲酸/甘氨酸螯合吸收好",bad:"长期高剂量影响铜",note:"与铜平衡，勿长期超量。"},
+  {id:"coq10",name:"辅酶 Q10（泛醇）",fullName:"泛醇 CoQ10 100mg",brand:"Doctor's Best",storage:"阴凉干燥处，避光",cat:"抗氧化",form:"优",ev:"中",trans:true,price:159,serv:60,
+    ing:{name:"CoQ10",amt:100,unit:"mg",min:30,max:200},
+    good:"泛醇(Ubiquinol)优于泛醌",bad:"",note:"他汀类药物使用者常补充。"},
+  {id:"ca",name:"钙（柠檬酸盐）",fullName:"柠檬酸钙 500mg/片",brand:"Pure Encapsulations",storage:"阴凉干燥处",cat:"矿物质",form:"中",ev:"强",trans:true,price:69,serv:120,
+    ing:{name:"钙",amt:500,unit:"mg",min:800,max:1200,ul:2500},
+    good:"柠檬酸盐不依赖胃酸",bad:"碳酸钙需随餐、影响铁锌",note:"单次不超 500mg 吸收佳。"},
+  {id:"fe",name:"铁（甘氨酸亚铁）",fullName:"甘氨酸亚铁 18mg",brand:"Thorne",storage:"阴凉干燥处，避光",cat:"矿物质",form:"优",ev:"强",trans:true,price:55,serv:60,
+    ing:{name:"铁",amt:18,unit:"mg",min:8,max:18,ul:45},
+    good:"甘氨酸亚铁温和少便秘",bad:"避免空腹大剂量硫酸亚铁",note:"与维C同服促吸收；勿与钙同服。"},
+  {id:"curc",name:"姜黄素（含黑胡椒素）",fullName:"姜黄素胶囊 500mg + 黑胡椒素",brand:"Life Extension",storage:"阴凉干燥处，避光",cat:"植提",form:"中",ev:"中",trans:true,price:89,serv:60,
+    ing:{name:"姜黄素",amt:500,unit:"mg",min:500,max:1000},
+    good:"黑胡椒素提升吸收",bad:"无提升剂吸收极差",note:"抗炎辅助。"},
+  {id:"k2",name:"维生素 K2（MK-7）",fullName:"维生素 K2 MK-7 90mcg",brand:"Jarrow Formulas",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"中",trans:true,price:79,serv:60,
+    ing:{name:"维生素 K2",amt:90,unit:"mcg",min:90,max:200},
+    good:"MK-7 长效",bad:"服抗凝药者先问医生",note:"与 D3 协同引钙入骨。"},
+  {id:"probiotic",name:"益生菌",fullName:"多菌株益生菌 100亿CFU",brand:"Garden of Life",storage:"冷藏保存（开封后）",cat:"肠道",form:"中",ev:"中",trans:true,price:139,serv:30,
+    ing:{name:"活菌",amt:100,unit:"亿CFU",min:100,max:500},
+    good:"看菌株编号与活菌数",bad:"",note:"冷藏保存活性更佳。"},
+  {id:"nac",name:"NAC",fullName:"N-乙酰半胱氨酸 600mg",brand:"Life Extension",storage:"阴凉干燥处",cat:"氨基酸",form:"中",ev:"中",trans:true,price:99,serv:60,
+    ing:{name:"NAC",amt:600,unit:"mg",min:600,max:1200},
+    good:"",bad:"",note:"抗氧化、支持谷胱甘肽。"}
+];
+const KNOW = [
+  {t:"维生素 D3 与 K2 协同",b:"D3 促钙吸收，K2 引钙入骨、防钙沉积血管。长期补 D3 建议同补 K2。"},
+  {t:"镁的形式很关键",b:"甘氨酸盐/柠檬酸盐吸收好且不易腹泻；氧化镁吸收差，多用于通便。"},
+  {t:"铁与钙、咖啡分开",b:"铁剂避免与钙、咖啡、茶同服，会大幅降低吸收；配维C可提升吸收。"},
+  {t:"鱼油看 EPA+DHA",b:"比较鱼油要比 EPA+DHA 总量，而非胶囊重量；rTG 剂型吸收更好。"},
+  {t:"叶酸选活性 5-MTHF",b:"约三成人群 MTHFR 基因变异，合成叶酸利用差，活性叶酸更直接。"},
+  {t:"补剂不能替代饮食",b:"评估打分是信息辅助，非医疗建议；均衡膳食仍是基础。"}
+];
+/* 推荐摄入量参考（RDA/参考值，示例） */
+const RDA = {
+  "维生素 D3":{rda:600,unit:"IU"},
+  "镁":{rda:350,unit:"mg"},
+  "钙":{rda:800,unit:"mg"},
+  "铁":{rda:18,unit:"mg"},
+  "锌":{rda:11,unit:"mg"},
+  "维生素 C":{rda:100,unit:"mg"},
+  "维生素 B12":{rda:2.4,unit:"mcg"},
+  "EPA+DHA":{rda:500,unit:"mg"}
+};
+
+/* ============ 状态与存储 ============ */
+const KEY = "gaichiyao_v5";
+function migrate(s){
+  (s.stack||[]).forEach(x=>{ if(x.usage===undefined)x.usage="any"; if(x.remindAt===undefined)x.remindAt=""; });
+  return s;
+}
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.stack)return migrate(s);}catch(e){}
+  try{const s=JSON.parse(localStorage.getItem("gaichiyao_v4"));if(s&&s.stack)return migrate(s);}catch(e){}
+  return {stack:[],intake:{}};
+}
+const state = load();
+function save(){localStorage.setItem(KEY, JSON.stringify(state));}
+const today = () => new Date().toISOString().slice(0,10);
+const byId = id => LIB.find(x=>x.id===id);
+const byNutrient = n => LIB.find(x=>x.ing.name===n);
+
+/* ============ 评分引擎 ============ */
+function median(a){const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+const vp = l => l.price/l.serv;
+function scoreOf(l, dosePerTake=1){
+  const quality = {优:90,中:65,差:40}[l.form];
+  const efficacy = {强:90,中:68,弱:45}[l.ev];
+  const transparency = l.trans ? 85 : 50;
+  const group = LIB.filter(x=>x.cat===l.cat);
+  const base = group.length>1 ? group : LIB;
+  const v = vp(l), med = median(base.map(vp));
+  const value = v<=med ? 90 : v<=med*1.6 ? 65 : 45;
+  const composite = Math.round(quality*.3 + efficacy*.3 + transparency*.2 + value*.2);
+  const amt = l.ing.amt*dosePerTake;
+  const dose = amt<l.ing.min ? "不足" : (l.ing.max && amt>l.ing.max ? "超标" : "达标");
+  const band = composite>=85 ? "优秀" : composite>=70 ? "良好" : composite>=55 ? "一般" : "谨慎";
+  return {quality, efficacy, transparency, value, composite, band, dose, amt};
+}
+const bandTag = b => b==="优秀"||b==="良好" ? "green" : b==="一般" ? "orange" : "red";
+const bandColor = b => b==="优秀"||b==="良好" ? "green" : b==="一般" ? "orange" : "red";
+const bandLabel = b => ({优秀:t("bExcellent"),良好:t("bGood"),一般:t("bFair"),谨慎:t("bCaution")})[b];
+
+/* ============ 工具 ============ */
+const $ = s => document.querySelector(s);
+const view = $("#view"), sheet = $("#sheet"), mask = $("#mask");
+function openSheet(html){sheet.innerHTML = '<div class="grip"></div>'+html;mask.classList.add("on");sheet.classList.add("on");}
+function closeSheet(){mask.classList.remove("on");sheet.classList.remove("on");}
+mask.addEventListener("click", closeSheet);
+const CHECK = `<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+
+/* ============ 评分报告 ============ */
+function reportHTML(l, dose=1){
+  const s = scoreOf(l, dose);
+  const doseLabel = {达标:t("doseOk"),不足:t("doseLow"),超标:t("doseHigh")}[s.dose];
+  const doseCls = s.dose==="达标" ? "good" : s.dose==="不足" ? "warn" : "bad";
+  const rows = [[t("quality"),s.quality],[t("efficacy"),s.efficacy],[t("transparency"),s.transparency],[t("value"),s.value]];
+  return `
+  <div class="rep-hero">
+    <div class="num" style="color:var(--${s.band==="谨慎"?"red":s.band==="一般"?"orange":"green"})">${s.composite}</div>
+    <div class="meta">
+      <div class="who">${l.name}</div>
+      <div class="what">${l.brand||""} · ${l.cat}</div>
+      <span class="tag ${bandTag(s.band)}" style="margin-top:8px;display:inline-block">${bandLabel(s.band)}</span>
+    </div>
+  </div>
+  <div class="card" style="margin:0 0 16px">
+    ${l.fullName?`<div class="row"><div class="row-main"><div class="row-sub">${t("fullName")}</div><div class="row-title" style="font-size:14px">${l.fullName}</div></div></div>`:""}
+    ${l.storage?`<div class="row"><div class="row-main"><div class="row-sub">${t("storage")}</div><div class="row-title" style="font-size:14px">${l.storage}</div></div></div>`:""}
+    <div class="row"><div class="row-main"><div class="row-sub">${t("ingredient")}</div><div class="row-title" style="font-size:14px">${l.ing.name} ${l.ing.amt}${l.ing.unit} / ${t("servings")}</div></div></div>
+    <div class="row"><div class="row-main"><div class="row-sub">${t("effRange")}</div><div class="row-title" style="font-size:14px">${l.ing.min}–${l.ing.max}${l.ing.unit}</div></div></div>
+    <div class="row"><div class="row-main"><div class="row-sub">${t("intakeNow")}</div><div class="row-title" style="font-size:14px;color:var(--${doseCls==="bad"?"red":doseCls==="warn"?"orange":"green"})">${s.amt}${l.ing.unit} · ${doseLabel}</div></div></div>
+  </div>
+  <div class="card" style="margin:0 0 16px;padding:4px 16px 14px">
+    <div class="sec-head" style="padding:12px 0 6px">${t("scoreParts")}</div>
+    ${rows.map(r=>`<div class="dim"><span>${r[0]}</span><b>${r[1]}</b></div><div class="meter ${bandColor(s.band)}"><i style="width:${r[1]}%"></i></div>`).join("")}
+  </div>
+  <div class="card" style="margin:0">
+    ${l.good?`<div class="row"><div class="row-main"><div class="row-title" style="font-size:15px;color:var(--green)">✓ ${l.good}</div></div></div>`:""}
+    ${l.bad?`<div class="row"><div class="row-main"><div class="row-title" style="font-size:15px;color:var(--red)">✕ ${l.bad}</div></div></div>`:""}
+    ${l.note?`<div class="row"><div class="row-main"><div class="row-title" style="font-size:15px;color:var(--label2)">${l.note}</div></div></div>`:""}
+  </div>`;
+}
+
+/* ============ 人体营养图 ============ */
+function bodyChartHTML(){
+  const d = today();
+  const intake = state.intake[d]||{};
+  const entries = Object.keys(RDA).map(n=>{
+    const r = RDA[n];
+    const val = intake[n]||0;
+    const pct = r.rda>0 ? val/r.rda : 0;
+    const cls = val<=0 ? "orange" : (pct>1 ? "red" : (pct>=0.8 ? "green" : "orange"));
+    return {n, val, rda:r.rda, unit:r.unit, pct, cls};
+  });
+  const half = Math.ceil(entries.length/2);
+  const left = entries.slice(0,half), right = entries.slice(half);
+  const nut = e=>`<div class="nut"><div class="n">${e.n}</div>
+    <div class="v">${e.val} / ${e.rda}${e.unit}</div>
+    <div class="mini"><i style="width:${Math.min(e.pct*100,100)}%;background:var(--${e.cls})"></i></div></div>`;
+  return `<div class="sec-head">${t("bodyChart")}</div>
+  <div class="card human-card" style="margin-top:0">
+    <div class="human-layout">
+      <div class="human-col">${left.map(nut).join("")}</div>
+      <div class="human-col center">
+        <svg class="human" viewBox="0 0 120 300">
+          <circle cx="60" cy="34" r="22" class="body"/>
+          <path d="M60 58 C 42 62, 36 88, 36 120 L 36 150 C 36 158, 42 164, 50 164 L 70 164 C 78 164, 84 158, 84 150 L 84 120 C 84 88, 78 62, 60 58 Z" class="body"/>
+          <path d="M42 72 C 30 90, 28 116, 32 140" class="line"/>
+          <path d="M78 72 C 90 90, 92 116, 88 140" class="line"/>
+          <path d="M50 164 L 46 210 L 42 252" class="line"/>
+          <path d="M70 164 L 74 210 L 78 252" class="line"/>
+        </svg>
+      </div>
+      <div class="human-col">${right.map(nut).join("")}</div>
+    </div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--green)"></span>${t("ok")}</span>
+      <span><span class="dot" style="background:var(--orange)"></span>${t("low")}</span>
+      <span><span class="dot" style="background:var(--red)"></span>${t("over")}</span>
+    </div>
+  </div>`;
+}
+
+/* ============ 页面：今日 ============ */
+function viewToday(){
+  const d = today();
+  if(!state.stack.length){
+    view.innerHTML = `<div class="empty"><div class="glyph">＋</div>${t("empty1")}<br><br>
+      <a href="#" data-goto="add">${t("addFirst")}</a></div>`;return;
+  }
+  const doneCount = state.stack.filter(s=>((s.history[d]||0)>=s.takes||s.remaining<=0)).length;
+  const total = state.stack.length;
+  let html = `<div class="card first">
+    <div class="row"><div class="row-main">
+      <div class="row-title" style="font-weight:600">${t("todayProgress")}</div>
+      <div class="row-sub">${t("doneCount")} ${doneCount} / ${total}</div></div>
+      <div class="meter blue" style="width:110px"><i style="width:${total?doneCount/total*100:0}%"></i></div>
+    </div></div>`;
+  html += `<div class="sec-head">${t("supplementList")}</div><div class="card" style="margin-top:0">`;
+  state.stack.forEach(s=>{
+    const taken = s.history[d]||0;
+    const done = taken>=s.takes || s.remaining<=0;
+    const low = s.remaining<=s.takes*3;
+    html += `<div class="row">
+      <div class="row-main" data-stack="${s.uid}" style="cursor:pointer">
+        <div class="row-title">${s.name}</div>
+        <div class="row-sub">${usageLabel(s.usage)}${s.remindAt?` · ⏰ ${s.remindAt}`:""} · ${t("remaining")} ${s.remaining}${low?" · <span style='color:var(--red)'>"+t("lowWarn")+"</span>":""}</div>
+      </div>
+      <button class="check ${done?"done":""}" ${done?"disabled":""} data-take="${s.uid}">${CHECK}</button>
+    </div>`;
+  });
+  html += `</div>`;
+  const intake = state.intake[d];
+  if(intake && Object.keys(intake).length){
+    html += `<div class="sec-head">${t("intakeToday")}</div><div class="card" style="margin-top:0">`;
+    Object.keys(intake).forEach(k=>{
+      const l = byNutrient(k);
+      const over = l && l.ing.max && intake[k] > l.ing.max;
+      html += `<div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${k}</div></div>
+        <span style="font-weight:600;color:${over?"var(--red)":"var(--label)"};font-variant-numeric:tabular-nums">${intake[k]}${l?l.ing.unit:""}</span></div>`;
+    });
+    html += `</div>`;
+  }
+  html += bodyChartHTML();
+  view.innerHTML = html;
+}
+
+/* ============ 页面：我的补剂 ============ */
+function viewStack(){
+  if(!state.stack.length){
+    view.innerHTML = `<div class="empty"><div class="glyph">＋</div>${t("empty2")}<br><br>
+      <a href="#" data-goto="add">${t("addFirstShort")}</a></div>`;return;
+  }
+  let html = `<div class="card first">`;
+  state.stack.forEach(s=>{
+    const per = (s.price/s.serv).toFixed(2);
+    const day = (per*s.takes).toFixed(2);
+    const days = s.takes>0 ? Math.floor(s.remaining/s.takes) : 0;
+    const low = s.remaining<=s.takes*3;
+    html += `<div class="row" data-stack="${s.uid}">
+      <div class="row-main">
+        <div class="row-title">${s.name}${low?` <span class="tag red" style="margin-left:4px">${t("lowStock")}</span>`:""}</div>
+        <div class="row-sub">${usageLabel(s.usage)} · ${t("remaining")} ${s.remaining} · ${days}${t("days")} · ¥${day}/${t("daily")}</div>
+      </div>
+      <span class="chev">›</span>
+    </div>`;
+  });
+  html += `</div>`;
+  view.innerHTML = html;
+}
+
+/* ============ 补剂详情 + 服用设置 ============ */
+function openStackDetail(uid){
+  const s = state.stack.find(x=>x.uid===uid); if(!s) return;
+  const l = s.lib || byId(s.libId);
+  const body = l ? reportHTML(l, s.dose)
+    : `<div class="card first"><div class="row"><div class="row-main"><div class="row-title">${s.name}</div>
+      <div class="row-sub">${t("customItem")} · ${t("remaining")} ${s.remaining}</div></div></div></div>`;
+  const seg = USAGES.map(u=>`<button data-usage="${u}" class="${s.usage===u?"on":""}">${usageLabel(u)}</button>`).join("");
+  openSheet(`<button class="x" data-x>×</button><h2>${s.name}</h2>`+body+
+    `<div class="sec-head" style="padding:8px 0 6px">${t("usage")}</div>
+    <div class="seg" data-usagewrap>${seg}</div>
+    <div class="sec-head" style="padding:0 0 6px">${t("remind")}</div>
+    <div class="field" style="margin-top:0"><input id="f_remind" type="time" value="${s.remindAt||""}"></div>
+    <div class="row-sub" style="padding:4px 2px 0">${t("remindDesc")}</div>
+    <button class="btn block" style="margin-top:14px" data-saveusage="${s.uid}">${t("save")}</button>
+    <button class="btn destructive block" style="margin-top:10px" data-del="${s.uid}">${t("removeArchive")}</button>`);
+}
+function saveUsage(uid){
+  const s = state.stack.find(x=>x.uid===uid); if(!s) return;
+  const active = document.querySelector("[data-usage].on");
+  if(active) s.usage = active.dataset.usage;
+  s.remindAt = $("#f_remind").value || "";
+  if(s.remindAt && "Notification" in window && Notification.permission==="default"){
+    Notification.requestPermission();
+  }
+  save(); closeSheet(); setTab(curTab);
+}
+
+/* ============ 页面：知识库 ============ */
+function viewLib(){
+  let html = `<div class="card first">`;
+  LIB.forEach(l=>{
+    const s = scoreOf(l);
+    html += `<div class="row" data-lib="${l.id}">
+      <div class="row-main"><div class="row-title">${l.name}</div>
+        <div class="row-sub">${l.brand} · ${l.cat}</div></div>
+      <span class="tag ${bandTag(s.band)}">${s.composite}</span>
+      <span class="chev">›</span>
+    </div>`;
+  });
+  html += `</div>`;
+  view.innerHTML = html;
+}
+
+/* ============ 页面：花费 ============ */
+function viewCost(){
+  if(!state.stack.length){
+    view.innerHTML = `<div class="empty"><div class="glyph">¥</div>${t("empty2")}</div>`;return;
+  }
+  const rows = state.stack.map(s=>{
+    const per = +(s.price/s.serv).toFixed(2);
+    const day = +(per*s.takes).toFixed(2);
+    return {name:s.name, per, day, month:+(day*30).toFixed(2)};
+  });
+  const total = rows.reduce((a,b)=>a+b.month,0);
+  const max = Math.max(...rows.map(r=>r.month));
+  let html = `<div class="card first"><div class="row"><div class="row-main">
+      <div class="row-sub">${t("monthly")}</div>
+      <div class="big-num">¥${total.toFixed(0)}<span class="unit">/ ${t("monthly")}</span></div>
+      <div class="row-sub" style="margin-top:4px">${t("avgDay")} ¥${(total/30).toFixed(1)}</div>
+    </div></div></div>`;
+  html += `<div class="sec-head">${t("costBreakdown")}</div><div class="card" style="margin-top:0;padding:4px 16px 14px">`;
+  rows.sort((a,b)=>b.month-a.month).forEach(r=>{
+    html += `<div class="dim"><span>${r.name}</span><b>¥${r.month}</b></div>
+      <div class="meter blue"><i style="width:${max?r.month/max*100:0}%"></i></div>
+      <div class="row-sub" style="margin-top:4px;margin-bottom:6px">${t("perServing")} ¥${r.per} · ${t("daily")} ¥${r.day}</div>`;
+  });
+  html += `</div>`;
+  view.innerHTML = html;
+}
+
+/* ============ 页面：知识 ============ */
+function viewKnow(){
+  let html = `<div class="card first">`;
+  KNOW.forEach(k=>{
+    html += `<div class="row"><div class="row-main">
+      <div class="row-title" style="font-size:15px">${k.t}</div>
+      <div class="row-sub">${k.b}</div></div></div>`;
+  });
+  html += `</div>`;
+  view.innerHTML = html;
+}
+
+/* ============ 添加流程 ============ */
+function openPick(){
+  let html = `<button class="x" data-x>×</button><h2>${t("addSupplement")}</h2>
+    <div style="margin:14px 0 2px">
+      <button class="big-action" data-goto="scan"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 12h8"/></svg>
+        <span>${t("scanRec")}<div class="sub">${t("scanSub")}</div></span></button>
+      <button class="big-action" data-goto="photo"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="4"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+        <span>${t("photoRec")}<div class="sub">${t("photoSub")}</div></span></button>
+    </div>
+    <div class="sec-head" style="padding:14px 0 6px">${t("fromLibrary")}</div>
+    <div class="card" style="margin-top:0">`;
+  LIB.forEach(l=>{
+    html += `<div class="row" data-start="${l.id}">
+      <div class="row-main"><div class="row-title">${l.name}</div>
+        <div class="row-sub">${l.brand}</div></div>
+      <span class="tag ${bandTag(scoreOf(l).band)}">${scoreOf(l).composite}</span>
+      <span class="chev">›</span></div>`;
+  });
+  html += `<div class="row" data-start="custom"><div class="row-main">
+      <div class="row-title">${t("manualAdd")}</div><div class="row-sub">${t("custom")}</div></div>
+      <span class="tag blue">＋</span><span class="chev">›</span></div>`;
+  html += `</div>`;
+  openSheet(html);
+}
+let currentLib = null;
+function openConfig(libObj, prefillName){
+  currentLib = libObj || null;
+  const l = currentLib;
+  const name=l?l.name:(prefillName||""), price=l?l.price:"", serv=l?l.serv:"";
+  const amt=l?l.ing.amt:"", unit=l?l.ing.unit:"mg";
+  let html = `<button class="x" data-x>×</button><h2>${l?l.name:t("manualAdd")}</h2>`;
+  if(l) html += `<div style="margin-top:8px">${reportHTML(l,1)}</div>`;
+  html += `<div class="field"><label>${t("fName")}</label><input id="f_name" value="${name}"></div>
+    <div class="field"><label>${t("fPrice")}</label><input id="f_price" type="number" inputmode="decimal" value="${price}"></div>
+    <div class="field"><label>${t("fServ")}</label><input id="f_serv" type="number" inputmode="numeric" value="${serv}"></div>
+    <div class="field"><label>${t("fAmt")}（${unit}）</label><input id="f_amt" type="number" inputmode="decimal" value="${amt}"></div>
+    <div class="field"><label>${t("fTakes")}</label><input id="f_takes" type="number" inputmode="numeric" value="1"></div>
+    <div class="field"><label>${t("fDose")}</label><input id="f_dose" type="number" inputmode="numeric" value="1"></div>
+    <button class="btn block" style="margin-top:16px" data-save>${t("joinStack")}</button>`;
+  openSheet(html);
+}
+function saveStack(){
+  const l = currentLib;
+  const name = $("#f_name").value.trim()||"未命名";
+  const price = +$("#f_price").value||0;
+  const serv = +$("#f_serv").value||1;
+  const amt = +$("#f_amt").value||0;
+  const takes = Math.max(1, +$("#f_takes").value||1);
+  const dose = Math.max(1, +$("#f_dose").value||1);
+  state.stack.push({
+    uid:"s"+Date.now(), libId:l?l.id:"custom", lib:l, name, price, serv, amt,
+    unit:l?l.ing.unit:"mg", takes, dose, remaining:serv, history:{},
+    ingName:l?l.ing.name:"", ingMin:l?l.ing.min:0, ingMax:l?l.ing.max:0,
+    usage:"any", remindAt:""
+  });
+  save(); closeSheet(); setTab("stack");
+}
+
+/* ============ 行为 ============ */
+function take(uid){
+  const s = state.stack.find(x=>x.uid===uid); if(!s) return;
+  const d = today();
+  if((s.history[d]||0)>=s.takes || s.remaining<=0) return;
+  s.history[d]=(s.history[d]||0)+1;
+  s.remaining=Math.max(0,s.remaining-1);
+  if(s.ingName){
+    if(!state.intake[d]) state.intake[d]={};
+    state.intake[d][s.ingName]=(state.intake[d][s.ingName]||0)+s.amt*s.dose;
+  }
+  save(); viewToday();
+}
+function remove(uid){state.stack=state.stack.filter(x=>x.uid!==uid);save();closeSheet();viewStack();}
+
+/* ============ 提醒 ============ */
+let remindTimer=null;
+function notify(name){
+  if("Notification" in window && Notification.permission==="granted"){
+    try{ new Notification(t("notifTitle"), {body:name}); }catch(e){}
+  }
+  toast(t("notifTitle")+"："+name);
+}
+function startReminderCheck(){
+  if(remindTimer) clearInterval(remindTimer);
+  remindTimer = setInterval(()=>{
+    const now = new Date();
+    const hhmm = String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+    const d = today();
+    state.stack.forEach(s=>{
+      if(s.remindAt && s.remindAt===hhmm && s.remaining>0){
+        const taken = s.history[d]||0;
+        if(taken < s.takes) notify(s.name);
+      }
+    });
+  }, 20000);
+}
+
+/* ============ 路由 ============ */
+const TITLES = {today:"today", stack:"stack", lib:"lib", cost:"cost", know:"know"};
+const views = {today:viewToday, stack:viewStack, lib:viewLib, cost:viewCost, know:viewKnow};
+let curTab = "today";
+function setTab(v){
+  curTab = v;
+  document.querySelectorAll("#tabbar button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  $("#navTitle").textContent = t(TITLES[v]);
+  views[v]();
+  view.classList.remove("view-enter"); void view.offsetWidth; view.classList.add("view-enter");
+  window.scrollTo({top:0});
+}
+$("#tabbar").addEventListener("click", e=>{const b=e.target.closest("button");if(b)setTab(b.dataset.v);});
+function applyLang(){
+  $("#addBtn").textContent = t("add");
+  $("#scanT").textContent = t("scanRec");
+  $("#scanHint").textContent = t("scanHint");
+  document.querySelectorAll("#tabbar .tb").forEach((el,i)=>{
+    el.textContent = t(["today","stack","lib","cost","know"][i]);
+  });
+  $("#navTitle").textContent = t(TITLES[curTab]);
+}
+
+document.addEventListener("click", e=>{
+  const tgt = e.target;
+  if(tgt.closest("[data-x]")){ closeSheet(); return; }
+  const usageBtn = tgt.closest("[data-usage]");
+  if(usageBtn){ const w=usageBtn.closest("[data-usagewrap]"); if(w) w.querySelectorAll("[data-usage]").forEach(b=>b.classList.toggle("on",b===usageBtn)); return; }
+  const saveU = tgt.closest("[data-saveusage]");
+  if(saveU){ saveUsage(saveU.dataset.saveusage); return; }
+  const ofedit = tgt.closest("[data-ofedit]");
+  if(ofedit){ closeSheet(); openConfig(null, lastFound?lastFound.name:""); return; }
+  const codeBtn = tgt.closest("[data-code]");
+  if(codeBtn){ aiFromCode(codeBtn.dataset.code); return; }
+  const manual = tgt.closest("[data-manual]");
+  if(manual){ closeSheet(); openConfig(null); return; }
+  const preset = tgt.closest("[data-preset]");
+  if(preset){ try{const p=JSON.parse(preset.dataset.preset); const b=$("#ai_base"),m=$("#ai_model"); if(b)b.value=p.baseUrl; if(m)m.value=p.model;}catch(e){} return; }
+  const saveai = tgt.closest("[data-saveai]");
+  if(saveai){ saveAI(); return; }
+  const langBtn = tgt.closest("[data-lang]");
+  if(langBtn){ selectSeg(langBtn); setLang(langBtn.dataset.lang); return; }
+  const themeBtn = tgt.closest("[data-theme]");
+  if(themeBtn){ selectSeg(themeBtn); setTheme(themeBtn.dataset.theme); return; }
+  const motionTgl = tgt.closest("[data-motion]");
+  if(motionTgl){ toggleMotion(); return; }
+  const exp = tgt.closest("[data-export]");
+  if(exp){ exportData(); return; }
+  const clr = tgt.closest("[data-clear]");
+  if(clr){ clearData(); return; }
+  const del = tgt.closest("[data-del]");
+  if(del){ remove(del.dataset.del); return; }
+  const takeBtn = tgt.closest("[data-take]");
+  if(takeBtn){ take(takeBtn.dataset.take); return; }
+  const saveBtn = tgt.closest("[data-save]");
+  if(saveBtn){ saveStack(); return; }
+  const start = tgt.closest("[data-start]");
+  if(start){ const id=start.dataset.start; openConfig(id==="custom"?null:byId(id)); return; }
+  const st = tgt.closest("[data-stack]");
+  if(st){ openStackDetail(st.dataset.stack); return; }
+  const libEl = tgt.closest("[data-lib]");
+  if(libEl){ const l=byId(libEl.dataset.lib); if(l) openSheet(`<button class="x" data-x>×</button><h2>${l.name}</h2>`+reportHTML(l,1)); return; }
+  const el = tgt.closest("[data-goto]");
+  if(el){
+    e.preventDefault();
+    const g = el.dataset.goto;
+    if(g==="add") openPick();
+    else if(g==="scan") startScan();
+    else if(g==="photo") pickImage();
+    else if(g==="settings") openSettings();
+    return;
+  }
+});
+
+/* ============ Toast ============ */
+let toastTimer=null;
+function toast(msg){
+  const el = $("#toast"); el.textContent = msg; el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove("on"), 2600);
+}
+
+/* ============ AI ============ */
+const AI_KEY = "gaichiyao_ai";
+function getAI(){try{return JSON.parse(localStorage.getItem(AI_KEY))||{};}catch(e){return {};}}
+function setAI(o){localStorage.setItem(AI_KEY, JSON.stringify(o));}
+const AI_PRESETS = [
+  {name:"OpenAI", baseUrl:"https://api.openai.com/v1", model:"gpt-4o-mini"},
+  {name:"智谱 GLM", baseUrl:"https://open.bigmodel.cn/api/paas/v4", model:"glm-4v-flash"},
+  {name:"通义千问", baseUrl:"https://dashscope.aliyuncs.com/compatible-mode/v1", model:"qwen-vl-max"}
+];
+const AI_SCHEMA = `你是补剂成分分析专家。请根据用户提供的补剂成分表/包装图片或条码信息，返回一个严格的 JSON 对象（不要任何其他文字、不要 markdown 代码块），字段如下：
+{"name":"补剂名称","cat":"类别，从 维生素/矿物质/脂肪酸/运动/蛋白/抗氧化/植提/肠道/氨基酸 中选","form":"成分形式优劣，优/中/差","ev":"循证等级，强/中/弱","ing":{"name":"主要成分名","amt":每份剂量的数字,"unit":"单位，IU/mg/mcg/g/亿CFU","min":有效剂量范围下限数字,"max":有效剂量范围上限数字},"good":"优选点说明","bad":"注意点说明","note":"一句话提示","price":参考瓶价数字(元),"serv":一瓶份数数字}
+若信息不全，用合理的膳食补充剂常识估计。所有数字字段必须是纯数字，不要带单位。`;
+function parseJSON(s){
+  try{return JSON.parse(s);}catch(e){}
+  const m = s.match(/\{[\s\S]*\}/);
+  if(m){try{return JSON.parse(m[0]);}catch(e){}}
+  return null;
+}
+function normalizeLib(o){
+  o = o||{};
+  const ing = o.ing||{};
+  return {
+    id:"ai", name:o.name||"AI 识别补剂", fullName:o.fullName||o.name||"", brand:o.brand||"",
+    storage:o.storage||"", cat:o.cat||"维生素",
+    form:["优","中","差"].includes(o.form)?o.form:"中",
+    ev:["强","中","弱"].includes(o.ev)?o.ev:"中", trans:true,
+    ing:{name:ing.name||"成分", amt:+ing.amt||0, unit:ing.unit||"mg", min:+ing.min||0, max:+ing.max||0, ul:ing.ul?+ing.ul:undefined},
+    good:o.good||"", bad:o.bad||"", note:o.note||"", price:+o.price||0, serv:+o.serv||60
+  };
+}
+async function callAI(prompt, imageDataUrl){
+  const c = getAI();
+  if(!c.apiKey) throw new Error(t("needAIKey"));
+  if(!c.baseUrl) throw new Error("Base URL");
+  const content = [{type:"text", text:prompt}];
+  if(imageDataUrl) content.push({type:"image_url", image_url:{url:imageDataUrl}});
+  const res = await fetch(c.baseUrl.replace(/\/+$/,"")+"/chat/completions",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+c.apiKey},
+    body: JSON.stringify({model:c.model||"gpt-4o-mini", messages:[{role:"user",content}], temperature:0.2})
+  });
+  if(!res.ok) throw new Error(t("aiHttp")+res.status+"）");
+  const data = await res.json();
+  const msg = data.choices && data.choices[0] && data.choices[0].message;
+  const text = msg ? msg.content : "";
+  if(!text) throw new Error(t("aiNoResult"));
+  return parseJSON(text);
+}
+
+/* ============ 拍照识别 ============ */
+function fileToDataURL(f){return new Promise((ok,err)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=err;r.readAsDataURL(f);});}
+function pickImage(){
+  if(!getAI().apiKey){ toast(t("needAIKey")); openSettings(); return; }
+  const input = document.createElement("input");
+  input.type = "file"; input.accept = "image/*"; input.capture = "environment";
+  input.onchange = async e=>{
+    const f = e.target.files[0]; if(!f) return;
+    toast(t("aiRecognizing"));
+    try{
+      const lib = await callAI(AI_SCHEMA, await fileToDataURL(f));
+      if(!lib) throw new Error(t("aiNoParse"));
+      closeSheet(); openConfig(normalizeLib(lib));
+    }catch(err){ toast(err.message||t("aiFail")); }
+  };
+  input.click();
+}
+
+/* ============ 扫码识别 ============ */
+let scanStream=null, scanDetector=null;
+function openScan(){ $("#scanWrap").classList.add("on"); }
+function closeScan(){
+  $("#scanWrap").classList.remove("on");
+  if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
+  scanDetector=null;
+}
+$("#scanClose").addEventListener("click", closeScan);
+async function startScan(){
+  if(!("BarcodeDetector" in window)){ toast(t("noScan")); return; }
+  closeSheet(); openScan();
+  try{
+    scanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+    $("#scanVideo").srcObject = scanStream;
+    scanDetector = new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","qr_code"]});
+    scanLoop();
+  }catch(err){ closeScan(); toast(t("noCamera")+"："+(err.message||"")); }
+}
+function scanLoop(){
+  if(!scanDetector) return;
+  scanDetector.detect($("#scanVideo")).then(codes=>{
+    if(codes && codes.length){ onCode(codes[0].rawValue); return; }
+    requestAnimationFrame(scanLoop);
+  }).catch(()=>requestAnimationFrame(scanLoop));
+}
+function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function queryOpenFoodFacts(code){
+  const url = "https://world.openfoodfacts.org/api/v2/product/"+encodeURIComponent(code)+
+    ".json?fields=product_name,product_name_zh,brands,categories,ingredients_text,quantity,image_front_url";
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const data = await res.json();
+  if(!data || !data.product) return null;
+  return data.product;
+}
+let lastFound = null;
+function onCode(code){
+  closeScan();
+  toast(t("querying"));
+  queryOpenFoodFacts(code).then(product=>{
+    if(product){
+      lastFound = {
+        name: product.product_name_zh || product.product_name || "未命名补剂",
+        brand: product.brands || "",
+        ing: product.ingredients_text || "",
+        qty: product.quantity || ""
+      };
+      if(getAI().apiKey){
+        toast(t("aiGen"));
+        callAI(AI_SCHEMA+"\n以下是 Open Food Facts 查到的产品信息，据此生成 JSON：\n名称："+lastFound.name+"\n品牌："+lastFound.brand+"\n成分表："+(lastFound.ing||"（无）")+"\n规格："+(lastFound.qty||"（无）"), null)
+        .then(lib=>{ if(lib){ openConfig(normalizeLib(lib)); return; } showOffFound(code); })
+        .catch(()=>showOffFound(code));
+        return;
+      }
+      showOffFound(code);
+    } else {
+      showNotFound(code);
+    }
+  }).catch(()=>showNotFound(code));
+}
+function showOffFound(code){
+  const f = lastFound||{};
+  openSheet(`<button class="x" data-x>×</button><h2>${t("foundProduct")}</h2>
+    <div class="card" style="margin-top:12px">
+      <div class="row"><div class="row-main"><div class="row-sub">${t("name")}</div><div class="row-title">${escapeHtml(f.name)}</div></div></div>
+      ${f.brand?`<div class="row"><div class="row-main"><div class="row-sub">${t("brand")}</div><div class="row-title" style="font-size:15px">${escapeHtml(f.brand)}</div></div></div>`:""}
+      ${f.ing?`<div class="row"><div class="row-main"><div class="row-sub">${t("ingredients")}</div><div class="row-title" style="font-size:13px;color:var(--label2);line-height:1.5">${escapeHtml(f.ing.slice(0,180))}${f.ing.length>180?"…":""}</div></div></div>`:""}
+      <div class="row"><div class="row-main"><div class="row-sub">${t("barcode")}</div><div class="row-title" style="font-variant-numeric:tabular-nums">${code}</div></div></div>
+    </div>
+    <div class="row-sub" style="padding:8px 2px">${t("ofNote")}</div>
+    <button class="btn block" style="margin-top:6px" data-ofedit>${t("completeSave")}</button>
+    <button class="btn plain block" style="margin-top:4px" data-code="${code}">${t("aiFill")}</button>`);
+}
+function showNotFound(code){
+  openSheet(`<button class="x" data-x>×</button><h2>${t("foundBarcode")}</h2>
+    <div class="card" style="margin-top:12px"><div class="row"><div class="row-main">
+      <div class="row-title" style="font-variant-numeric:tabular-nums">${code}</div>
+      <div class="row-sub">${t("notFound")}</div></div></div></div>
+    <button class="btn block" style="margin-top:16px" data-code="${code}">${t("aiFillInfo")}</button>
+    <button class="btn plain block" style="margin-top:6px" data-manual>${t("manualAdd")}</button>`);
+}
+async function aiFromCode(code){
+  toast(t("aiQuery"));
+  try{
+    const lib = await callAI(AI_SCHEMA+"\n用户提供的条码号："+code+"。条码通常无法精确反查产品，请基于常识给出最可能的补剂信息；若完全不确定则 name 填「未知补剂」。", null);
+    if(!lib) throw new Error(t("aiNoParse"));
+    closeSheet(); openConfig(normalizeLib(lib));
+  }catch(err){ toast(err.message||t("aiFail")); }
+}
+
+/* ============ 设置 ============ */
+function saveAI(){
+  setAI({baseUrl:$("#ai_base").value.trim(), apiKey:$("#ai_key").value.trim(), model:$("#ai_model").value.trim()});
+  toast(t("saved")); closeSheet();
+}
+function setLang(l){ settings.lang=l; lang=l; saveSettings(); applyLang(); views[curTab](); }
+function setTheme(m){ settings.theme=m; saveSettings(); applyTheme(); }
+function toggleMotion(){ settings.reduceMotion=!settings.reduceMotion; saveSettings(); applyReduceMotion(); }
+function positionSegThumb(seg){
+  const btns = seg.querySelectorAll("button");
+  const thumb = seg.querySelector(".seg-thumb");
+  if(!btns.length || !thumb) return;
+  let idx = 0;
+  btns.forEach((b,i)=>{ if(b.classList.contains("on")) idx=i; });
+  const btn = btns[idx];
+  if(btn.offsetWidth){
+    thumb.style.left = btn.offsetLeft + "px";
+    thumb.style.width = btn.offsetWidth + "px";
+  }
+}
+function selectSeg(btn){
+  const seg = btn.closest(".seg");
+  seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b===btn));
+  positionSegThumb(seg);
+}
+function exportData(){
+  const blob = new Blob([JSON.stringify({state, settings, ai:getAI()}, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "gaichiyao-backup-"+today()+".json"; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function clearData(){
+  localStorage.removeItem(KEY); localStorage.removeItem(AI_KEY);
+  state.stack=[]; state.intake={}; save(); closeSheet(); toast(t("dataCleared")); setTab("today");
+}
+function openSettings(){
+  const c = getAI();
+  const presets = AI_PRESETS.map(p=>`<button class="ai-preset" data-preset='${JSON.stringify(p)}'>${p.name}</button>`).join("");
+  const segLang = ["zh","en"].map(l=>`<button data-lang="${l}" class="${lang===l?"on":""}">${l==="zh"?"中文":"English"}</button>`).join("");
+  const segTheme = ["auto","light","dark"].map(m=>`<button data-theme="${m}" class="${(settings.theme||"auto")===m?"on":""}">${t(m==="auto"?"followSystem":m)}</button>`).join("");
+  openSheet(`<button class="x" data-x>×</button><h2>${t("settings")}</h2>
+    <div class="sec-head" style="padding:12px 0 6px">${t("language")}</div><div class="seg">${segLang}<span class="seg-thumb"></span></div>
+    <div class="sec-head" style="padding:8px 0 6px">${t("appearance")}</div><div class="seg">${segTheme}<span class="seg-thumb"></span></div>
+    <div class="sec-head" style="padding:8px 0 0">${t("motion")}</div>
+    <div class="switch-row"><span>${t("motionDesc")}</span><div class="switch ${settings.reduceMotion?"":"on"}" data-motion></div></div>
+    <div class="sec-head" style="padding:8px 0 6px">${t("data")}</div>
+    <div class="card"><div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${t("exportData")}</div></div><button class="btn plain" data-export>${t("exportData")}</button></div>
+      <div class="row"><div class="row-main"><div class="row-title" style="font-size:15px;color:var(--red)">${t("clearData")}</div></div><button class="btn plain" data-clear style="color:var(--red)">${t("clearData")}</button></div></div>
+    <div class="sec-head" style="padding:8px 0 6px">${t("aiSection")}</div>
+    <div class="ai-presets">${presets}</div>
+    <div class="field"><label>${t("baseUrl")}</label><input id="ai_base" value="${c.baseUrl||""}" placeholder="https://api.openai.com/v1"></div>
+    <div class="field"><label>${t("apiKey")}</label><input id="ai_key" type="password" value="${c.apiKey||""}" placeholder="sk-..."></div>
+    <div class="field"><label>${t("model")}</label><input id="ai_model" value="${c.model||""}" placeholder="gpt-4o-mini / glm-4v-flash"></div>
+    <button class="btn block" style="margin-top:8px" data-saveai>${t("saveAI")}</button>
+    <div class="sec-head" style="padding:18px 0 6px">${t("about")}</div>
+    <div class="card"><div class="row"><div class="row-main"><div class="row-sub" style="line-height:1.6">${t("disclaimer")}</div></div></div></div>`);
+  requestAnimationFrame(()=>document.querySelectorAll(".seg").forEach(positionSegThumb));
+}
+
+applyTheme();
+applyReduceMotion();
+applyLang();
+viewToday();
+startReminderCheck();
+</script>
+</body>
+</html>
