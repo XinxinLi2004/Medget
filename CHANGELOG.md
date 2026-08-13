@@ -1,5 +1,10 @@
 # CHANGELOG
 
+2026-08-13 20:30 · 配置 · git 初始化 + workflow 补 web 资源生成步骤
+- 文件清单：git init + 首次提交（64 文件）；workflow 增加 Prepare web assets（云端 cp index.html → www）；.gitignore 增加 .workbuddy/
+- 说明：本地已提交到 main 分支（commit d688290），推送到 GitHub 后即可触发云端构建 APK；git 身份用的是临时占位（lixueyou），push 前可自行修改
+- 部署标记：[前端]
+
 2026-08-13 20:25 · 配置 · 新增 GitHub Actions 云端构建 APK（免装 Android Studio）
 - 文件清单：新增 .github/workflows/android.yml；更新 封装APK说明.md
 - 内容：云端构建 debug APK（workflow_dispatch 手动触发 + v* tag 自动触发），云端装 JDK17 + Android SDK + npm ci + cap sync + gradlew assembleDebug + 上传 artifact；本地零依赖
