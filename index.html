@@ -442,7 +442,7 @@
 const I18N = {
   zh: {
     today:"今日", stack:"补剂", lib:"补剂库", cost:"花费", know:"知识",
-    add:"添加", save:"保存", removeArchive:"移除档案", takeOne:"吃一份", done:"完成",
+    add:"添加", save:"保存", edit:"编辑", removeArchive:"移除档案", takeOne:"吃一份", done:"完成",
     manualAdd:"手动添加", custom:"自定义补剂", joinStack:"加入我的补剂",
     settings:"设置", aiSection:"AI 识别（视觉模型）", baseUrl:"API 地址（Base URL）",
     apiKey:"API Key", model:"模型名", saveAI:"保存",
@@ -497,7 +497,7 @@ const I18N = {
   },
   en: {
     today:"Today", stack:"Supps", lib:"Library", cost:"Cost", know:"Notes",
-    add:"Add", save:"Save", removeArchive:"Remove", takeOne:"Take", done:"Done",
+    add:"Add", save:"Save", edit:"Edit", removeArchive:"Remove", takeOne:"Take", done:"Done",
     manualAdd:"Add manually", custom:"Custom", joinStack:"Add to my supplements",
     settings:"Settings", aiSection:"AI Recognition (Vision)", baseUrl:"Base URL",
     apiKey:"API Key", model:"Model", saveAI:"Save",
@@ -1573,6 +1573,7 @@ function openStackDetail(uid){
     <div class="field" style="margin-top:0"><input id="f_remind" type="time" value="${s.remindAt||""}"></div>
     <div class="row-sub" style="padding:4px 2px 0">${t("remindDesc")}</div>
     <button class="btn block" style="margin-top:14px" data-saveusage="${s.uid}">${t("save")}</button>
+    <button class="btn block" style="margin-top:10px" data-editstack="${s.uid}">${t("edit")}</button>
     <button class="btn destructive block" style="margin-top:10px" data-del="${s.uid}">${t("removeArchive")}</button>`);
 }
 const capLN = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
@@ -1759,6 +1760,7 @@ function openPick(){
   if(inp) inp.addEventListener("input", e=>{ pickQuery = e.target.value; renderPickLib(); });
 }
 let currentLib = null;
+let currentEditUid = null;
 const ING_UNITS = ["mg","mcg","g","IU","亿CFU"];
 function ingRowHTML(g){
   g = g||{name:"", amt:"", unit:"mg", form:""};
@@ -1835,14 +1837,20 @@ function pillPickerHTML(){
     <div class="pp-label">${t("pillDetail")}</div>
     <div class="detail-row">${detailBtns}</div>`;
 }
-function openConfig(libObj, prefillName){
-  currentLib = libObj || null;
+function openConfig(libObj, prefillName, editItem){
+  currentLib = libObj || (editItem ? (editItem.lib||null) : null);
+  currentEditUid = editItem ? editItem.uid : null;
   const l = currentLib;
-  tmpPhoto = (lastFound && lastFound.image) || "";
-  const name=l?l.name:(prefillName||""), price=l?l.price:"", serv=l?l.serv:"";
-  const ings = l ? getIngs(l) : [{name:"",amt:"",unit:"mg"}];
-  pickShape = "capsule"; pickColor = "blue"; pickDetail = "none";
-  let html = `<button class="x" data-x>×</button><h2>${l?l.name:t("manualAdd")}</h2>`;
+  tmpPhoto = editItem ? (editItem.image||"") : ((lastFound && lastFound.image) || "");
+  const name = editItem ? editItem.name : (l?l.name:(prefillName||""));
+  const price = editItem ? editItem.price : (l?l.price:"");
+  const serv = editItem ? editItem.serv : (l?l.serv:"");
+  const ings = editItem ? (editItem.ings && editItem.ings.length ? editItem.ings : [{name:"",amt:"",unit:"mg"}])
+                        : (l ? getIngs(l) : [{name:"",amt:"",unit:"mg"}]);
+  pickShape = editItem&&editItem.icon ? editItem.icon.shape : "capsule";
+  pickColor = editItem&&editItem.icon ? editItem.icon.color : "blue";
+  pickDetail = editItem&&editItem.icon ? editItem.icon.detail : "none";
+  let html = `<button class="x" data-x>×</button><h2>${currentEditUid ? t("edit")+"："+escapeHtml(name) : (l?l.name:t("manualAdd"))}</h2>`;
   if(l) html += `<div style="margin-top:8px">${reportHTML(l,1)}</div>`;
   html += `<div class="field"><label>${t("fName")}</label><input id="f_name" value="${escapeHtml(name)}"></div>
     <div class="field"><label>${t("fPrice")}</label><input id="f_price" type="number" inputmode="decimal" value="${price}"></div>
@@ -1858,8 +1866,8 @@ function openConfig(libObj, prefillName){
     <datalist id="ingdatalist">${COMPONENT_NAMES.map(n=>`<option value="${escapeHtml(n)}">`).join("")}</datalist>
     <div id="ingList">${ings.map(ingRowHTML).join("")}</div>
     <button class="btn plain block" style="margin-top:8px" data-ingadd>+ ${t("addIngredient")}</button>
-    <div class="field"><label>${t("fTakes")}</label><input id="f_takes" type="number" inputmode="numeric" value="1"></div>
-    <div class="field"><label>${t("fDose")}</label><input id="f_dose" type="number" inputmode="numeric" value="1"></div>
+    <div class="field"><label>${t("fTakes")}</label><input id="f_takes" type="number" inputmode="numeric" value="${currentEditUid?(editItem.takes||1):1}"></div>
+    <div class="field"><label>${t("fDose")}</label><input id="f_dose" type="number" inputmode="numeric" value="${currentEditUid?(editItem.dose||1):1}"></div>
     <button class="btn block" style="margin-top:16px" data-save>${t("joinStack")}</button>`;
   openSheet(html);
 }
@@ -1879,10 +1887,21 @@ function saveStack(){
     return {name:n, amt, unit, form, min:0, max:0};
   }).filter(g=>g.name && g.amt>0);
   const icon = {shape:pickShape, color:pickColor, detail:pickDetail};
-  state.stack.push({
-    uid:"s"+Date.now(), libId:l?l.id:"custom", lib:l, name, price, serv,
-    takes, dose, remaining:serv, history:{}, ings, icon, image:tmpPhoto, usage:"any", remindAt:""
-  });
+  if(currentEditUid){
+    const s = state.stack.find(x=>x.uid===currentEditUid);
+    if(s){
+      const totalTaken = Object.values(s.history||{}).reduce((a,b)=>a+(+b||0),0);
+      s.name=name; s.price=price; s.serv=serv; s.takes=takes; s.dose=dose;
+      s.ings=ings; s.icon=icon; s.image=tmpPhoto; s.lib=l; s.libId=l?l.id:"custom";
+      s.remaining = Math.max(0, serv - totalTaken);
+    }
+  } else {
+    state.stack.push({
+      uid:"s"+Date.now(), libId:l?l.id:"custom", lib:l, name, price, serv,
+      takes, dose, remaining:serv, history:{}, ings, icon, image:tmpPhoto, usage:"any", remindAt:""
+    });
+  }
+  currentEditUid = null;
   save(); closeSheet(); setTab("stack");
 }
 
@@ -2017,6 +2036,8 @@ document.addEventListener("click", e=>{
   if(libAdd){ openConfig(byId(libAdd.dataset.libadd)); return; }
   const st = tgt.closest("[data-stack]");
   if(st){ openStackDetail(st.dataset.stack); return; }
+  const editStackBtn = tgt.closest("[data-editstack]");
+  if(editStackBtn){ const s = state.stack.find(x=>x.uid===editStackBtn.dataset.editstack); if(s){ closeSheet(); openConfig(s.lib||null, null, s); } return; }
   const libEl = tgt.closest("[data-lib]");
   if(libEl){ const l=byId(libEl.dataset.lib); if(l) openSheet(`<button class="x" data-x>×</button><h2>${l.name}</h2>`+reportHTML(l,1)+`<button class="btn block" style="margin-top:12px" data-libadd="${l.id}">${t("addToMine")}</button>`); return; }
   const el = tgt.closest("[data-goto]");
