@@ -1,5 +1,14 @@
 # CHANGELOG
 
+2026-08-14 20:30 · 功能 · 国内数据源接入工程（NMPA 国药准字 OTC + SAMR 保健食品 + 比价层）
+- 文件清单：tools/import-nmpa.mjs（新增）、tools/import-samr.mjs（新增）、tools/price-enrich.mjs（新增）
+- 目标：用户要"接入中国药品网做廉价国产 OTC 补剂库"。厘清两套库：NMPA 药监局管【药品】国药准字 OTC（维C/维B/钙/铁/锌等廉价国产替代，在这）；SAMR 市场监管总局管【保健食品/蓝帽子】（真正补剂品牌，按名查）。
+- import-nmpa.mjs：逆向签名 sign=md5(encodeURIComponent(排序参数+"&nmpasecret2020")) + Timestamp 头（curl 实测验证过签名关）；cookie 双路径（Playwright 自动 / NMPA_COOKIE 环境变量）。映射字段到 db/supplements.json schema。⚠ 实测被瑞数 412 拦截，需本机浏览器 cookie 才能过（沙箱无浏览器，过不去属环境限制非脚本问题）。
+- import-samr.mjs：保健食品查询脚手架（按"产品名+品牌"查，无公开 API，未实测，URL 占位待本机 F12 抓真实接口）。
+- price-enrich.mjs：比价层。京东健康/阿里健康反爬极重、需登录态，故采用「国产平价 OTC 参考价表（公开市场常识，如维C片¥1.5-3）+ 失败回退」，按通用名匹配 nmpa_ 条目填价并明确标注"参考价待实时核验"，不冒充实时价。
+- 实测约束：NMPA/SAMR 均需在用户本机（有 Chrome 的 Mac）跑一次导入器拿真实数据；本沙箱无浏览器无法实时拉取，故未伪造数据。
+- 部署标记：[前端]（工具脚本，不影响已构建 APK；运行导入器后需 node tools/build-lib.mjs 注入 index.html 再构建）
+
 2026-08-14 16:10 · 修复 · 已添加补剂支持重新编辑（自定义/从库均可）
 - 文件清单：index.html（前端）
 - 新增编辑入口：「我的补剂」详情页新增「编辑」按钮，复用 openConfig 预填该条的名称/价格/份数/每日次数/每次份数/成分（含真实原料形态）/瓶身图/药丸外观
