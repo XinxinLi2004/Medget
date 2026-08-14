@@ -1,5 +1,12 @@
 # CHANGELOG
 
+2026-08-14 20:35 · 功能 · 京东联盟开放平台 API 导入器（廉价比价真源）
+- 文件清单：tools/import-jd-union.mjs（新增）
+- 背景：用户选"替代 API 接入平台"。京东健康网页反爬重需登录态，改用京东联盟开放平台(union.jd.com)正经签名 API：免费开发者账号（需联盟会员+应用+申请 jd.union.open.goods.query 权限），返回商品名/价格/最低价/优惠券/图文/skuId。签名 md5(appSecret+排序kv拼接+appSecret)大写，与 iHerb 同类。
+- 实现：批量关键词（默认国产廉价 OTC：维C/维B/钙/铁/锌/叶酸/多维等）循环 jd.union.open.goods.query；解析嵌套响应（queryResult 可能为 JSON 字符串二次 parse）；映射 db schema（id=jd_skuId, price=lowestPrice, cat 按名推断）；合并去重。无 key 打印申请指引+探测。
+- 说明：京东联盟给电商数据（价/SKU/品牌）非国药准字说明书；权威成分仍走 import-nmpa / 药智。填补 price-enrich.mjs 的"实时价"真源。
+- 部署标记：[前端]（工具脚本；运行后需 node tools/build-lib.mjs 注入 index.html 再构建）
+
 2026-08-14 20:30 · 功能 · 国内数据源接入工程（NMPA 国药准字 OTC + SAMR 保健食品 + 比价层）
 - 文件清单：tools/import-nmpa.mjs（新增）、tools/import-samr.mjs（新增）、tools/price-enrich.mjs（新增）
 - 目标：用户要"接入中国药品网做廉价国产 OTC 补剂库"。厘清两套库：NMPA 药监局管【药品】国药准字 OTC（维C/维B/钙/铁/锌等廉价国产替代，在这）；SAMR 市场监管总局管【保健食品/蓝帽子】（真正补剂品牌，按名查）。
