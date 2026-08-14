@@ -305,6 +305,57 @@
 
   @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
+  /* ============ 日历 + 连续天数 ============ */
+  .streak-card{display:flex;align-items:center;gap:16px;padding:16px}
+  .streak-num{font-family:var(--font-num);font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .streak-num .unit{font-size:14px;font-weight:500;color:var(--label2);margin-left:2px;font-family:var(--font)}
+  .streak-meta{flex:1}
+  .streak-label{font-size:13px;color:var(--label2)}
+  .streak-sub{font-size:15px;font-weight:600;margin-top:2px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:0 16px 14px}
+  .cal-day{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:600;color:var(--label3);position:relative;background:rgba(60,60,67,.06)}
+  .dark .cal-day{background:rgba(255,255,255,.06)}
+  .cal-day.done{background:var(--green-soft);color:var(--green)}
+  .cal-day.partial{background:var(--orange-soft);color:var(--orange)}
+  .cal-day.today{box-shadow:inset 0 0 0 2px var(--blue)}
+  .cal-day.future{opacity:.4}
+  .cal-dow{text-align:center;font-size:10px;color:var(--label3);font-weight:600;padding:0 0 4px}
+
+  /* ============ 7 天趋势柱状图 ============ */
+  .trend-row{display:flex;align-items:flex-end;gap:8px;padding:8px 16px 14px;height:90px}
+  .trend-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+  .trend-bar .bar{width:100%;border-radius:6px 6px 2px 2px;min-height:4px;transition:height .5s var(--ease)}
+  .trend-bar .bar.full{background:var(--green)}
+  .trend-bar .bar.partial{background:var(--orange)}
+  .trend-bar .bar.none{background:rgba(60,60,67,.12)}
+  .dark .trend-bar .bar.none{background:rgba(255,255,255,.1)}
+  .trend-bar .lbl{font-size:10px;color:var(--label3);font-weight:600}
+  .trend-bar .pct{font-size:10px;color:var(--label2);font-variant-numeric:tabular-nums}
+
+  /* ============ 相互作用卡片 ============ */
+  .ia-card{padding:12px 16px;border-radius:12px;margin:8px 16px 0;display:flex;gap:10px;align-items:flex-start}
+  .ia-card.warn{background:var(--orange-soft)}
+  .ia-card.good{background:var(--green-soft)}
+  .ia-card.info{background:var(--blue-soft)}
+  .ia-ico{font-size:18px;flex:0 0 auto;line-height:1.2}
+  .ia-body{flex:1;min-width:0}
+  .ia-title{font-size:13px;font-weight:700;margin-bottom:2px}
+  .ia-msg{font-size:12px;color:var(--label2);line-height:1.4}
+  .ia-card.warn .ia-title{color:var(--orange)}
+  .ia-card.good .ia-title{color:var(--green)}
+  .ia-card.info .ia-title{color:var(--blue)}
+
+  /* ============ 时段分组 ============ */
+  .slot-head{display:flex;align-items:center;gap:8px;padding:14px 16px 6px}
+  .slot-head .dot{width:8px;height:8px;border-radius:50%}
+  .slot-head .dot.morning{background:var(--orange)}
+  .slot-head .dot.noon{background:var(--blue)}
+  .slot-head .dot.evening{background:var(--purple,#AF52DE)}
+  .slot-head .dot.bed{background:var(--indigo,#5856D6)}
+  .slot-head span{font-size:13px;font-weight:600;color:var(--label2)}
+  .slot-head .slot-cnt{font-size:12px;color:var(--label3);margin-left:auto}
+
   @media (prefers-reduced-transparency: reduce){
     .nav,.tabbar,.sheet,.card{backdrop-filter:none;-webkit-backdrop-filter:none}
     .nav{background:#f2f2f7}.tabbar{background:#f9f9f9}.sheet{background:#f8f8fa}.card{background:#fff}
@@ -396,7 +447,13 @@ const I18N = {
     querying:"查询商品库…", aiGen:"AI 生成评估…", aiQuery:"AI 查询中…", aiRecognizing:"AI 识别成分表中…",
     needAIKey:"请先在「设置」配置 AI Key", aiFail:"识别失败", noCamera:"无法访问摄像头", noScan:"当前浏览器不支持扫码，请用安卓 Chrome 真机测试",
     saved:"已保存", aiNoResult:"AI 无返回内容", aiNoParse:"未能解析识别结果", aiHttp:"AI 请求失败（HTTP ",
-    notifTitle:"该吃药了", notifPerm:"需要通知权限才能后台提醒"
+    notifTitle:"该吃药了", notifPerm:"需要通知权限才能后台提醒",
+    streak:"连续打卡", days:"天", calendar:"打卡日历", weekTrend:"近 7 天",
+    interactions:"相互作用提醒", interactionWarn:"注意", interactionGood:"协同", interactionInfo:"提示",
+    morning:"晨起", noon:"午餐", evening:"晚餐", bedtime:"睡前",
+    importData:"导入数据", importSuccess:"导入成功", importFail:"导入失败：格式错误",
+    personalTips:"个性化提示", general:"通用知识", noInteractions:"暂无相互作用提醒",
+    allDone:"今日已全部完成", keepGoing:"继续加油"
   },
   en: {
     today:"Today", stack:"Supps", lib:"Library", cost:"Cost", know:"Notes",
@@ -441,7 +498,13 @@ const I18N = {
     querying:"Looking up product…", aiGen:"AI evaluating…", aiQuery:"AI querying…", aiRecognizing:"AI reading label…",
     needAIKey:"Set your AI key in Settings first", aiFail:"Recognition failed", noCamera:"Cannot access camera", noScan:"Barcode scanning not supported here; try Android Chrome",
     saved:"Saved", aiNoResult:"AI returned no content", aiNoParse:"Could not parse result", aiHttp:"AI request failed (HTTP ",
-    notifTitle:"Time for your supplement", notifPerm:"Notification permission required"
+    notifTitle:"Time for your supplement", notifPerm:"Notification permission required",
+    streak:"Streak", days:"d", calendar:"Calendar", weekTrend:"Last 7 days",
+    interactions:"Interaction alerts", interactionWarn:"Caution", interactionGood:"Synergy", interactionInfo:"Note",
+    morning:"Morning", noon:"Lunch", evening:"Dinner", bedtime:"Bedtime",
+    importData:"Import data", importSuccess:"Imported", importFail:"Import failed: invalid format",
+    personalTips:"Personal tips", general:"General", noInteractions:"No interaction alerts",
+    allDone:"All done today!", keepGoing:"Keep going"
   }
 };
 const SET_KEY = "gaichiyao_settings";
@@ -521,13 +584,65 @@ const LIB = [
     good:"",bad:"",note:"抗氧化、支持谷胱甘肽。"}
 ];
 const KNOW = [
-  {t:"维生素 D3 与 K2 协同",b:"D3 促钙吸收，K2 引钙入骨、防钙沉积血管。长期补 D3 建议同补 K2。"},
-  {t:"镁的形式很关键",b:"甘氨酸盐/柠檬酸盐吸收好且不易腹泻；氧化镁吸收差，多用于通便。"},
-  {t:"铁与钙、咖啡分开",b:"铁剂避免与钙、咖啡、茶同服，会大幅降低吸收；配维C可提升吸收。"},
-  {t:"鱼油看 EPA+DHA",b:"比较鱼油要比 EPA+DHA 总量，而非胶囊重量；rTG 剂型吸收更好。"},
-  {t:"叶酸选活性 5-MTHF",b:"约三成人群 MTHFR 基因变异，合成叶酸利用差，活性叶酸更直接。"},
-  {t:"补剂不能替代饮食",b:"评估打分是信息辅助，非医疗建议；均衡膳食仍是基础。"}
+  {t:"维生素 D3 与 K2 协同",b:"D3 促钙吸收，K2 引钙入骨、防钙沉积血管。长期补 D3 建议同补 K2。",cat:"协同"},
+  {t:"镁的形式很关键",b:"甘氨酸盐/柠檬酸盐吸收好且不易腹泻；氧化镁吸收差，多用于通便。",cat:"选购"},
+  {t:"铁与钙、咖啡分开",b:"铁剂避免与钙、咖啡、茶同服，会大幅降低吸收；配维C可提升吸收。",cat:"服用"},
+  {t:"鱼油看 EPA+DHA",b:"比较鱼油要比 EPA+DHA 总量，而非胶囊重量；rTG 剂型吸收更好。",cat:"选购"},
+  {t:"叶酸选活性 5-MTHF",b:"约三成人群 MTHFR 基因变异，合成叶酸利用差，活性叶酸更直接。",cat:"选购"},
+  {t:"补剂不能替代饮食",b:"评估打分是信息辅助，非医疗建议；均衡膳食仍是基础。",cat:"通用"},
+  {t:"脂溶性维生素随餐",b:"维生素 A/D/E/K 需脂肪帮助吸收，随餐或饭后服用效果最佳。",cat:"服用"},
+  {t:"益生菌空腹或睡前",b:"胃酸较低时（晨起空腹或睡前）服用益生菌，存活率更高。",cat:"服用"},
+  {t:"肌酸需持续饱和",b:"一水肌酸需每日 3-5g 持续服用达到饱和，非即刻见效；无需冲击期。",cat:"运动"},
+  {t:"B 族维生素晨服",b:"B 族参与能量代谢，晨间服用更符合生理节律；晚间可能影响睡眠。",cat:"服用"},
+  {t:"锌铜比例",b:"长期补锌（>30mg/天）需注意铜的平衡，建议锌铜比 10-15:1。",cat:"平衡"},
+  {t:"辅酶 Q10 与他汀",b:"他汀类药物会消耗体内 CoQ10，长期服用他汀者常需补充。",cat:"药物"}
 ];
+/* ============ 补剂相互作用数据库 ============ */
+const INTERACTIONS = [
+  {a:"铁", b:"钙", type:"conflict", msg:"铁与钙竞争吸收通道，建议间隔 2 小时以上服用", sev:"warn"},
+  {a:"铁", b:"锌", type:"conflict", msg:"高剂量铁影响锌吸收，建议分开服用", sev:"warn"},
+  {a:"铁", b:"维生素 C", type:"synergy", msg:"维生素 C 可提升铁吸收率 2-3 倍，建议同服", sev:"good"},
+  {a:"维生素 D3", b:"维生素 K2", type:"synergy", msg:"D3 促钙吸收，K2 引钙入骨，协同效果更佳", sev:"good"},
+  {a:"钙", b:"维生素 D3", type:"synergy", msg:"维生素 D 促进钙吸收，两者同补效果更好", sev:"good"},
+  {a:"锌", b:"铜", type:"balance", msg:"长期补锌需注意铜平衡，建议锌铜比 10-15:1", sev:"info"},
+  {a:"镁", b:"钙", type:"balance", msg:"镁钙比例建议 1:2，同补有助于骨骼健康与神经放松", sev:"info"},
+  {a:"鱼油", b:"维生素 E", type:"balance", msg:"鱼油增加氧化压力，适量维 E 可抗氧化保护", sev:"info"},
+  {a:"铁", b:"咖啡", type:"conflict", msg:"咖啡中的多酚抑制铁吸收，建议间隔 1 小时", sev:"warn"},
+  {a:"铁", b:"茶", type:"conflict", msg:"茶鞣酸大幅降低铁吸收，建议间隔 1-2 小时", sev:"warn"},
+];
+function checkInteractions(){
+  const names = [];
+  state.stack.forEach(s=>{
+    (s.ings||[]).forEach(g=>{ if(g.name) names.push(g.name); });
+  });
+  const found = [];
+  const seen = new Set();
+  INTERACTIONS.forEach(rule=>{
+    const hasA = names.some(n=>n.includes(rule.a) || rule.a.includes(n));
+    const hasB = names.some(n=>n.includes(rule.b) || rule.b.includes(n));
+    if(hasA && hasB){
+      const key = [rule.a,rule.b].sort().join("+");
+      if(!seen.has(key)){ seen.add(key); found.push(rule); }
+    }
+  });
+  return found;
+}
+/* ============ 智能时段建议 ============ */
+const TIME_SLOTS = {morning:"晨起", noon:"午餐", evening:"晚餐", bed:"睡前"};
+function suggestTimeSlot(s){
+  const ings = (s.ings||[]).map(g=>g.name);
+  const has = kw => ings.some(n=>n.includes(kw));
+  if(has("镁") || has("益生菌") || has("褪黑")) return "bed";
+  if(has("铁")) return "morning";
+  if(has("维生素 D") || has("维生素 K") || has("维生素 A") || has("鱼油") || has("EPA") || has("DHA") || has("辅酶")) return "noon";
+  if(has("维生素 B") || has("维生素 C")) return "morning";
+  if(has("肌酸") || has("蛋白")) return "morning";
+  if(s.usage === "bed") return "bed";
+  if(s.usage === "empty") return "morning";
+  if(s.usage === "meal") return "noon";
+  return "noon";
+}
+function slotLabel(slot){ return TIME_SLOTS[slot] || "不限"; }
 /* 推荐摄入量参考（RDA/参考值，示例） */
 const RDA = {
   "维生素 D3":{rda:600,unit:"IU"},
@@ -759,35 +874,149 @@ function bodyChartHTML(){
 }
 
 /* ============ 页面：今日 ============ */
+function calcStreak(){
+  let streak = 0;
+  const d = new Date();
+  // 如果今天还没完成，从昨天开始算
+  const todayDone = state.stack.length > 0 && state.stack.every(s=>((s.history[today()]||0)>=s.takes||s.remaining<=0));
+  if(!todayDone) d.setDate(d.getDate()-1);
+  while(true){
+    const ds = d.toISOString().slice(0,10);
+    const allDone = state.stack.length > 0 && state.stack.every(s=>((s.history[ds]||0)>=s.takes||s.remaining<=0));
+    if(allDone) streak++;
+    else break;
+    d.setDate(d.getDate()-1);
+    if(streak > 365) break;
+  }
+  return streak;
+}
+function calendarHTML(){
+  const days = [];
+  const now = new Date();
+  const todayStr = today();
+  // 显示最近 35 天（5 周）
+  const start = new Date(now);
+  start.setDate(start.getDate() - 34);
+  for(let i = 0; i < 35; i++){
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    const ds = d.toISOString().slice(0,10);
+    const isFuture = ds > todayStr;
+    const isToday = ds === todayStr;
+    let cls = isFuture ? "future" : "";
+    if(!isFuture && state.stack.length > 0){
+      const doneCount = state.stack.filter(s=>((s.history[ds]||0)>=s.takes||s.remaining<=0)).length;
+      const ratio = doneCount / state.stack.length;
+      if(ratio >= 1) cls = "done";
+      else if(ratio > 0) cls = "partial";
+    }
+    const label = d.getDate();
+    days.push(`<div class="cal-day ${cls}">${label}</div>`);
+  }
+  const dows = ["一","二","三","四","五","六","日"];
+  const dowHTML = dows.map(d=>`<div class="cal-dow">${d}</div>`).join("");
+  return `<div class="cal-grid">${dowHTML}${days.join("")}</div>`;
+}
+function trendHTML(){
+  const days = [];
+  const now = new Date();
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0,10);
+    const isToday = ds === today();
+    let done = 0, total = state.stack.length;
+    if(total > 0){
+      done = state.stack.filter(s=>((s.history[ds]||0)>=s.takes||s.remaining<=0)).length;
+    }
+    const pct = total > 0 ? Math.round(done/total*100) : 0;
+    const cls = pct >= 100 ? "full" : pct > 0 ? "partial" : "none";
+    const lbl = isToday ? "今" : (d.getMonth()+1)+"/"+d.getDate();
+    days.push(`<div class="trend-bar"><span class="pct">${pct}%</span><div class="bar ${cls}" style="height:${Math.max(pct,5)}%"></div><span class="lbl">${lbl}</span></div>`);
+  }
+  return `<div class="trend-row">${days.join("")}</div>`;
+}
+function interactionsHTML(){
+  const found = checkInteractions();
+  if(!found.length) return "";
+  return found.map(r=>{
+    const cls = r.sev === "warn" ? "warn" : r.sev === "good" ? "good" : "info";
+    const ico = r.sev === "warn" ? "⚠️" : r.sev === "good" ? "✓" : "ℹ️";
+    const title = r.sev === "warn" ? t("interactionWarn") : r.sev === "good" ? t("interactionGood") : t("interactionInfo");
+    return `<div class="ia-card ${cls}"><div class="ia-ico">${ico}</div><div class="ia-body"><div class="ia-title">${title}：${r.a} + ${r.b}</div><div class="ia-msg">${r.msg}</div></div></div>`;
+  }).join("");
+}
 function viewToday(){
   const d = today();
   if(!state.stack.length){
     view.innerHTML = `<div class="empty"><div class="glyph">＋</div>${t("empty1")}<br><br>
       <a href="#" data-goto="add">${t("addFirst")}</a></div>`;return;
   }
+  const streak = calcStreak();
   const doneCount = state.stack.filter(s=>((s.history[d]||0)>=s.takes||s.remaining<=0)).length;
   const total = state.stack.length;
-  let html = `<div class="card first">
-    <div class="row"><div class="row-main">
-      <div class="row-title" style="font-weight:600">${t("todayProgress")}</div>
-      <div class="row-sub">${t("doneCount")} ${doneCount} / ${total}</div></div>
-      <div class="meter blue" style="width:110px"><i style="width:${total?doneCount/total*100:0}%"></i></div>
-    </div></div>`;
-  html += `<div class="sec-head">${t("supplementList")}</div><div class="card" style="margin-top:0">`;
-  state.stack.forEach(s=>{
-    const taken = s.history[d]||0;
-    const done = taken>=s.takes || s.remaining<=0;
-    const low = s.remaining<=s.takes*3;
-    html += `<div class="row">
-      <div class="pill-icon">${pillIconOf(s.icon)}</div>
-      <div class="row-main" data-stack="${s.uid}" style="cursor:pointer">
-        <div class="row-title">${s.name}</div>
-        <div class="row-sub">${usageLabel(s.usage)}${s.remindAt?` · ⏰ ${s.remindAt}`:""} · ${t("remaining")} ${s.remaining}${low?" · <span style='color:var(--red)'>"+t("lowWarn")+"</span>":""}</div>
+  const allDone = doneCount >= total;
+  const iaHTML = interactionsHTML();
+
+  let html = "";
+
+  // 相互作用警告（如果有）
+  if(iaHTML){
+    html += `<div class="sec-head" style="padding-bottom:0">${t("interactions")}</div>${iaHTML}`;
+  }
+
+  // 连续打卡 + 进度
+  html += `<div class="card first">
+    <div class="streak-card">
+      <div class="streak-num" style="color:var(--${allDone?'green':'blue'})">${streak}<span class="unit">${t("days")}</span></div>
+      <div class="streak-meta">
+        <div class="streak-label">${t("streak")}</div>
+        <div class="streak-sub">${allDone?t("allDone"):t("doneCount")+" "+doneCount+" / "+total}</div>
       </div>
-      <button class="check ${done?"done":""}" ${done?"disabled":""} data-take="${s.uid}">${CHECK}</button>
-    </div>`;
+    </div>
+    <div class="meter ${allDone?'green':'blue'}" style="margin:0 16px 14px"><i style="width:${total?doneCount/total*100:0}%"></i></div>
+  </div>`;
+
+  // 日历
+  html += `<div class="sec-head">${t("calendar")}</div><div class="card" style="margin-top:0">${calendarHTML()}</div>`;
+
+  // 补剂列表（按时段分组）
+  const slots = {morning:[], noon:[], evening:[], bed:[]};
+  state.stack.forEach(s=>{
+    const slot = suggestTimeSlot(s);
+    if(!slots[slot]) slots[slot] = [];
+    slots[slot].push(s);
   });
-  html += `</div>`;
+  const slotOrder = ["morning","noon","evening","bed"];
+  const slotColors = {morning:"orange", noon:"blue", evening:"purple", bed:"indigo"};
+  let firstSlot = true;
+  slotOrder.forEach(slot=>{
+    const items = slots[slot];
+    if(!items || !items.length) return;
+    const doneInSlot = items.filter(s=>((s.history[d]||0)>=s.takes||s.remaining<=0)).length;
+    html += `<div class="slot-head"><span class="dot ${slot}"></span><span>${t({morning:"morning",noon:"noon",evening:"evening",bed:"bedtime"}[slot])}</span><span class="slot-cnt">${doneInSlot}/${items.length}</span></div>`;
+    html += `<div class="card${firstSlot?' first':''}" style="margin-top:0">`;
+    firstSlot = false;
+    items.forEach(s=>{
+      const taken = s.history[d]||0;
+      const done = taken>=s.takes || s.remaining<=0;
+      const low = s.remaining<=s.takes*3;
+      html += `<div class="row">
+        <div class="pill-icon">${pillIconOf(s.icon)}</div>
+        <div class="row-main" data-stack="${s.uid}" style="cursor:pointer">
+          <div class="row-title">${s.name}</div>
+          <div class="row-sub">${usageLabel(s.usage)}${s.remindAt?` · ⏰ ${s.remindAt}`:""} · ${t("remaining")} ${s.remaining}${low?" · <span style='color:var(--red)'>"+t("lowWarn")+"</span>":""}</div>
+        </div>
+        <button class="check ${done?"done":""}" ${done?"disabled":""} data-take="${s.uid}">${CHECK}</button>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  // 7 天趋势
+  html += `<div class="sec-head">${t("weekTrend")}</div><div class="card" style="margin-top:0">${trendHTML()}</div>`;
+
+  // 今日摄入
   const intake = state.intake[d];
   if(intake && Object.keys(intake).length){
     html += `<div class="sec-head">${t("intakeToday")}</div><div class="card" style="margin-top:0">`;
@@ -931,11 +1160,41 @@ function viewCost(){
 
 /* ============ 页面：知识 ============ */
 function viewKnow(){
-  let html = `<div class="card first">`;
+  let html = "";
+  // 个性化：基于用户补剂的相互作用
+  const ia = checkInteractions();
+  if(ia.length){
+    html += `<div class="sec-head">${t("interactions")}</div><div class="card first" style="padding:4px 0">`;
+    ia.forEach(r=>{
+      const cls = r.sev === "warn" ? "warn" : r.sev === "good" ? "good" : "info";
+      const ico = r.sev === "warn" ? "⚠️" : r.sev === "good" ? "✓" : "ℹ️";
+      const title = r.sev === "warn" ? t("interactionWarn") : r.sev === "good" ? t("interactionGood") : t("interactionInfo");
+      html += `<div class="ia-card ${cls}" style="margin:8px 16px"><div class="ia-ico">${ico}</div><div class="ia-body"><div class="ia-title">${title}：${r.a} + ${r.b}</div><div class="ia-msg">${r.msg}</div></div></div>`;
+    });
+    html += `</div>`;
+  }
+  // 个性化：基于用户补剂的知识
+  const stackNames = state.stack.flatMap(s=>(s.ings||[]).map(g=>g.name));
+  const personal = KNOW.filter(k=>stackNames.some(n=>k.t.includes(n)||k.b.includes(n)));
+  if(personal.length){
+    html += `<div class="sec-head">${t("personalTips")}</div><div class="card${ia.length?'':' first'}" style="margin-top:0">`;
+    personal.forEach(k=>{
+      html += `<div class="row"><div class="row-main">
+        <div class="row-title" style="font-size:15px">${k.t}</div>
+        <div class="row-sub">${k.b}</div>
+        ${k.cat?`<span class="tag gray" style="margin-top:4px">${k.cat}</span>`:""}
+      </div></div>`;
+    });
+    html += `</div>`;
+  }
+  // 通用知识
+  html += `<div class="sec-head">${t("general")}</div><div class="card${!ia.length&&!personal.length?' first':''}" style="margin-top:0">`;
   KNOW.forEach(k=>{
     html += `<div class="row"><div class="row-main">
       <div class="row-title" style="font-size:15px">${k.t}</div>
-      <div class="row-sub">${k.b}</div></div></div>`;
+      <div class="row-sub">${k.b}</div>
+      ${k.cat?`<span class="tag gray" style="margin-top:4px">${k.cat}</span>`:""}
+    </div></div>`;
   });
   html += `</div>`;
   view.innerHTML = html;
@@ -1175,6 +1434,8 @@ document.addEventListener("click", e=>{
   if(motionTgl){ toggleMotion(); return; }
   const exp = tgt.closest("[data-export]");
   if(exp){ exportData(); return; }
+  const imp = tgt.closest("[data-import]");
+  if(imp){ importData(); return; }
   const clr = tgt.closest("[data-clear]");
   if(clr){ clearData(); return; }
   const del = tgt.closest("[data-del]");
@@ -1541,6 +1802,36 @@ function exportData(){
   a.href = URL.createObjectURL(blob); a.download = "gaichiyao-backup-"+today()+".json"; a.click();
   URL.revokeObjectURL(a.href);
 }
+function importData(){
+  const input = document.createElement("input");
+  input.type = "file"; input.accept = "application/json,.json";
+  input.onchange = e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      try{
+        const data = JSON.parse(ev.target.result);
+        if(data.state && data.state.stack){
+          const merged = migrate(data.state);
+          // 合并而非覆盖：保留现有 + 导入新的
+          const existingIds = new Set(state.stack.map(s=>s.uid));
+          merged.stack.forEach(s=>{ if(!existingIds.has(s.uid)) state.stack.push(s); });
+          if(merged.intake){
+            Object.keys(merged.intake).forEach(d=>{ if(!state.intake[d]) state.intake[d]=merged.intake[d]; });
+          }
+          if(data.settings) Object.assign(settings, data.settings);
+          if(data.ai) setAIState(data.ai);
+          save(); saveSettings(); applyTheme(); applyLang();
+          toast(t("importSuccess")); closeSheet(); setTab("today");
+        } else {
+          toast(t("importFail"));
+        }
+      }catch(err){ toast(t("importFail")); }
+    };
+    reader.readAsText(f);
+  };
+  input.click();
+}
 function clearData(){
   localStorage.removeItem(KEY); localStorage.removeItem(AI_KEY);
   state.stack=[]; state.intake={}; save(); closeSheet(); toast(t("dataCleared")); setTab("today");
@@ -1571,6 +1862,7 @@ function openSettings(){
     <div class="switch-row"><span>${t("motionDesc")}</span><div class="switch ${settings.reduceMotion?"":"on"}" data-motion></div></div>
     <div class="sec-head" style="padding:8px 0 6px">${t("data")}</div>
     <div class="card"><div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${t("exportData")}</div></div><button class="btn plain" data-export>${t("exportData")}</button></div>
+      <div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${t("importData")}</div><div class="row-sub" style="font-size:12px">${t("importData")}</div></div><button class="btn plain" data-import>${t("importData")}</button></div>
       <div class="row"><div class="row-main"><div class="row-title" style="font-size:15px;color:var(--red)">${t("clearData")}</div></div><button class="btn plain" data-clear style="color:var(--red)">${t("clearData")}</button></div></div>
     <div class="sec-head" style="padding:8px 0 6px">${t("aiSection")}</div>
     <div class="ai-presets">${presets}</div>
