@@ -1,5 +1,10 @@
 # CHANGELOG
 
+2026-08-14 22:45 · 修复 · 拍照/扫码 AI 识别增加持久加载动画（替代瞬时 toast）
+- 文件清单：index.html（新增 .ai-loading 加载层 + showAILoading/hideAILoading + i18n aiWait）
+- 触发点：pickImage（拍照添加）、onCode（扫码→AI）、aiFromCode（条码→AI）全部改用全屏毛玻璃加载层（spinner + 标题 + "通常需要 10–30 秒"副文案），AI 返回后平滑过渡到结果表单；失败才回落 toast。解决"只闪一下识别中、长时间无反馈、结果突然弹窗"的割裂感。
+- [前端]
+
 2026-08-14 20:35 · 功能 · 京东联盟开放平台 API 导入器（廉价比价真源）
 - 文件清单：tools/import-jd-union.mjs（新增）
 - 背景：用户选"替代 API 接入平台"。京东健康网页反爬重需登录态，改用京东联盟开放平台(union.jd.com)正经签名 API：免费开发者账号（需联盟会员+应用+申请 jd.union.open.goods.query 权限），返回商品名/价格/最低价/优惠券/图文/skuId。签名 md5(appSecret+排序kv拼接+appSecret)大写，与 iHerb 同类。

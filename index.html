@@ -301,6 +301,18 @@
     box-shadow:0 8px 24px rgba(0,0,0,.2)}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
+  /* ============ AI 等待加载层 ============ */
+  .ai-loading{position:fixed;inset:0;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.7);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+  .ai-loading.on{opacity:1;pointer-events:auto}
+  .dark .ai-loading{background:rgba(0,0,0,.62)}
+  .ai-loading .sp{width:48px;height:48px;border-radius:50%;border:4px solid rgba(0,122,255,.16);
+    border-top-color:var(--blue);animation:aiload-spin .8s linear infinite}
+  @keyframes aiload-spin{to{transform:rotate(360deg)}}
+  .ai-loading .lt{margin-top:18px;font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .ai-loading .ls{margin-top:6px;font-size:13px;color:var(--label2);text-align:center;padding:0 36px;line-height:1.45}
+
   .ai-presets{display:flex;flex-wrap:wrap;gap:8px;padding:2px 16px 10px}
   .ai-preset{background:var(--blue-soft);color:var(--blue);border:0;border-radius:100px;
     padding:6px 13px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:opacity .15s}
@@ -435,6 +447,7 @@
   <div class="scan-hint" id="scanHint">将补剂条码对准取景框</div>
 </div>
 <div class="toast" id="toast"></div>
+<div class="ai-loading" id="aiLoading"><div class="sp"></div><div class="lt" id="aiLt"></div><div class="ls" id="aiLs"></div></div>
 
 <script>
 "use strict";
@@ -480,7 +493,7 @@ const I18N = {
     remind:"提醒时间", remindDesc:"到点提醒（App 打开时）", noRemind:"不提醒",
     bodyChart:"营养摄入 vs 推荐", rda:"推荐", intakeS:"摄入", low:"不足", ok:"达标", over:"超标",
     editSetup:"服用设置",
-    querying:"查询商品库…", aiGen:"AI 生成评估…", aiQuery:"AI 查询中…", aiRecognizing:"AI 识别成分表中…",
+    querying:"查询商品库…", aiGen:"AI 生成评估…", aiQuery:"AI 查询中…", aiRecognizing:"AI 识别成分表中…", aiWait:"正在分析图片，通常需要 10–30 秒，请稍候",
     needAIKey:"请先在「设置」配置 AI Key", aiFail:"识别失败", noCamera:"无法访问摄像头", noScan:"当前浏览器不支持扫码，请用安卓 Chrome 真机测试",
     saved:"已保存", aiNoResult:"AI 无返回内容", aiNoParse:"未能解析识别结果", aiHttp:"AI 请求失败（HTTP ",
     notifTitle:"该吃药了", notifPerm:"需要通知权限才能后台提醒",
@@ -535,7 +548,7 @@ const I18N = {
     remind:"Reminder", remindDesc:"Remind on time (while app open)", noRemind:"No reminder",
     bodyChart:"Intake vs Recommended", rda:"RDA", intakeS:"Intake", low:"Low", ok:"OK", over:"Over",
     editSetup:"Usage setup",
-    querying:"Looking up product…", aiGen:"AI evaluating…", aiQuery:"AI querying…", aiRecognizing:"AI reading label…",
+    querying:"Looking up product…", aiGen:"AI evaluating…", aiQuery:"AI querying…", aiRecognizing:"AI reading label…", aiWait:"Analyzing image, usually takes 10–30 seconds. Please wait",
     needAIKey:"Set your AI key in Settings first", aiFail:"Recognition failed", noCamera:"Cannot access camera", noScan:"Barcode scanning not supported here; try Android Chrome",
     saved:"Saved", aiNoResult:"AI returned no content", aiNoParse:"Could not parse result", aiHttp:"AI request failed (HTTP ",
     notifTitle:"Time for your supplement", notifPerm:"Notification permission required",
@@ -577,280 +590,1869 @@ function applyReduceMotion(){
 
 /* ============ 知识库（含品牌/全名/储存；示例数据非医疗建议） ============ */
 const LIB = [
-  /* ===================== 复合维生素 / B 族 ===================== */
-  {id:"mv",name:"复合维生素（全面）",fullName:"每日综合维生素 2粒装 含全B族+胆碱+肌醇",brand:"Life Extension",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:139,serv:60,
-    ing:{name:"维生素 C",amt:270,unit:"mg",min:100,max:1000},
-    ings:[
-      {name:"维生素 A",amt:5000,unit:"IU",min:700,max:10000},
-      {name:"维生素 C",amt:270,unit:"mg",min:100,max:2000},
-      {name:"维生素 D3",amt:1000,unit:"IU",min:600,max:4000},
-      {name:"维生素 E",amt:30,unit:"mg",min:15,max:300},
-      {name:"维生素 K2",amt:50,unit:"mcg",min:90,max:200},
-      {name:"维生素 B1",amt:75,unit:"mg",min:1.2,max:100},
-      {name:"维生素 B2",amt:25,unit:"mg",min:1.4,max:100},
-      {name:"维生素 B3",amt:50,unit:"mg",min:16,max:35},
-      {name:"维生素 B5",amt:50,unit:"mg",min:5,max:100},
-      {name:"维生素 B6",amt:25,unit:"mg",min:1.4,max:100},
-      {name:"维生素 B7",amt:300,unit:"mcg",min:30,max:1000},
-      {name:"叶酸",amt:400,unit:"mcg",min:400,max:1000},
-      {name:"维生素 B12",amt:300,unit:"mcg",min:2.4,max:1000},
-      {name:"胆碱",amt:10,unit:"mg",min:500,max:3500},
-      {name:"肌醇",amt:10,unit:"mg",min:0,max:0},
-      {name:"钙",amt:20,unit:"mg",min:800,max:2500},
-      {name:"碘",amt:75,unit:"mcg",min:150,max:1100},
-      {name:"镁",amt:25,unit:"mg",min:350,max:700},
-      {name:"锌",amt:15,unit:"mg",min:11,max:40},
-      {name:"硒",amt:100,unit:"mcg",min:60,max:400},
-      {name:"铜",amt:1,unit:"mg",min:0.9,max:10},
-      {name:"锰",amt:2,unit:"mg",min:2.5,max:11},
-      {name:"铬",amt:100,unit:"mcg",min:35,max:1000},
-      {name:"钾",amt:10,unit:"mg",min:2000,max:4700},
-      {name:"硼",amt:1,unit:"mg",min:2,max:20}
-    ],
-    good:"全谱覆盖，B族多为活性辅酶形式",bad:"剂量为每日2粒，注意实际服用粒数",note:"全面基础补充，按饮食缺口调整。"},
-  {id:"bcomplex",name:"B 族复合（活性）",fullName:"BioActive 活性 B 族复合胶囊 含全B族",brand:"Life Extension",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:79,serv:60,
-    ing:{name:"维生素 B12",amt:300,unit:"mcg",min:2.4,max:1000},
-    ings:[
-      {name:"维生素 B1",amt:100,unit:"mg",min:1.2,max:100,form:"苯磷硫胺 (Benfotiamine)"},
-      {name:"维生素 B2",amt:25,unit:"mg",min:1.4,max:100,form:"核黄素-5'-磷酸 (FMN)"},
-      {name:"维生素 B3",amt:50,unit:"mg",min:16,max:35,form:"烟酰胺 (Niacinamide)"},
-      {name:"维生素 B5",amt:100,unit:"mg",min:5,max:100},
-      {name:"维生素 B6",amt:25,unit:"mg",min:1.4,max:100,form:"磷酸吡哆醛 (P-5-P / PLP)"},
-      {name:"维生素 B7",amt:300,unit:"mcg",min:30,max:1000},
-      {name:"叶酸",amt:400,unit:"mcg",min:400,max:1000,form:"5-甲基四氢叶酸 (5-MTHF / L-甲基叶酸)"},
-      {name:"维生素 B12",amt:300,unit:"mcg",min:2.4,max:1000,form:"甲钴胺 (Methylcobalamin)"},
-      {name:"胆碱",amt:10,unit:"mg",min:500,max:3500,form:"CDP-胆碱 (Citicoline)"},
-      {name:"肌醇",amt:10,unit:"mg",min:0,max:0,form:"Myo-肌醇"},
-      {name:"PABA",amt:10,unit:"mg",min:0,max:0}
-    ],
-    good:"B1/B2/B6/B12/叶酸均为活性形式，吸收利用好",bad:"",note:"参与能量代谢，建议晨服；晚间可能影响睡眠。"},
-  {id:"lulu",name:"女士综合维生素（全B族）",fullName:"女士复合维生素 含全部B族+胆碱+铁",brand:"lululab",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:149,serv:60,
-    ing:{name:"维生素 B12",amt:6,unit:"mcg",min:2.4,max:1000},
-    ings:[
-      {name:"维生素 A",amt:5000,unit:"IU",min:700,max:10000},
-      {name:"维生素 C",amt:90,unit:"mg",min:100,max:2000},
-      {name:"维生素 D3",amt:1000,unit:"IU",min:600,max:4000},
-      {name:"维生素 E",amt:15,unit:"mg",min:15,max:300},
-      {name:"维生素 K2",amt:55,unit:"mcg",min:90,max:200},
-      {name:"维生素 B1",amt:1.5,unit:"mg",min:1.2,max:100},
-      {name:"维生素 B2",amt:1.7,unit:"mg",min:1.4,max:100},
-      {name:"维生素 B3",amt:20,unit:"mg",min:16,max:35},
-      {name:"维生素 B5",amt:10,unit:"mg",min:5,max:100},
-      {name:"维生素 B6",amt:2,unit:"mg",min:1.4,max:100},
-      {name:"维生素 B7",amt:30,unit:"mcg",min:30,max:1000},
-      {name:"叶酸",amt:400,unit:"mcg",min:400,max:1000},
-      {name:"维生素 B12",amt:6,unit:"mcg",min:2.4,max:1000},
-      {name:"胆碱",amt:55,unit:"mg",min:500,max:3500},
-      {name:"肌醇",amt:50,unit:"mg",min:0,max:0},
-      {name:"钙",amt:200,unit:"mg",min:800,max:2500},
-      {name:"镁",amt:50,unit:"mg",min:350,max:700},
-      {name:"锌",amt:11,unit:"mg",min:11,max:40},
-      {name:"铁",amt:18,unit:"mg",min:18,max:45},
-      {name:"硒",amt:55,unit:"mcg",min:60,max:400},
-      {name:"碘",amt:150,unit:"mcg",min:150,max:1100},
-      {name:"铜",amt:1,unit:"mg",min:0.9,max:10},
-      {name:"锰",amt:2,unit:"mg",min:2.5,max:11},
-      {name:"铬",amt:35,unit:"mcg",min:35,max:1000}
-    ],
-    good:"专为女性设计，含铁的全面配方",bad:"经期外女性注意铁剂量",note:"含全部 B 族与胆碱，全面基础。"},
-  {id:"vd3",name:"维生素 D3",fullName:"维生素 D3 软胶囊 2000 IU",brand:"Now Foods",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:89,serv:100,
-    ing:{name:"维生素 D3",amt:2000,unit:"IU",min:600,max:4000,ul:4000},
-    good:"油溶胶囊吸收更好",bad:"",note:"与 K2 同补利于钙归位；日照不足者常缺。"},
-  {id:"vd3k2",name:"维生素 D3 + K2",fullName:"维生素 D3 5000IU + K2 MK-7 胶囊",brand:"NOW Foods",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:99,serv:60,
-    ing:{name:"维生素 D3",amt:5000,unit:"IU",min:600,max:4000},
-    ings:[{name:"维生素 D3",amt:5000,unit:"IU",min:600,max:4000},{name:"维生素 K2",amt:100,unit:"mcg",min:90,max:200}],
-    good:"D3+K2 协同引钙入骨",bad:"服抗凝药者先问医生",note:"长期补 D3 建议同补 K2。"},
-  {id:"vc",name:"维生素 C",fullName:"维生素 C 缓释片 500mg",brand:"Doctor's Best",storage:"阴凉干燥处",cat:"维生素",form:"中",ev:"强",trans:true,price:49,serv:100,
-    ing:{name:"维生素 C",amt:500,unit:"mg",min:100,max:1000,ul:2000},
-    good:"",bad:"",note:"高剂量可能腹泻；分次服用。"},
-  {id:"va",name:"维生素 A（视黄醇）",fullName:"维生素 A 视黄醇胶囊 10000 IU",brand:"Now Foods",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:59,serv:100,
-    ing:{name:"维生素 A",amt:10000,unit:"IU",min:700,max:10000,ul:10000},
-    good:"视黄醇直接利用",bad:"孕妇勿超量，β-胡萝卜素更安全",note:"脂溶性，随餐服。"},
-  {id:"ve",name:"维生素 E（混合生育酚）",fullName:"天然维生素 E 混合生育酚 400 IU",brand:"Now Foods",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:69,serv:100,
-    ing:{name:"维生素 E",amt:268,unit:"mg",min:15,max:300,ul:1000},
-    good:"混合生育酚优于单一α",bad:"",note:"抗氧化；随餐脂溶吸收好。"},
-  {id:"k2",name:"维生素 K2（MK-7）",fullName:"维生素 K2 MK-7 90mcg",brand:"Jarrow Formulas",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"中",trans:true,price:79,serv:60,
-    ing:{name:"维生素 K2",amt:90,unit:"mcg",min:90,max:200},
-    good:"MK-7 长效",bad:"服抗凝药者先问医生",note:"与 D3 协同引钙入骨。"},
-  {id:"b1",name:"维生素 B1（硫胺素）",fullName:"硫胺素 B1 片 100mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"强",trans:true,price:39,serv:100,
-    ing:{name:"维生素 B1",amt:100,unit:"mg",min:1.2,max:100},
-    good:"",bad:"",note:"碳水代谢关键；饮酒者易缺。"},
-  {id:"b2",name:"维生素 B2（核黄素）",fullName:"核黄素 B2 片 100mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"强",trans:true,price:39,serv:100,
-    ing:{name:"维生素 B2",amt:100,unit:"mg",min:1.4,max:100},
-    good:"",bad:"",note:"高剂量尿液偏黄属正常。"},
-  {id:"b3",name:"维生素 B3（烟酰胺）",fullName:"烟酰胺 B3 片 500mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"强",trans:true,price:45,serv:100,
-    ing:{name:"维生素 B3",amt:500,unit:"mg",min:16,max:35},
-    good:"烟酰胺不潮红",bad:"高剂量伤肝，需监测",note:"烟酸会潮红，烟酰胺不潮红。"},
-  {id:"b5",name:"维生素 B5（泛酸）",fullName:"泛酸 B5 胶囊 500mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"中",trans:true,price:45,serv:100,
-    ing:{name:"维生素 B5",amt:500,unit:"mg",min:5,max:100},
-    good:"",bad:"",note:"参与皮脂与能量代谢。"},
-  {id:"b6",name:"维生素 B6（P5P）",fullName:"活性 B6（P5P） 片 50mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"强",trans:true,price:45,serv:100,
-    ing:{name:"维生素 B6",amt:50,unit:"mg",min:1.4,max:100,ul:100},
-    good:"P5P 活性形式直接利用",bad:"长期超量损神经",note:"经前、孕吐常补。"},
-  {id:"b7",name:"生物素（B7）",fullName:"生物素 5000mcg 片",brand:"Now Foods",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"中",trans:true,price:49,serv:100,
-    ing:{name:"维生素 B7",amt:5000,unit:"mcg",min:30,max:1000},
-    good:"",bad:"",note:"护发护肤甲；检测前停服。"},
-  {id:"b12",name:"维生素 B12（甲钴胺）",fullName:"甲钴胺 B12 500mcg 含片",brand:"Jarrow Formulas",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"强",trans:true,price:39,serv:100,
-    ing:{name:"维生素 B12",amt:500,unit:"mcg",min:2.4,max:1000},
-    good:"甲钴胺优于氰钴胺",bad:"",note:"素食者、老年人易缺。"},
-  {id:"folate",name:"叶酸（5-MTHF）",fullName:"活性叶酸 5-MTHF 400mcg",brand:"Jarrow Formulas",storage:"阴凉干燥处",cat:"维生素",form:"优",ev:"中",trans:true,price:59,serv:90,
-    ing:{name:"叶酸",amt:400,unit:"mcg",min:400,max:1000},
-    good:"活性 5-MTHF 直接利用",bad:"MTHFR 突变者避免合成叶酸",note:"备孕/孕期关键。"},
-  /* ===================== 矿物质 ===================== */
-  {id:"mag",name:"镁（甘氨酸盐）",fullName:"甘氨酸镁粉 200mg/份",brand:"Thorne",storage:"阴凉干燥处，防潮",cat:"矿物质",form:"优",ev:"强",trans:true,price:79,serv:120,
-    ing:{name:"镁",amt:200,unit:"mg",min:300,max:420,ul:700},
-    good:"甘氨酸盐/柠檬酸盐吸收好、不腹泻",bad:"避免氧化镁（吸收差、易腹泻）",note:"助眠、放松神经；随餐或睡前。"},
-  {id:"magthy",name:"镁（L-苏糖酸盐）",fullName:"镁 L-苏糖酸盐 144mg 穿越血脑屏障",brand:"Life Extension",storage:"阴凉干燥处，防潮",cat:"矿物质",form:"优",ev:"中",trans:true,price:129,serv:90,
-    ing:{name:"镁",amt:144,unit:"mg",min:300,max:420},
-    good:"可入脑，助认知与睡眠",bad:"剂量偏低需配合其他镁",note:"价格高但吸收独特。"},
-  {id:"magmal",name:"镁（苹果酸盐）",fullName:"镁苹果酸盐 200mg 支持能量",brand:"Doctor's Best",storage:"阴凉干燥处，防潮",cat:"矿物质",form:"优",ev:"中",trans:true,price:89,serv:120,
-    ing:{name:"镁",amt:200,unit:"mg",min:300,max:420},
-    good:"苹果酸助能量代谢",bad:"",note:"运动/疲劳人群友好。"},
-  {id:"zn",name:"锌（吡啶甲酸）",fullName:"吡啶甲酸锌 15mg",brand:"Thorne",storage:"阴凉干燥处",cat:"矿物质",form:"优",ev:"强",trans:true,price:45,serv:100,
-    ing:{name:"锌",amt:15,unit:"mg",min:11,max:40,ul:40},
-    good:"吡啶甲酸/甘氨酸螯合吸收好",bad:"长期高剂量影响铜",note:"与铜平衡，勿长期超量。"},
-  {id:"ca",name:"钙（柠檬酸盐）",fullName:"柠檬酸钙 500mg/片",brand:"Pure Encapsulations",storage:"阴凉干燥处",cat:"矿物质",form:"中",ev:"强",trans:true,price:69,serv:120,
-    ing:{name:"钙",amt:500,unit:"mg",min:800,max:1200,ul:2500},
-    good:"柠檬酸盐不依赖胃酸",bad:"碳酸钙需随餐、影响铁锌",note:"单次不超 500mg 吸收佳。"},
-  {id:"fe",name:"铁（甘氨酸亚铁）",fullName:"甘氨酸亚铁 18mg",brand:"Thorne",storage:"阴凉干燥处，避光",cat:"矿物质",form:"优",ev:"强",trans:true,price:55,serv:60,
-    ing:{name:"铁",amt:18,unit:"mg",min:18,max:45,ul:45},
-    good:"甘氨酸亚铁温和少便秘",bad:"避免空腹大剂量硫酸亚铁",note:"与维C同服促吸收；勿与钙同服。"},
-  {id:"k",name:"钾（葡萄糖酸钾）",fullName:"葡萄糖酸钾片 595mg",brand:"21st Century",storage:"阴凉干燥处",cat:"矿物质",form:"中",ev:"强",trans:true,price:39,serv:110,
-    ing:{name:"钾",amt:55,unit:"mg",min:2000,max:4700},
-    good:"补钾温和",bad:"仅提供少量钾",note:"高钾食物（香蕉/薯类）更重要。"},
-  {id:"se",name:"硒（酵母硒）",fullName:"酵母硒 200mcg 片",brand:"Now Foods",storage:"阴凉干燥处",cat:"矿物质",form:"优",ev:"强",trans:true,price:45,serv:100,
-    ing:{name:"硒",amt:200,unit:"mcg",min:60,max:400,ul:400},
-    good:"抗氧化、护甲护甲状腺",bad:"超量有毒",note:"与维E协同。"},
-  {id:"iodine",name:"碘（海带提取）",fullName:"碘片 150mcg",brand:"Now Foods",storage:"阴凉干燥处",cat:"矿物质",form:"优",ev:"强",trans:true,price:35,serv:100,
-    ing:{name:"碘",amt:150,unit:"mcg",min:150,max:1100,ul:1100},
-    good:"",bad:"甲亢者慎用",note:"内陆/少海鲜者需补。"},
-  {id:"cu",name:"铜（甘氨酸铜）",fullName:"甘氨酸铜 2mg 片",brand:"Now Foods",storage:"阴凉干燥处",cat:"矿物质",form:"优",ev:"中",trans:true,price:35,serv:100,
-    ing:{name:"铜",amt:2,unit:"mg",min:0.9,max:10,ul:10},
-    good:"长期高锌需补铜",bad:"",note:"锌铜比建议 10-15:1。"},
-  {id:"mn",name:"锰",fullName:"锰片 5mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"矿物质",form:"中",ev:"中",trans:true,price:35,serv:100,
-    ing:{name:"锰",amt:5,unit:"mg",min:2.5,max:11,ul:11},
-    good:"",bad:"",note:"骨骼与抗氧化酶辅因子。"},
-  {id:"cr",name:"铬（烟酸铬）",fullName:"烟酸铬 200mcg 片",brand:"Now Foods",storage:"阴凉干燥处",cat:"矿物质",form:"中",ev:"中",trans:true,price:35,serv:100,
-    ing:{name:"铬",amt:200,unit:"mcg",min:35,max:1000,ul:1000},
-    good:"辅助糖代谢",bad:"",note:"糖尿病人群关注。"},
-  {id:"boron",name:"硼",fullName:"硼片 3mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"矿物质",form:"中",ev:"弱",trans:true,price:35,serv:100,
-    ing:{name:"硼",amt:3,unit:"mg",min:2,max:20,ul:20},
-    good:"支持骨与激素",bad:"",note:"小剂量即可。"},
-  /* ===================== 脂肪酸 / 胆碱 / 认知脂类 ===================== */
-  {id:"omega",name:"鱼油 Omega-3",fullName:"高纯鱼油 1100mg EPA/DHA",brand:"California Gold Nutrition",storage:"开封后冷藏保存",cat:"脂肪酸",form:"优",ev:"强",trans:true,price:129,serv:100,
-    ing:{name:"EPA+DHA",amt:1000,unit:"mg",min:250,max:2000},
-    ings:[{name:"EPA",amt:550,unit:"mg",min:250,max:1000},{name:"DHA",amt:450,unit:"mg",min:250,max:1000}],
-    good:"看 IFOS 认证、rTG 剂型",bad:"避免乙酯型（吸收差）",note:"关注 EPA+DHA 总量，而非鱼油重量。"},
-  {id:"epa",name:"高纯 EPA",fullName:"浓缩 EPA 软胶囊 500mg",brand:"NOW Foods",storage:"开封后冷藏",cat:"脂肪酸",form:"优",ev:"强",trans:true,price:99,serv:60,
-    ing:{name:"EPA",amt:500,unit:"mg",min:250,max:1000},
-    good:"炎症/心脑支持",bad:"",note:"与 DHA 功能侧重不同。"},
-  {id:"dha",name:"藻油 DHA",fullName:"藻油 DHA 软胶囊 250mg",brand:"Nordic Naturals",storage:"开封后冷藏",cat:"脂肪酸",form:"优",ev:"强",trans:true,price:119,serv:60,
-    ing:{name:"DHA",amt:250,unit:"mg",min:250,max:1000},
-    good:"植物来源、无鱼腥",bad:"",note:"孕婴、脑眼发育友好。"},
-  {id:"choline",name:"胆碱（CDP 胆碱）",fullName:"CDP 胆碱（胞二磷胆碱）250mg",brand:"Double Wood",storage:"阴凉干燥处",cat:"认知",form:"优",ev:"中",trans:true,price:99,serv:60,
-    ing:{name:"胆碱",amt:108,unit:"mg",min:500,max:3500},
-    good:"转化为乙酰胆碱，助认知",bad:"",note:"高剂量可能头晕/胃肠不适。"},
-  {id:"alphagpc",name:"胆碱（Alpha-GPC）",fullName:"Alpha-GPC 300mg 胶囊",brand:"Double Wood",storage:"阴凉干燥处",cat:"认知",form:"优",ev:"中",trans:true,price:119,serv:60,
-    ing:{name:"胆碱",amt:135,unit:"mg",min:500,max:3500},
-    good:"血脑屏障穿透好",bad:"",note:"运动表现与认知兼顾。"},
-  {id:"ps",name:"磷脂酰丝氨酸（PS）",fullName:"PS 100mg 胶囊",brand:"Now Foods",storage:"阴凉干燥处",cat:"认知",form:"优",ev:"中",trans:true,price:99,serv:60,
-    ing:{name:"磷脂酰丝氨酸",amt:100,unit:"mg",min:100,max:400},
-    good:"助记忆与压力",bad:"",note:"睡前服助放松。"},
-  {id:"lecithin",name:"卵磷脂",fullName:"大豆卵磷脂颗粒 1200mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"脂肪酸",form:"中",ev:"中",trans:true,price:55,serv:100,
-    ing:{name:"胆碱",amt:60,unit:"mg",min:500,max:3500},
-    good:"天然胆碱来源",bad:"",note:"含磷脂与胆碱。"},
-  /* ===================== 抗氧化 ===================== */
-  {id:"coq10",name:"辅酶 Q10（泛醇）",fullName:"泛醇 CoQ10 100mg",brand:"Doctor's Best",storage:"阴凉干燥处，避光",cat:"抗氧化",form:"优",ev:"中",trans:true,price:159,serv:60,
-    ing:{name:"CoQ10",amt:100,unit:"mg",min:30,max:200},
-    good:"泛醇(Ubiquinol)优于泛醌",bad:"",note:"他汀类药物使用者常补充。"},
-  {id:"nac",name:"NAC",fullName:"N-乙酰半胱氨酸 600mg",brand:"Life Extension",storage:"阴凉干燥处",cat:"氨基酸",form:"中",ev:"中",trans:true,price:99,serv:60,
-    ing:{name:"NAC",amt:600,unit:"mg",min:600,max:1200},
-    good:"",bad:"",note:"抗氧化、支持谷胱甘肽。"},
-  {id:"glut",name:"谷胱甘肽（还原型）",fullName:"还原型谷胱甘肽 500mg",brand:"NOW Foods",storage:"阴凉干燥处，避光",cat:"抗氧化",form:"中",ev:"中",trans:true,price:119,serv:60,
-    ing:{name:"谷胱甘肽",amt:500,unit:"mg",min:250,max:1000},
-    good:"核心抗氧化",bad:"口服吸收有限",note:"可配合 NAC/维C 增效。"},
-  {id:"ala",name:"α-硫辛酸",fullName:"硫辛酸 300mg 胶囊",brand:"Now Foods",storage:"阴凉干燥处",cat:"抗氧化",form:"优",ev:"中",trans:true,price:89,serv:60,
-    ing:{name:"α-硫辛酸",amt:300,unit:"mg",min:300,max:600},
-    good:"水脂双溶抗氧化",bad:"",note:"助糖代谢、护神经。"},
-  {id:"asta",name:"虾青素",fullName:"虾青素 12mg 软胶囊",brand:"AstaReal",storage:"阴凉干燥处，避光",cat:"抗氧化",form:"优",ev:"中",trans:true,price:139,serv:60,
-    ing:{name:"虾青素",amt:12,unit:"mg",min:4,max:12},
-    good:"强抗氧化、护眼护肤",bad:"",note:"雨生红球藻来源佳。"},
-  {id:"resv",name:"白藜芦醇",fullName:"白藜芦醇 500mg 胶囊",brand:"Now Foods",storage:"阴凉干燥处，避光",cat:"抗氧化",form:"中",ev:"弱",trans:true,price:99,serv:60,
-    ing:{name:"白藜芦醇",amt:500,unit:"mg",min:150,max:1000},
-    good:"",bad:"",note:"剂量与吸收争议大。"},
-  {id:"egcg",name:"绿茶提取物（EGCG）",fullName:"绿茶提取物 500mg（EGCG 标准）",brand:"Now Foods",storage:"阴凉干燥处",cat:"抗氧化",form:"中",ev:"中",trans:true,price:79,serv:60,
-    ing:{name:"EGCG",amt:250,unit:"mg",min:200,max:800},
-    good:"",bad:"空腹可能伤肝",note:"随餐服更安全。"},
-  {id:"garlic",name:"大蒜素",fullName:" aged 大蒜提取物 500mg",brand:"Now Foods",storage:"阴凉干燥处",cat:"植提",form:"中",ev:"中",trans:true,price:55,serv:100,
-    ing:{name:"大蒜素",amt:500,unit:"mg",min:300,max:1000},
-    good:"心脑与免疫",bad:"",note:"无臭工艺更友好。"},
-  /* ===================== 氨基酸 ===================== */
-  {id:"creatine",name:"肌酸（一水）",fullName:"一水肌酸粉 5g/勺",brand:"Optimum Nutrition",storage:"阴凉干燥处，密封防潮",cat:"运动",form:"优",ev:"强",trans:true,price:99,serv:60,
-    ing:{name:"肌酸",amt:5000,unit:"mg",min:3000,max:5000},
-    good:"一水合物证据最充分",bad:"避免花哨复合肌酸",note:"需持续服用饱和，非即刻见效。"},
-  {id:"theanine",name:"L-茶氨酸",fullName:"L-茶氨酸 200mg 胶囊",brand:"Now Foods",storage:"阴凉干燥处",cat:"认知",form:"优",ev:"强",trans:true,price:69,serv:60,
-    ing:{name:"L-茶氨酸",amt:200,unit:"mg",min:100,max:400},
-    good:"放松不嗜睡",bad:"",note:"与咖啡因协同专注。"},
-  {id:"glutamine",name:"L-谷氨酰胺",fullName:"谷氨酰胺粉 5g/勺",brand:"Now Foods",storage:"阴凉干燥处，密封",cat:"氨基酸",form:"优",ev:"中",trans:true,price:79,serv:60,
-    ing:{name:"L-谷氨酰胺",amt:5000,unit:"mg",min:3000,max:10000},
-    good:"护肠黏膜、恢复",bad:"",note:"训练后或空腹服。"},
-  {id:"glycine",name:"甘氨酸",fullName:"甘氨酸粉 3g/勺",brand:"Now Foods",storage:"阴凉干燥处",cat:"氨基酸",form:"优",ev:"中",trans:true,price:59,serv:60,
-    ing:{name:"甘氨酸",amt:3000,unit:"mg",min:3000,max:9000},
-    good:"助眠、温和",bad:"",note:"睡前 3g 温水服。"},
-  {id:"taurine",name:"牛磺酸",fullName:"牛磺酸粉 1g/勺",brand:"Now Foods",storage:"阴凉干燥处",cat:"氨基酸",form:"优",ev:"中",trans:true,price:45,serv:100,
-    ing:{name:"牛磺酸",amt:1000,unit:"mg",min:500,max:2000},
-    good:"心脑与运动耐力",bad:"",note:"能量饮料常含。"},
-  {id:"bcaa",name:"BCAA（2:1:1）",fullName:"支链氨基酸 5g/勺",brand:"NOW Foods",storage:"阴凉干燥处，密封",cat:"运动",form:"中",ev:"中",trans:true,price:79,serv:60,
-    ing:{name:"BCAA",amt:5000,unit:"mg",min:3000,max:10000},
-    good:"亮/异亮/缬 2:1:1",bad:"整蛋白更优",note:"训练中饮。"},
-  /* ===================== 蛋白 ===================== */
-  {id:"whey",name:"乳清蛋白",fullName:"乳清蛋白粉 25g/份",brand:"Optimum Nutrition",storage:"阴凉干燥处，密封",cat:"蛋白",form:"中",ev:"强",trans:true,price:199,serv:30,
-    ing:{name:"蛋白质",amt:25,unit:"g",min:20,max:40},
-    good:"",bad:"乳糖不耐选分离乳清",note:"按体重缺口补充。"},
-  {id:"pea",name:"豌豆蛋白",fullName:"豌豆蛋白粉 21g/份",brand:"NOW Foods",storage:"阴凉干燥处，密封",cat:"蛋白",form:"中",ev:"中",trans:true,price:159,serv:30,
-    ing:{name:"蛋白质",amt:21,unit:"g",min:20,max:40},
-    good:"植物来源、低敏",bad:"",note:"素食者替代乳清。"},
-  {id:"collagen",name:"胶原蛋白肽",fullName:"海洋胶原蛋白肽粉 7.26oz",brand:"California Gold Nutrition",storage:"阴凉干燥处",cat:"美容",form:"优",ev:"中",trans:true,price:159,serv:41,
-    ing:{name:"胶原蛋白",amt:5000,unit:"mg",min:2500,max:10000},
-    good:"水解易吸收，含维C",bad:"",note:"护关节皮肤；随餐。"},
-  /* ===================== 肠道 ===================== */
-  {id:"probiotic",name:"益生菌",fullName:"多菌株益生菌 100亿CFU",brand:"Garden of Life",storage:"冷藏保存（开封后）",cat:"肠道",form:"中",ev:"中",trans:true,price:139,serv:30,
-    ing:{name:"活菌",amt:100,unit:"亿CFU",min:100,max:500},
-    good:"看菌株编号与活菌数",bad:"",note:"冷藏保存活性更佳。"},
-  {id:"psyllium",name:"洋车前子纤维",fullName:"洋车前子壳粉 500mg",brand:"NOW Foods",storage:"阴凉干燥处",cat:"肠道",form:"中",ev:"强",trans:true,price:59,serv:100,
-    ing:{name:"膳食纤维",amt:500,unit:"mg",min:25000,max:38000},
-    good:"通便、控糖",bad:"需大量饮水",note:"逐步增量避免腹胀。"},
-  {id:"enzyme",name:"消化酶",fullName:"复合消化酶胶囊",brand:"Now Foods",storage:"阴凉干燥处",cat:"肠道",form:"中",ev:"中",trans:true,price:79,serv:60,
-    ing:{name:"消化酶",amt:1,unit:"粒",min:1,max:3},
-    good:"蛋白酶/淀粉酶/脂肪酶",bad:"",note:"随餐服助消化。"},
-  /* ===================== 适应原 / 植提 ===================== */
-  {id:"curc",name:"姜黄素（黑胡椒素）",fullName:"姜黄素胶囊 500mg + 黑胡椒素",brand:"Life Extension",storage:"阴凉干燥处，避光",cat:"植提",form:"中",ev:"中",trans:true,price:89,serv:60,
-    ing:{name:"姜黄素",amt:500,unit:"mg",min:500,max:1000},
-    good:"黑胡椒素提升吸收",bad:"无提升剂吸收极差",note:"抗炎辅助。"},
-  {id:"ashwa",name:"南非醉茄（南非醉茄）",fullName:"南非醉茄提取物 450mg",brand:"NOW Foods",storage:"阴凉干燥处",cat:"适应原",form:"中",ev:"中",trans:true,price:89,serv:60,
-    ing:{name:"南非醉茄",amt:450,unit:"mg",min:300,max:600},
-    good:"抗压、助眠",bad:"甲减者慎用",note:"KSM-66/_sensoril 专利佳。"},
-  {id:"rhodiola",name:"红景天",fullName:"红景天提取物 500mg",brand:"NOW Foods",storage:"阴凉干燥处",cat:"适应原",form:"中",ev:"中",trans:true,price:89,serv:60,
-    ing:{name:"红景天",amt:500,unit:"mg",min:200,max:600},
-    good:"抗疲劳、提专注",bad:"",note:"晨服，避免晚间。"},
-  {id:"milk",name:"水飞蓟（护肝）",fullName:"水飞蓟素 150mg 胶囊",brand:"NOW Foods",storage:"阴凉干燥处",cat:"植提",form:"中",ev:"中",trans:true,price:79,serv:60,
-    ing:{name:"水飞蓟素",amt:150,unit:"mg",min:150,max:300},
-    good:"护肝抗氧化",bad:"",note:"饮酒/用药人群关注。"},
-  /* ===================== 睡眠 ===================== */
-  {id:"melatonin",name:"褪黑素",fullName:"褪黑素 3mg 片",brand:"NOW Foods",storage:"阴凉干燥处",cat:"睡眠",form:"优",ev:"强",trans:true,price:45,serv:100,
-    ing:{name:"褪黑素",amt:3,unit:"mg",min:0.5,max:5},
-    good:"倒时差/助眠",bad:"长期依赖需谨慎",note:"睡前 30 分钟低剂量。"},
-  /* ===================== 运动 ===================== */
-  {id:"beta",name:"β-丙氨酸",fullName:"β-丙氨酸粉 3g/勺",brand:"NOW Foods",storage:"阴凉干燥处，密封",cat:"运动",form:"优",ev:"强",trans:true,price:89,serv:60,
-    ing:{name:"β-丙氨酸",amt:3000,unit:"mg",min:3000,max:6500},
-    good:"提升耐力、刺痛感正常",bad:"",note:"训练前服。"},
-  {id:"citrulline",name:"瓜氨酸",fullName:"L-瓜氨酸 1.5g 胶囊",brand:"NOW Foods",storage:"阴凉干燥处",cat:"运动",form:"优",ev:"强",trans:true,price:99,serv:60,
-    ing:{name:"L-瓜氨酸",amt:1500,unit:"mg",min:600,max:8000},
-    good:"促血流、助泵感",bad:"",note:"训练前服。"},
-  {id:"elec",name:"电解质粉",fullName:"电解质冲剂 钠钾镁钙",brand:"LMNT",storage:"阴凉干燥处",cat:"运动",form:"中",ev:"强",trans:true,price:139,serv:30,
-    ing:{name:"钠",amt:500,unit:"mg",min:1500,max:2300},
-    ings:[{name:"钠",amt:500,unit:"mg",min:1500,max:2300},{name:"钾",amt:200,unit:"mg",min:2000,max:4700},{name:"镁",amt:60,unit:"mg",min:350,max:700}],
-    good:"运动/出汗补给",bad:"",note:"高强度训练或暑热适用。"}
+  {
+    "id": "mv",
+    "name": "复合维生素（全面）",
+    "fullName": "每日综合维生素 2粒装 含全B族+胆碱+肌醇",
+    "brand": "Life Extension",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 139,
+    "serv": 60,
+    "ing": {
+      "name": "维生素 C",
+      "amt": 270,
+      "unit": "mg",
+      "min": 100,
+      "max": 1000
+    },
+    "ings": [
+      {
+        "name": "维生素 A",
+        "amt": 5000,
+        "unit": "IU",
+        "min": 700,
+        "max": 10000
+      },
+      {
+        "name": "维生素 C",
+        "amt": 270,
+        "unit": "mg",
+        "min": 100,
+        "max": 2000
+      },
+      {
+        "name": "维生素 D3",
+        "amt": 1000,
+        "unit": "IU",
+        "min": 600,
+        "max": 4000
+      },
+      {
+        "name": "维生素 E",
+        "amt": 30,
+        "unit": "mg",
+        "min": 15,
+        "max": 300
+      },
+      {
+        "name": "维生素 K2",
+        "amt": 50,
+        "unit": "mcg",
+        "min": 90,
+        "max": 200
+      },
+      {
+        "name": "维生素 B1",
+        "amt": 75,
+        "unit": "mg",
+        "min": 1.2,
+        "max": 100
+      },
+      {
+        "name": "维生素 B2",
+        "amt": 25,
+        "unit": "mg",
+        "min": 1.4,
+        "max": 100
+      },
+      {
+        "name": "维生素 B3",
+        "amt": 50,
+        "unit": "mg",
+        "min": 16,
+        "max": 35
+      },
+      {
+        "name": "维生素 B5",
+        "amt": 50,
+        "unit": "mg",
+        "min": 5,
+        "max": 100
+      },
+      {
+        "name": "维生素 B6",
+        "amt": 25,
+        "unit": "mg",
+        "min": 1.4,
+        "max": 100
+      },
+      {
+        "name": "维生素 B7",
+        "amt": 300,
+        "unit": "mcg",
+        "min": 30,
+        "max": 1000
+      },
+      {
+        "name": "叶酸",
+        "amt": 400,
+        "unit": "mcg",
+        "min": 400,
+        "max": 1000
+      },
+      {
+        "name": "维生素 B12",
+        "amt": 300,
+        "unit": "mcg",
+        "min": 2.4,
+        "max": 1000
+      },
+      {
+        "name": "胆碱",
+        "amt": 10,
+        "unit": "mg",
+        "min": 500,
+        "max": 3500
+      },
+      {
+        "name": "肌醇",
+        "amt": 10,
+        "unit": "mg",
+        "min": 0,
+        "max": 0
+      },
+      {
+        "name": "钙",
+        "amt": 20,
+        "unit": "mg",
+        "min": 800,
+        "max": 2500
+      },
+      {
+        "name": "碘",
+        "amt": 75,
+        "unit": "mcg",
+        "min": 150,
+        "max": 1100
+      },
+      {
+        "name": "镁",
+        "amt": 25,
+        "unit": "mg",
+        "min": 350,
+        "max": 700
+      },
+      {
+        "name": "锌",
+        "amt": 15,
+        "unit": "mg",
+        "min": 11,
+        "max": 40
+      },
+      {
+        "name": "硒",
+        "amt": 100,
+        "unit": "mcg",
+        "min": 60,
+        "max": 400
+      },
+      {
+        "name": "铜",
+        "amt": 1,
+        "unit": "mg",
+        "min": 0.9,
+        "max": 10
+      },
+      {
+        "name": "锰",
+        "amt": 2,
+        "unit": "mg",
+        "min": 2.5,
+        "max": 11
+      },
+      {
+        "name": "铬",
+        "amt": 100,
+        "unit": "mcg",
+        "min": 35,
+        "max": 1000
+      },
+      {
+        "name": "钾",
+        "amt": 10,
+        "unit": "mg",
+        "min": 2000,
+        "max": 4700
+      },
+      {
+        "name": "硼",
+        "amt": 1,
+        "unit": "mg",
+        "min": 2,
+        "max": 20
+      }
+    ]
+  },
+  {
+    "id": "bcomplex",
+    "name": "B 族复合（活性）",
+    "fullName": "BioActive 活性 B 族复合胶囊 含全B族",
+    "brand": "Life Extension",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "ing": {
+      "name": "维生素 B12",
+      "amt": 300,
+      "unit": "mcg",
+      "min": 2.4,
+      "max": 1000
+    },
+    "ings": [
+      {
+        "name": "维生素 B1",
+        "amt": 100,
+        "unit": "mg",
+        "min": 1.2,
+        "max": 100,
+        "form": "苯磷硫胺 (Benfotiamine)"
+      },
+      {
+        "name": "维生素 B2",
+        "amt": 25,
+        "unit": "mg",
+        "min": 1.4,
+        "max": 100,
+        "form": "核黄素-5'-磷酸 (FMN)"
+      },
+      {
+        "name": "维生素 B3",
+        "amt": 50,
+        "unit": "mg",
+        "min": 16,
+        "max": 35,
+        "form": "烟酰胺 (Niacinamide)"
+      },
+      {
+        "name": "维生素 B5",
+        "amt": 100,
+        "unit": "mg",
+        "min": 5,
+        "max": 100
+      },
+      {
+        "name": "维生素 B6",
+        "amt": 25,
+        "unit": "mg",
+        "min": 1.4,
+        "max": 100,
+        "form": "磷酸吡哆醛 (P-5-P / PLP)"
+      },
+      {
+        "name": "维生素 B7",
+        "amt": 300,
+        "unit": "mcg",
+        "min": 30,
+        "max": 1000
+      },
+      {
+        "name": "叶酸",
+        "amt": 400,
+        "unit": "mcg",
+        "min": 400,
+        "max": 1000,
+        "form": "5-甲基四氢叶酸 (5-MTHF / L-甲基叶酸)"
+      },
+      {
+        "name": "维生素 B12",
+        "amt": 300,
+        "unit": "mcg",
+        "min": 2.4,
+        "max": 1000,
+        "form": "甲钴胺 (Methylcobalamin)"
+      },
+      {
+        "name": "胆碱",
+        "amt": 10,
+        "unit": "mg",
+        "min": 500,
+        "max": 3500,
+        "form": "CDP-胆碱 (Citicoline)"
+      },
+      {
+        "name": "肌醇",
+        "amt": 10,
+        "unit": "mg",
+        "min": 0,
+        "max": 0,
+        "form": "Myo-肌醇"
+      },
+      {
+        "name": "PABA",
+        "amt": 10,
+        "unit": "mg",
+        "min": 0,
+        "max": 0
+      }
+    ]
+  },
+  {
+    "id": "lulu",
+    "name": "女士综合维生素（全B族）",
+    "fullName": "女士复合维生素 含全部B族+胆碱+铁",
+    "brand": "lululab",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 149,
+    "serv": 60,
+    "ing": {
+      "name": "维生素 B12",
+      "amt": 6,
+      "unit": "mcg",
+      "min": 2.4,
+      "max": 1000
+    },
+    "ings": [
+      {
+        "name": "维生素 A",
+        "amt": 5000,
+        "unit": "IU",
+        "min": 700,
+        "max": 10000
+      },
+      {
+        "name": "维生素 C",
+        "amt": 90,
+        "unit": "mg",
+        "min": 100,
+        "max": 2000
+      },
+      {
+        "name": "维生素 D3",
+        "amt": 1000,
+        "unit": "IU",
+        "min": 600,
+        "max": 4000
+      },
+      {
+        "name": "维生素 E",
+        "amt": 15,
+        "unit": "mg",
+        "min": 15,
+        "max": 300
+      },
+      {
+        "name": "维生素 K2",
+        "amt": 55,
+        "unit": "mcg",
+        "min": 90,
+        "max": 200
+      },
+      {
+        "name": "维生素 B1",
+        "amt": 1.5,
+        "unit": "mg",
+        "min": 1.2,
+        "max": 100
+      },
+      {
+        "name": "维生素 B2",
+        "amt": 1.7,
+        "unit": "mg",
+        "min": 1.4,
+        "max": 100
+      },
+      {
+        "name": "维生素 B3",
+        "amt": 20,
+        "unit": "mg",
+        "min": 16,
+        "max": 35
+      },
+      {
+        "name": "维生素 B5",
+        "amt": 10,
+        "unit": "mg",
+        "min": 5,
+        "max": 100
+      },
+      {
+        "name": "维生素 B6",
+        "amt": 2,
+        "unit": "mg",
+        "min": 1.4,
+        "max": 100
+      },
+      {
+        "name": "维生素 B7",
+        "amt": 30,
+        "unit": "mcg",
+        "min": 30,
+        "max": 1000
+      },
+      {
+        "name": "叶酸",
+        "amt": 400,
+        "unit": "mcg",
+        "min": 400,
+        "max": 1000
+      },
+      {
+        "name": "维生素 B12",
+        "amt": 6,
+        "unit": "mcg",
+        "min": 2.4,
+        "max": 1000
+      },
+      {
+        "name": "胆碱",
+        "amt": 55,
+        "unit": "mg",
+        "min": 500,
+        "max": 3500
+      },
+      {
+        "name": "肌醇",
+        "amt": 50,
+        "unit": "mg",
+        "min": 0,
+        "max": 0
+      },
+      {
+        "name": "钙",
+        "amt": 200,
+        "unit": "mg",
+        "min": 800,
+        "max": 2500
+      },
+      {
+        "name": "镁",
+        "amt": 50,
+        "unit": "mg",
+        "min": 350,
+        "max": 700
+      },
+      {
+        "name": "锌",
+        "amt": 11,
+        "unit": "mg",
+        "min": 11,
+        "max": 40
+      },
+      {
+        "name": "铁",
+        "amt": 18,
+        "unit": "mg",
+        "min": 18,
+        "max": 45
+      },
+      {
+        "name": "硒",
+        "amt": 55,
+        "unit": "mcg",
+        "min": 60,
+        "max": 400
+      },
+      {
+        "name": "碘",
+        "amt": 150,
+        "unit": "mcg",
+        "min": 150,
+        "max": 1100
+      },
+      {
+        "name": "铜",
+        "amt": 1,
+        "unit": "mg",
+        "min": 0.9,
+        "max": 10
+      },
+      {
+        "name": "锰",
+        "amt": 2,
+        "unit": "mg",
+        "min": 2.5,
+        "max": 11
+      },
+      {
+        "name": "铬",
+        "amt": 35,
+        "unit": "mcg",
+        "min": 35,
+        "max": 1000
+      }
+    ]
+  },
+  {
+    "id": "vd3",
+    "name": "维生素 D3",
+    "fullName": "维生素 D3 软胶囊 2000 IU",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 89,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 D3",
+      "amt": 2000,
+      "unit": "IU",
+      "min": 600,
+      "max": 4000,
+      "ul": 4000
+    },
+    "ings": []
+  },
+  {
+    "id": "vd3k2",
+    "name": "维生素 D3 + K2",
+    "fullName": "维生素 D3 5000IU + K2 MK-7 胶囊",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "维生素 D3",
+      "amt": 5000,
+      "unit": "IU",
+      "min": 600,
+      "max": 4000
+    },
+    "ings": [
+      {
+        "name": "维生素 D3",
+        "amt": 5000,
+        "unit": "IU",
+        "min": 600,
+        "max": 4000
+      },
+      {
+        "name": "维生素 K2",
+        "amt": 100,
+        "unit": "mcg",
+        "min": 90,
+        "max": 200
+      }
+    ]
+  },
+  {
+    "id": "vc",
+    "name": "维生素 C",
+    "fullName": "维生素 C 缓释片 500mg",
+    "brand": "Doctor's Best",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "中",
+    "ev": "强",
+    "trans": true,
+    "price": 49,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 C",
+      "amt": 500,
+      "unit": "mg",
+      "min": 100,
+      "max": 1000,
+      "ul": 2000
+    },
+    "ings": []
+  },
+  {
+    "id": "va",
+    "name": "维生素 A（视黄醇）",
+    "fullName": "维生素 A 视黄醇胶囊 10000 IU",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 59,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 A",
+      "amt": 10000,
+      "unit": "IU",
+      "min": 700,
+      "max": 10000,
+      "ul": 10000
+    },
+    "ings": []
+  },
+  {
+    "id": "ve",
+    "name": "维生素 E（混合生育酚）",
+    "fullName": "天然维生素 E 混合生育酚 400 IU",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 69,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 E",
+      "amt": 268,
+      "unit": "mg",
+      "min": 15,
+      "max": 300,
+      "ul": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "k2",
+    "name": "维生素 K2（MK-7）",
+    "fullName": "维生素 K2 MK-7 90mcg",
+    "brand": "Jarrow Formulas",
+    "storage": "阴凉干燥处，避光",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "ing": {
+      "name": "维生素 K2",
+      "amt": 90,
+      "unit": "mcg",
+      "min": 90,
+      "max": 200
+    },
+    "ings": []
+  },
+  {
+    "id": "b1",
+    "name": "维生素 B1（硫胺素）",
+    "fullName": "硫胺素 B1 片 100mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 39,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 B1",
+      "amt": 100,
+      "unit": "mg",
+      "min": 1.2,
+      "max": 100
+    },
+    "ings": []
+  },
+  {
+    "id": "b2",
+    "name": "维生素 B2（核黄素）",
+    "fullName": "核黄素 B2 片 100mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 39,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 B2",
+      "amt": 100,
+      "unit": "mg",
+      "min": 1.4,
+      "max": 100
+    },
+    "ings": []
+  },
+  {
+    "id": "b3",
+    "name": "维生素 B3（烟酰胺）",
+    "fullName": "烟酰胺 B3 片 500mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 45,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 B3",
+      "amt": 500,
+      "unit": "mg",
+      "min": 16,
+      "max": 35
+    },
+    "ings": []
+  },
+  {
+    "id": "b5",
+    "name": "维生素 B5（泛酸）",
+    "fullName": "泛酸 B5 胶囊 500mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 45,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 B5",
+      "amt": 500,
+      "unit": "mg",
+      "min": 5,
+      "max": 100
+    },
+    "ings": []
+  },
+  {
+    "id": "b6",
+    "name": "维生素 B6（P5P）",
+    "fullName": "活性 B6（P5P） 片 50mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 45,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 B6",
+      "amt": 50,
+      "unit": "mg",
+      "min": 1.4,
+      "max": 100,
+      "ul": 100
+    },
+    "ings": []
+  },
+  {
+    "id": "b7",
+    "name": "生物素（B7）",
+    "fullName": "生物素 5000mcg 片",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 49,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 B7",
+      "amt": 5000,
+      "unit": "mcg",
+      "min": 30,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "b12",
+    "name": "维生素 B12（甲钴胺）",
+    "fullName": "甲钴胺 B12 500mcg 含片",
+    "brand": "Jarrow Formulas",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 39,
+    "serv": 100,
+    "ing": {
+      "name": "维生素 B12",
+      "amt": 500,
+      "unit": "mcg",
+      "min": 2.4,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "folate",
+    "name": "叶酸（5-MTHF）",
+    "fullName": "活性叶酸 5-MTHF 400mcg",
+    "brand": "Jarrow Formulas",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 59,
+    "serv": 90,
+    "ing": {
+      "name": "叶酸",
+      "amt": 400,
+      "unit": "mcg",
+      "min": 400,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "mag",
+    "name": "镁（甘氨酸盐）",
+    "fullName": "甘氨酸镁粉 200mg/份",
+    "brand": "Thorne",
+    "storage": "阴凉干燥处，防潮",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 79,
+    "serv": 120,
+    "ing": {
+      "name": "镁",
+      "amt": 200,
+      "unit": "mg",
+      "min": 300,
+      "max": 420,
+      "ul": 700
+    },
+    "ings": []
+  },
+  {
+    "id": "magthy",
+    "name": "镁（L-苏糖酸盐）",
+    "fullName": "镁 L-苏糖酸盐 144mg 穿越血脑屏障",
+    "brand": "Life Extension",
+    "storage": "阴凉干燥处，防潮",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 129,
+    "serv": 90,
+    "ing": {
+      "name": "镁",
+      "amt": 144,
+      "unit": "mg",
+      "min": 300,
+      "max": 420
+    },
+    "ings": []
+  },
+  {
+    "id": "magmal",
+    "name": "镁（苹果酸盐）",
+    "fullName": "镁苹果酸盐 200mg 支持能量",
+    "brand": "Doctor's Best",
+    "storage": "阴凉干燥处，防潮",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 89,
+    "serv": 120,
+    "ing": {
+      "name": "镁",
+      "amt": 200,
+      "unit": "mg",
+      "min": 300,
+      "max": 420
+    },
+    "ings": []
+  },
+  {
+    "id": "zn",
+    "name": "锌（吡啶甲酸）",
+    "fullName": "吡啶甲酸锌 15mg",
+    "brand": "Thorne",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 45,
+    "serv": 100,
+    "ing": {
+      "name": "锌",
+      "amt": 15,
+      "unit": "mg",
+      "min": 11,
+      "max": 40,
+      "ul": 40
+    },
+    "ings": []
+  },
+  {
+    "id": "ca",
+    "name": "钙（柠檬酸盐）",
+    "fullName": "柠檬酸钙 500mg/片",
+    "brand": "Pure Encapsulations",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "中",
+    "ev": "强",
+    "trans": true,
+    "price": 69,
+    "serv": 120,
+    "ing": {
+      "name": "钙",
+      "amt": 500,
+      "unit": "mg",
+      "min": 800,
+      "max": 1200,
+      "ul": 2500
+    },
+    "ings": []
+  },
+  {
+    "id": "fe",
+    "name": "铁（甘氨酸亚铁）",
+    "fullName": "甘氨酸亚铁 18mg",
+    "brand": "Thorne",
+    "storage": "阴凉干燥处，避光",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 55,
+    "serv": 60,
+    "ing": {
+      "name": "铁",
+      "amt": 18,
+      "unit": "mg",
+      "min": 18,
+      "max": 45,
+      "ul": 45
+    },
+    "ings": []
+  },
+  {
+    "id": "k",
+    "name": "钾（葡萄糖酸钾）",
+    "fullName": "葡萄糖酸钾片 595mg",
+    "brand": "21st Century",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "中",
+    "ev": "强",
+    "trans": true,
+    "price": 39,
+    "serv": 110,
+    "ing": {
+      "name": "钾",
+      "amt": 55,
+      "unit": "mg",
+      "min": 2000,
+      "max": 4700
+    },
+    "ings": []
+  },
+  {
+    "id": "se",
+    "name": "硒（酵母硒）",
+    "fullName": "酵母硒 200mcg 片",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 45,
+    "serv": 100,
+    "ing": {
+      "name": "硒",
+      "amt": 200,
+      "unit": "mcg",
+      "min": 60,
+      "max": 400,
+      "ul": 400
+    },
+    "ings": []
+  },
+  {
+    "id": "iodine",
+    "name": "碘（海带提取）",
+    "fullName": "碘片 150mcg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 35,
+    "serv": 100,
+    "ing": {
+      "name": "碘",
+      "amt": 150,
+      "unit": "mcg",
+      "min": 150,
+      "max": 1100,
+      "ul": 1100
+    },
+    "ings": []
+  },
+  {
+    "id": "cu",
+    "name": "铜（甘氨酸铜）",
+    "fullName": "甘氨酸铜 2mg 片",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 35,
+    "serv": 100,
+    "ing": {
+      "name": "铜",
+      "amt": 2,
+      "unit": "mg",
+      "min": 0.9,
+      "max": 10,
+      "ul": 10
+    },
+    "ings": []
+  },
+  {
+    "id": "mn",
+    "name": "锰",
+    "fullName": "锰片 5mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 35,
+    "serv": 100,
+    "ing": {
+      "name": "锰",
+      "amt": 5,
+      "unit": "mg",
+      "min": 2.5,
+      "max": 11,
+      "ul": 11
+    },
+    "ings": []
+  },
+  {
+    "id": "cr",
+    "name": "铬（烟酸铬）",
+    "fullName": "烟酸铬 200mcg 片",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 35,
+    "serv": 100,
+    "ing": {
+      "name": "铬",
+      "amt": 200,
+      "unit": "mcg",
+      "min": 35,
+      "max": 1000,
+      "ul": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "boron",
+    "name": "硼",
+    "fullName": "硼片 3mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "中",
+    "ev": "弱",
+    "trans": true,
+    "price": 35,
+    "serv": 100,
+    "ing": {
+      "name": "硼",
+      "amt": 3,
+      "unit": "mg",
+      "min": 2,
+      "max": 20,
+      "ul": 20
+    },
+    "ings": []
+  },
+  {
+    "id": "omega",
+    "name": "鱼油 Omega-3",
+    "fullName": "高纯鱼油 1100mg EPA/DHA",
+    "brand": "California Gold Nutrition",
+    "storage": "开封后冷藏保存",
+    "cat": "脂肪酸",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 129,
+    "serv": 100,
+    "ing": {
+      "name": "EPA+DHA",
+      "amt": 1000,
+      "unit": "mg",
+      "min": 250,
+      "max": 2000
+    },
+    "ings": [
+      {
+        "name": "EPA",
+        "amt": 550,
+        "unit": "mg",
+        "min": 250,
+        "max": 1000
+      },
+      {
+        "name": "DHA",
+        "amt": 450,
+        "unit": "mg",
+        "min": 250,
+        "max": 1000
+      }
+    ]
+  },
+  {
+    "id": "epa",
+    "name": "高纯 EPA",
+    "fullName": "浓缩 EPA 软胶囊 500mg",
+    "brand": "NOW Foods",
+    "storage": "开封后冷藏",
+    "cat": "脂肪酸",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "EPA",
+      "amt": 500,
+      "unit": "mg",
+      "min": 250,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "dha",
+    "name": "藻油 DHA",
+    "fullName": "藻油 DHA 软胶囊 250mg",
+    "brand": "Nordic Naturals",
+    "storage": "开封后冷藏",
+    "cat": "脂肪酸",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 119,
+    "serv": 60,
+    "ing": {
+      "name": "DHA",
+      "amt": 250,
+      "unit": "mg",
+      "min": 250,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "choline",
+    "name": "胆碱（CDP 胆碱）",
+    "fullName": "CDP 胆碱（胞二磷胆碱）250mg",
+    "brand": "Double Wood",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "胆碱",
+      "amt": 108,
+      "unit": "mg",
+      "min": 500,
+      "max": 3500
+    },
+    "ings": []
+  },
+  {
+    "id": "alphagpc",
+    "name": "胆碱（Alpha-GPC）",
+    "fullName": "Alpha-GPC 300mg 胶囊",
+    "brand": "Double Wood",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 119,
+    "serv": 60,
+    "ing": {
+      "name": "胆碱",
+      "amt": 135,
+      "unit": "mg",
+      "min": 500,
+      "max": 3500
+    },
+    "ings": []
+  },
+  {
+    "id": "ps",
+    "name": "磷脂酰丝氨酸（PS）",
+    "fullName": "PS 100mg 胶囊",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "磷脂酰丝氨酸",
+      "amt": 100,
+      "unit": "mg",
+      "min": 100,
+      "max": 400
+    },
+    "ings": []
+  },
+  {
+    "id": "lecithin",
+    "name": "卵磷脂",
+    "fullName": "大豆卵磷脂颗粒 1200mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "脂肪酸",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 55,
+    "serv": 100,
+    "ing": {
+      "name": "胆碱",
+      "amt": 60,
+      "unit": "mg",
+      "min": 500,
+      "max": 3500
+    },
+    "ings": []
+  },
+  {
+    "id": "coq10",
+    "name": "辅酶 Q10（泛醇）",
+    "fullName": "泛醇 CoQ10 100mg",
+    "brand": "Doctor's Best",
+    "storage": "阴凉干燥处，避光",
+    "cat": "抗氧化",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 159,
+    "serv": 60,
+    "ing": {
+      "name": "CoQ10",
+      "amt": 100,
+      "unit": "mg",
+      "min": 30,
+      "max": 200
+    },
+    "ings": []
+  },
+  {
+    "id": "nac",
+    "name": "NAC",
+    "fullName": "N-乙酰半胱氨酸 600mg",
+    "brand": "Life Extension",
+    "storage": "阴凉干燥处",
+    "cat": "氨基酸",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "NAC",
+      "amt": 600,
+      "unit": "mg",
+      "min": 600,
+      "max": 1200
+    },
+    "ings": []
+  },
+  {
+    "id": "glut",
+    "name": "谷胱甘肽（还原型）",
+    "fullName": "还原型谷胱甘肽 500mg",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处，避光",
+    "cat": "抗氧化",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 119,
+    "serv": 60,
+    "ing": {
+      "name": "谷胱甘肽",
+      "amt": 500,
+      "unit": "mg",
+      "min": 250,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "ala",
+    "name": "α-硫辛酸",
+    "fullName": "硫辛酸 300mg 胶囊",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "抗氧化",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 89,
+    "serv": 60,
+    "ing": {
+      "name": "α-硫辛酸",
+      "amt": 300,
+      "unit": "mg",
+      "min": 300,
+      "max": 600
+    },
+    "ings": []
+  },
+  {
+    "id": "asta",
+    "name": "虾青素",
+    "fullName": "虾青素 12mg 软胶囊",
+    "brand": "AstaReal",
+    "storage": "阴凉干燥处，避光",
+    "cat": "抗氧化",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 139,
+    "serv": 60,
+    "ing": {
+      "name": "虾青素",
+      "amt": 12,
+      "unit": "mg",
+      "min": 4,
+      "max": 12
+    },
+    "ings": []
+  },
+  {
+    "id": "resv",
+    "name": "白藜芦醇",
+    "fullName": "白藜芦醇 500mg 胶囊",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处，避光",
+    "cat": "抗氧化",
+    "form": "中",
+    "ev": "弱",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "白藜芦醇",
+      "amt": 500,
+      "unit": "mg",
+      "min": 150,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "egcg",
+    "name": "绿茶提取物（EGCG）",
+    "fullName": "绿茶提取物 500mg（EGCG 标准）",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "抗氧化",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "ing": {
+      "name": "EGCG",
+      "amt": 250,
+      "unit": "mg",
+      "min": 200,
+      "max": 800
+    },
+    "ings": []
+  },
+  {
+    "id": "garlic",
+    "name": "大蒜素",
+    "fullName": " aged 大蒜提取物 500mg",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "植提",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 55,
+    "serv": 100,
+    "ing": {
+      "name": "大蒜素",
+      "amt": 500,
+      "unit": "mg",
+      "min": 300,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "creatine",
+    "name": "肌酸（一水）",
+    "fullName": "一水肌酸粉 5g/勺",
+    "brand": "Optimum Nutrition",
+    "storage": "阴凉干燥处，密封防潮",
+    "cat": "运动",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "肌酸",
+      "amt": 5000,
+      "unit": "mg",
+      "min": 3000,
+      "max": 5000
+    },
+    "ings": []
+  },
+  {
+    "id": "theanine",
+    "name": "L-茶氨酸",
+    "fullName": "L-茶氨酸 200mg 胶囊",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 69,
+    "serv": 60,
+    "ing": {
+      "name": "L-茶氨酸",
+      "amt": 200,
+      "unit": "mg",
+      "min": 100,
+      "max": 400
+    },
+    "ings": []
+  },
+  {
+    "id": "glutamine",
+    "name": "L-谷氨酰胺",
+    "fullName": "谷氨酰胺粉 5g/勺",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处，密封",
+    "cat": "氨基酸",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "ing": {
+      "name": "L-谷氨酰胺",
+      "amt": 5000,
+      "unit": "mg",
+      "min": 3000,
+      "max": 10000
+    },
+    "ings": []
+  },
+  {
+    "id": "glycine",
+    "name": "甘氨酸",
+    "fullName": "甘氨酸粉 3g/勺",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "氨基酸",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 59,
+    "serv": 60,
+    "ing": {
+      "name": "甘氨酸",
+      "amt": 3000,
+      "unit": "mg",
+      "min": 3000,
+      "max": 9000
+    },
+    "ings": []
+  },
+  {
+    "id": "taurine",
+    "name": "牛磺酸",
+    "fullName": "牛磺酸粉 1g/勺",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "氨基酸",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 45,
+    "serv": 100,
+    "ing": {
+      "name": "牛磺酸",
+      "amt": 1000,
+      "unit": "mg",
+      "min": 500,
+      "max": 2000
+    },
+    "ings": []
+  },
+  {
+    "id": "bcaa",
+    "name": "BCAA（2:1:1）",
+    "fullName": "支链氨基酸 5g/勺",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处，密封",
+    "cat": "运动",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "ing": {
+      "name": "BCAA",
+      "amt": 5000,
+      "unit": "mg",
+      "min": 3000,
+      "max": 10000
+    },
+    "ings": []
+  },
+  {
+    "id": "whey",
+    "name": "乳清蛋白",
+    "fullName": "乳清蛋白粉 25g/份",
+    "brand": "Optimum Nutrition",
+    "storage": "阴凉干燥处，密封",
+    "cat": "蛋白",
+    "form": "中",
+    "ev": "强",
+    "trans": true,
+    "price": 199,
+    "serv": 30,
+    "ing": {
+      "name": "蛋白质",
+      "amt": 25,
+      "unit": "g",
+      "min": 20,
+      "max": 40
+    },
+    "ings": []
+  },
+  {
+    "id": "pea",
+    "name": "豌豆蛋白",
+    "fullName": "豌豆蛋白粉 21g/份",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处，密封",
+    "cat": "蛋白",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 159,
+    "serv": 30,
+    "ing": {
+      "name": "蛋白质",
+      "amt": 21,
+      "unit": "g",
+      "min": 20,
+      "max": 40
+    },
+    "ings": []
+  },
+  {
+    "id": "collagen",
+    "name": "胶原蛋白肽",
+    "fullName": "海洋胶原蛋白肽粉 7.26oz",
+    "brand": "California Gold Nutrition",
+    "storage": "阴凉干燥处",
+    "cat": "美容",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 159,
+    "serv": 41,
+    "ing": {
+      "name": "胶原蛋白",
+      "amt": 5000,
+      "unit": "mg",
+      "min": 2500,
+      "max": 10000
+    },
+    "ings": []
+  },
+  {
+    "id": "probiotic",
+    "name": "益生菌",
+    "fullName": "多菌株益生菌 100亿CFU",
+    "brand": "Garden of Life",
+    "storage": "冷藏保存（开封后）",
+    "cat": "肠道",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 139,
+    "serv": 30,
+    "ing": {
+      "name": "活菌",
+      "amt": 100,
+      "unit": "亿CFU",
+      "min": 100,
+      "max": 500
+    },
+    "ings": []
+  },
+  {
+    "id": "psyllium",
+    "name": "洋车前子纤维",
+    "fullName": "洋车前子壳粉 500mg",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处",
+    "cat": "肠道",
+    "form": "中",
+    "ev": "强",
+    "trans": true,
+    "price": 59,
+    "serv": 100,
+    "ing": {
+      "name": "膳食纤维",
+      "amt": 500,
+      "unit": "mg",
+      "min": 25000,
+      "max": 38000
+    },
+    "ings": []
+  },
+  {
+    "id": "enzyme",
+    "name": "消化酶",
+    "fullName": "复合消化酶胶囊",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "肠道",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "ing": {
+      "name": "消化酶",
+      "amt": 1,
+      "unit": "粒",
+      "min": 1,
+      "max": 3
+    },
+    "ings": []
+  },
+  {
+    "id": "curc",
+    "name": "姜黄素（黑胡椒素）",
+    "fullName": "姜黄素胶囊 500mg + 黑胡椒素",
+    "brand": "Life Extension",
+    "storage": "阴凉干燥处，避光",
+    "cat": "植提",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 89,
+    "serv": 60,
+    "ing": {
+      "name": "姜黄素",
+      "amt": 500,
+      "unit": "mg",
+      "min": 500,
+      "max": 1000
+    },
+    "ings": []
+  },
+  {
+    "id": "ashwa",
+    "name": "南非醉茄（南非醉茄）",
+    "fullName": "南非醉茄提取物 450mg",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处",
+    "cat": "适应原",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 89,
+    "serv": 60,
+    "ing": {
+      "name": "南非醉茄",
+      "amt": 450,
+      "unit": "mg",
+      "min": 300,
+      "max": 600
+    },
+    "ings": []
+  },
+  {
+    "id": "rhodiola",
+    "name": "红景天",
+    "fullName": "红景天提取物 500mg",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处",
+    "cat": "适应原",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 89,
+    "serv": 60,
+    "ing": {
+      "name": "红景天",
+      "amt": 500,
+      "unit": "mg",
+      "min": 200,
+      "max": 600
+    },
+    "ings": []
+  },
+  {
+    "id": "milk",
+    "name": "水飞蓟（护肝）",
+    "fullName": "水飞蓟素 150mg 胶囊",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处",
+    "cat": "植提",
+    "form": "中",
+    "ev": "中",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "ing": {
+      "name": "水飞蓟素",
+      "amt": 150,
+      "unit": "mg",
+      "min": 150,
+      "max": 300
+    },
+    "ings": []
+  },
+  {
+    "id": "melatonin",
+    "name": "褪黑素",
+    "fullName": "褪黑素 3mg 片",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处",
+    "cat": "睡眠",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 45,
+    "serv": 100,
+    "ing": {
+      "name": "褪黑素",
+      "amt": 3,
+      "unit": "mg",
+      "min": 0.5,
+      "max": 5
+    },
+    "ings": []
+  },
+  {
+    "id": "beta",
+    "name": "β-丙氨酸",
+    "fullName": "β-丙氨酸粉 3g/勺",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处，密封",
+    "cat": "运动",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 89,
+    "serv": 60,
+    "ing": {
+      "name": "β-丙氨酸",
+      "amt": 3000,
+      "unit": "mg",
+      "min": 3000,
+      "max": 6500
+    },
+    "ings": []
+  },
+  {
+    "id": "citrulline",
+    "name": "瓜氨酸",
+    "fullName": "L-瓜氨酸 1.5g 胶囊",
+    "brand": "NOW Foods",
+    "storage": "阴凉干燥处",
+    "cat": "运动",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 99,
+    "serv": 60,
+    "ing": {
+      "name": "L-瓜氨酸",
+      "amt": 1500,
+      "unit": "mg",
+      "min": 600,
+      "max": 8000
+    },
+    "ings": []
+  },
+  {
+    "id": "elec",
+    "name": "电解质粉",
+    "fullName": "电解质冲剂 钠钾镁钙",
+    "brand": "LMNT",
+    "storage": "阴凉干燥处",
+    "cat": "运动",
+    "form": "中",
+    "ev": "强",
+    "trans": true,
+    "price": 139,
+    "serv": 30,
+    "ing": {
+      "name": "钠",
+      "amt": 500,
+      "unit": "mg",
+      "min": 1500,
+      "max": 2300
+    },
+    "ings": [
+      {
+        "name": "钠",
+        "amt": 500,
+        "unit": "mg",
+        "min": 1500,
+        "max": 2300
+      },
+      {
+        "name": "钾",
+        "amt": 200,
+        "unit": "mg",
+        "min": 2000,
+        "max": 4700
+      },
+      {
+        "name": "镁",
+        "amt": 60,
+        "unit": "mg",
+        "min": 350,
+        "max": 700
+      }
+    ]
+  }
 ];
 const KNOW = [
   {t:"维生素 D3 与 K2 协同",b:"D3 促钙吸收，K2 引钙入骨、防钙沉积血管。长期补 D3 建议同补 K2。",cat:"协同"},
@@ -2071,6 +3673,12 @@ function toast(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>el.classList.remove("on"), 2600);
 }
+function showAILoading(title, sub){
+  $("#aiLt").textContent = title || t("aiRecognizing");
+  $("#aiLs").textContent = sub || t("aiWait");
+  $("#aiLoading").classList.add("on");
+}
+function hideAILoading(){ const el=$("#aiLoading"); if(el) el.classList.remove("on"); }
 
 /* ============ AI ============ */
 const AI_KEY = "gaichiyao_ai";
@@ -2168,12 +3776,14 @@ function pickImage(){
   input.type = "file"; input.accept = "image/*"; input.capture = "environment";
   input.onchange = async e=>{
     const f = e.target.files[0]; if(!f) return;
-    toast(t("aiRecognizing"));
+    closeSheet();
+    showAILoading(t("aiRecognizing"), t("aiWait"));
     try{
       const lib = await callAI(t("aiPhotoPrompt"), await fileToDataURL(f));
+      hideAILoading();
       if(!lib) throw new Error(t("aiNoParse"));
-      closeSheet(); openConfig(normalizeLib(lib));
-    }catch(err){ toast(err.message||t("aiFail")); }
+      openConfig(normalizeLib(lib));
+    }catch(err){ hideAILoading(); toast(err.message||t("aiFail")); }
   };
   input.click();
 }
@@ -2258,10 +3868,10 @@ function onCode(code){
         image: product.image_front_url || ""
       };
       const _ap=getActiveProfile(); if(_ap&&_ap.apiKey){
-        toast(t("aiGen"));
+        showAILoading(t("aiGen"), t("aiWait"));
         callAI(t("aiOffPrompt")+"\n名称："+lastFound.name+"\n品牌："+lastFound.brand+"\n成分表："+(lastFound.ing||"（无）")+"\n规格："+(lastFound.qty||"（无）"), null)
-        .then(lib=>{ if(lib){ openConfig(normalizeLib(lib)); return; } showOffFound(code); })
-        .catch(()=>showOffFound(code));
+        .then(lib=>{ hideAILoading(); if(lib){ openConfig(normalizeLib(lib)); return; } showOffFound(code); })
+        .catch(()=>{ hideAILoading(); showOffFound(code); });
         return;
       }
       showOffFound(code);
@@ -2293,12 +3903,14 @@ function showNotFound(code){
     <button class="btn plain block" style="margin-top:6px" data-manual>${t("manualAdd")}</button>`);
 }
 async function aiFromCode(code){
-  toast(t("aiQuery"));
+  closeSheet();
+  showAILoading(t("aiQuery"), t("aiWait"));
   try{
     const lib = await callAI(t("aiCodePrompt")+"\n用户提供的条码号："+code+"。条码通常无法精确反查产品，请基于常识给出最可能的补剂信息；若完全不确定则 name 填「未知补剂」。", null);
+    hideAILoading();
     if(!lib) throw new Error(t("aiNoParse"));
-    closeSheet(); openConfig(normalizeLib(lib));
-  }catch(err){ toast(err.message||t("aiFail")); }
+    openConfig(normalizeLib(lib));
+  }catch(err){ hideAILoading(); toast(err.message||t("aiFail")); }
 }
 
 /* ============ 设置 ============ */
