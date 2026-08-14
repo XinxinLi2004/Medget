@@ -1,5 +1,12 @@
 # CHANGELOG
 
+2026-08-14 18:05 · 功能 · 接入 Agnes AI 服务商（推理模型兼容）
+- 文件清单：index.html、www/index.html
+- 新增 Agnes AI 预设（baseUrl: `https://apihub.agnes-ai.com/v1`，model: `agnes-2.5-flash`），设置页一键选用
+- `callAI()` 兼容推理模型响应：自动检测 agnes/deepseek-r/qwq/reasoner 等模型名，注入 `chat_template_kwargs.enable_thinking:false` 关闭推理获取干净 JSON；兜底读取 `reasoning_content` 字段（当 `content` 为空时）
+- 已验证：Agnes 2.5 Flash 支持 base64 图片输入 + 图像理解，拍照识别流程可用
+- 部署标记：[前端] 需重新构建 APK
+
 2026-08-14 12:20 · 重构 · 药丸 3D 立体选择器（形状+颜色+颗粒）+ 人体图改列表 + 命名修正
 - 文件清单：index.html、www/index.html
 - 药丸 3D 选择器：完整复刻 iOS 健康药物选择——6 种立体形状（圆片/长片/胶囊/软胶囊/粉剂/滴剂，多层渐变+高光+边缘模拟 3D）、8 种颜色、细节选项（片剂刻痕：无/单刻痕/十字；胶囊颗粒：无/颗粒）；大预览实时更新；`icon` 字段从字符串升级为 `{shape,color,detail}` 对象，migrate 兼容旧字符串

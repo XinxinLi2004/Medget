@@ -1254,8 +1254,14 @@ function getActiveProfile(){
 const AI_PRESETS = [
   {name:"OpenAI", baseUrl:"https://api.openai.com/v1", model:"gpt-4o-mini"},
   {name:"智谱 GLM", baseUrl:"https://open.bigmodel.cn/api/paas/v4", model:"glm-4v-flash"},
-  {name:"通义千问", baseUrl:"https://dashscope.aliyuncs.com/compatible-mode/v1", model:"qwen-vl-max"}
+  {name:"通义千问", baseUrl:"https://dashscope.aliyuncs.com/compatible-mode/v1", model:"qwen-vl-max"},
+  {name:"Agnes AI", baseUrl:"https://apihub.agnes-ai.com/v1", model:"agnes-2.5-flash"}
 ];
+/* 判断是否为推理模型（返回 reasoning_content 而非 content） */
+function isReasoningModel(profile){
+  const m = (profile.model||"").toLowerCase();
+  return m.includes("agnes") || m.includes("deepseek-r") || m.includes("qwq") || m.includes("reasoner");
+}
 const AI_SCHEMA = `你是补剂成分分析专家。请根据用户提供的补剂成分表/包装图片或条码信息，返回一个严格的 JSON 对象（不要任何其他文字、不要 markdown 代码块），字段如下：
 {"name":"补剂名称","cat":"类别，从 维生素/矿物质/脂肪酸/运动/蛋白/抗氧化/植提/肠道/氨基酸 中选","form":"成分形式优劣，优/中/差","ev":"循证等级，强/中/弱","ings":[{"name":"成分名","amt":每份剂量数字,"unit":"单位，IU/mg/mcg/g/亿CFU","min":有效范围下限数字,"max":有效范围上限数字}],"good":"优选点说明","bad":"注意点说明","note":"一句话提示","price":参考瓶价数字(元),"serv":一瓶份数数字}
 若有多个关键活性成分（例如鱼油拆分为 EPA 与 DHA、复合维生素拆为各维生素），请在 ings 数组中分别列出每个成分；若只有一个主成分，ings 数组放一项即可。
@@ -1293,15 +1299,22 @@ async function callAI(prompt, imageDataUrl){
   const messages = [];
   if(sys) messages.push({role:"system", content:sys});
   messages.push({role:"user", content:userContent});
+  const reqBody = {model:p.model||"gpt-4o-mini", messages, temperature:0.2};
+  /* 推理模型（如 Agnes agnes-2.5-flash）需要关闭 thinking 才能拿到干净 content */
+  if(isReasoningModel(p)){
+    reqBody.chat_template_kwargs = {enable_thinking: false};
+  }
   const res = await fetch(p.baseUrl.replace(/\/+$/,"")+"/chat/completions",{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+p.apiKey},
-    body: JSON.stringify({model:p.model||"gpt-4o-mini", messages, temperature:0.2})
+    body: JSON.stringify(reqBody)
   });
   if(!res.ok) throw new Error(t("aiHttp")+res.status+"）");
   const data = await res.json();
   const msg = data.choices && data.choices[0] && data.choices[0].message;
-  const text = msg ? msg.content : "";
+  /* 推理模型可能将内容放在 reasoning_content，需兜底 */
+  let text = msg ? (msg.content || "") : "";
+  if(!text && msg && msg.reasoning_content) text = msg.reasoning_content;
   if(!text) throw new Error(t("aiNoResult"));
   return parseJSON(text);
 }
