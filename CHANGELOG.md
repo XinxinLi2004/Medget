@@ -1,5 +1,11 @@
 # CHANGELOG
 
+2026-08-14 22:55 · 修复 · 打卡日历改为可翻月月份视图（含回到今天、点击看当日明细）
+- 文件清单：index.html（calendarHTML 重写为月份网格 + calY/calM 状态 + renderCal + openCalDay + 导航/日详情点击；CSS 新增 .cal-bar/.cal-nav/.cal-title/.cal-today/.cal-day.blank/.cal-daylist；i18n calBackToday/calDayTitle/calTaken/calMiss/calFuture）
+- 原问题：日历是固定 35 天窗口、今天被强制排在最后一个格子、无法翻看其它月份。现改为标准月份网格（周一起始），顶部 ‹ 月份 › + 「回到今天」可自由翻月；默认显示当月、今天蓝框高亮、落在网格中部而非边缘；点击任意日期弹出当日打卡明细（已服/未服 + 份数）。
+- 日期键与 history 一致：ds 改用 toISOString().slice(0,10)（UTC），避免时区错位。
+- [前端]
+
 2026-08-14 22:45 · 修复 · 拍照/扫码 AI 识别增加持久加载动画（替代瞬时 toast）
 - 文件清单：index.html（新增 .ai-loading 加载层 + showAILoading/hideAILoading + i18n aiWait）
 - 触发点：pickImage（拍照添加）、onCode（扫码→AI）、aiFromCode（条码→AI）全部改用全屏毛玻璃加载层（spinner + 标题 + "通常需要 10–30 秒"副文案），AI 返回后平滑过渡到结果表单；失败才回落 toast。解决"只闪一下识别中、长时间无反馈、结果突然弹窗"的割裂感。

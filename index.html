@@ -350,13 +350,29 @@
   .streak-sub{font-size:15px;font-weight:600;margin-top:2px}
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:0 16px 14px}
   .cal-day{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;
-    font-size:10px;font-weight:600;color:var(--label3);position:relative;background:rgba(60,60,67,.06)}
+    font-size:11px;font-weight:600;color:var(--label3);position:relative;background:rgba(60,60,67,.06)}
   .dark .cal-day{background:rgba(255,255,255,.06)}
   .cal-day.done{background:var(--green-soft);color:var(--green)}
   .cal-day.partial{background:var(--orange-soft);color:var(--orange)}
   .cal-day.today{box-shadow:inset 0 0 0 2px var(--blue)}
   .cal-day.future{opacity:.4}
-  .cal-dow{text-align:center;font-size:10px;color:var(--label3);font-weight:600;padding:0 0 4px}
+  .cal-day.blank{background:transparent}
+  .cal-day[data-calday]{cursor:pointer}
+  .cal-day.blank{cursor:default}
+  .cal-bar{display:flex;align-items:center;gap:8px;padding:12px 16px 6px}
+  .cal-title{font-size:16px;font-weight:700;letter-spacing:-.01em;flex:1;text-align:center;font-variant-numeric:tabular-nums}
+  .cal-nav{width:32px;height:32px;border-radius:50%;border:0;background:rgba(60,60,67,.08);color:var(--label);
+    font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:opacity .15s}
+  .dark .cal-nav{background:rgba(255,255,255,.1)}
+  .cal-nav:active{opacity:.5}
+  .cal-today{border:0;background:var(--blue-soft);color:var(--blue);font-size:13px;font-weight:600;
+    padding:6px 12px;border-radius:100px;cursor:pointer;font-family:var(--font);transition:opacity .15s;white-space:nowrap}
+  .cal-today:active{opacity:.5}
+  .cal-daylist{margin:4px 0 2px}
+  .cal-daylist .row{padding:10px 16px}
+  .cal-done-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:5px}
+  .cal-done-dot.ok{background:var(--green)}
+  .cal-done-dot.no{background:var(--orange)}
 
   /* ============ 7 天趋势柱状图 ============ */
   .trend-row{display:flex;align-items:flex-end;gap:8px;padding:8px 16px 14px;height:90px}
@@ -497,7 +513,7 @@ const I18N = {
     needAIKey:"请先在「设置」配置 AI Key", aiFail:"识别失败", noCamera:"无法访问摄像头", noScan:"当前浏览器不支持扫码，请用安卓 Chrome 真机测试",
     saved:"已保存", aiNoResult:"AI 无返回内容", aiNoParse:"未能解析识别结果", aiHttp:"AI 请求失败（HTTP ",
     notifTitle:"该吃药了", notifPerm:"需要通知权限才能后台提醒",
-    streak:"连续打卡", days:"天", calendar:"打卡日历", weekTrend:"近 7 天",
+    streak:"连续打卡", days:"天", calendar:"打卡日历", weekTrend:"近 7 天", calBackToday:"回到今天", calDayTitle:"当日打卡", calTaken:"已服", calMiss:"未服", calFuture:"未来日期",
     interactions:"相互作用提醒", interactionWarn:"注意", interactionGood:"协同", interactionInfo:"提示",
     morning:"晨起", noon:"午餐", evening:"晚餐", bedtime:"睡前",
     importData:"导入数据", importSuccess:"导入成功", importFail:"导入失败：格式错误",
@@ -552,7 +568,7 @@ const I18N = {
     needAIKey:"Set your AI key in Settings first", aiFail:"Recognition failed", noCamera:"Cannot access camera", noScan:"Barcode scanning not supported here; try Android Chrome",
     saved:"Saved", aiNoResult:"AI returned no content", aiNoParse:"Could not parse result", aiHttp:"AI request failed (HTTP ",
     notifTitle:"Time for your supplement", notifPerm:"Notification permission required",
-    streak:"Streak", days:"d", calendar:"Calendar", weekTrend:"Last 7 days",
+    streak:"Streak", days:"d", calendar:"Calendar", weekTrend:"Last 7 days", calBackToday:"Today", calDayTitle:"That day", calTaken:"Taken", calMiss:"Missed", calFuture:"Future date",
     interactions:"Interaction alerts", interactionWarn:"Caution", interactionGood:"Synergy", interactionInfo:"Note",
     morning:"Morning", noon:"Lunch", evening:"Dinner", bedtime:"Bedtime",
     importData:"Import data", importSuccess:"Imported", importFail:"Import failed: invalid format",
@@ -2981,32 +2997,69 @@ function calcStreak(){
   }
   return streak;
 }
+let calY = null, calM = null;
+function ensureCal(){
+  if(calY === null){ const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); }
+}
 function calendarHTML(){
-  const days = [];
-  const now = new Date();
+  ensureCal();
+  const y = calY, m = calM;
+  const first = new Date(y, m, 1);
+  const startDow = (first.getDay() + 6) % 7; // 周一为一周首日
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
   const todayStr = today();
-  // 显示最近 35 天（5 周）
-  const start = new Date(now);
-  start.setDate(start.getDate() - 34);
-  for(let i = 0; i < 35; i++){
-    const d = new Date(start);
-    d.setDate(d.getDate() + i);
-    const ds = d.toISOString().slice(0,10);
-    const isFuture = ds > todayStr;
-    const isToday = ds === todayStr;
-    let cls = isFuture ? "future" : "";
-    if(!isFuture && state.stack.length > 0){
-      const doneCount = state.stack.filter(s=>((s.history[ds]||0)>=s.takes||s.remaining<=0)).length;
-      const ratio = doneCount / state.stack.length;
-      if(ratio >= 1) cls = "done";
-      else if(ratio > 0) cls = "partial";
-    }
-    const label = d.getDate();
-    days.push(`<div class="cal-day ${cls}">${label}</div>`);
-  }
   const dows = ["一","二","三","四","五","六","日"];
   const dowHTML = dows.map(d=>`<div class="cal-dow">${d}</div>`).join("");
-  return `<div class="cal-grid">${dowHTML}${days.join("")}</div>`;
+  const cells = [];
+  for(let i = 0; i < startDow; i++) cells.push(`<div class="cal-day blank"></div>`);
+  for(let d = 1; d <= daysInMonth; d++){
+    const ds = new Date(y, m, d).toISOString().slice(0,10);
+    const isFuture = ds > todayStr;
+    const isToday = ds === todayStr;
+    let cls = "";
+    if(isToday) cls = "today";
+    if(!isFuture && state.stack.length > 0){
+      const doneCount = state.stack.filter(s=>((s.history[ds]||0)>=s.takes || s.remaining<=0)).length;
+      const ratio = doneCount / state.stack.length;
+      if(ratio >= 1) cls = "done" + (isToday ? " today" : "");
+      else if(ratio > 0) cls = "partial" + (isToday ? " today" : "");
+    }
+    if(isFuture) cls = (cls ? cls + " " : "") + "future";
+    cells.push(`<div class="cal-day ${cls.trim()}" data-calday="${ds}">${d}</div>`);
+  }
+  while(cells.length % 7 !== 0) cells.push(`<div class="cal-day blank"></div>`);
+  return `<div class="cal-grid">${dowHTML}${cells.join("")}</div>`;
+}
+function renderCal(){
+  ensureCal();
+  const title = document.getElementById("calTitle");
+  if(title) title.textContent = calY + "年" + (calM + 1) + "月";
+  const wrap = document.getElementById("calWrap");
+  if(wrap) wrap.innerHTML = calendarHTML();
+}
+function openCalDay(ds){
+  const [y, m, d] = ds.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  const todayStr = today();
+  const isFuture = ds > todayStr;
+  const week = ["周日","周一","周二","周三","周四","周五","周六"][date.getDay()];
+  const title = `${y}年${m}月${d}日 ${week}`;
+  if(isFuture){
+    openSheet(`<button class="x" data-x>×</button><h2>${title}</h2>
+      <div class="card" style="margin-top:12px"><div class="row"><div class="row-main"><div class="row-sub">${t("calFuture")}</div><div class="row-title">${t("calFuture")}</div></div></div></div>`);
+    return;
+  }
+  const rows = state.stack.map(s=>{
+    const taken = s.history[ds] || 0;
+    const done = (taken >= s.takes) || s.remaining <= 0;
+    return `<div class="row">
+      <div class="cal-done-dot ${done ? "ok" : "no"}"></div>
+      <div class="row-main"><div class="row-title" style="font-size:15px">${escapeHtml(s.name)}</div>
+        <div class="row-sub">${done ? t("calTaken") : t("calMiss")}${s.takes>1 ? " · " + taken + "/" + s.takes + " 份" : ""}</div></div>
+    </div>`;
+  }).join("");
+  openSheet(`<button class="x" data-x>×</button><h2>${title}</h2>
+    <div class="card" style="margin-top:12px"><div class="cal-daylist">${rows || `<div class="row"><div class="row-main"><div class="row-sub">${t("empty1")}</div></div></div>`}</div></div>`);
 }
 function trendHTML(){
   const days = [];
@@ -3069,7 +3122,18 @@ function viewToday(){
   </div>`;
 
   // 日历
-  html += `<div class="sec-head">${t("calendar")}</div><div class="card" style="margin-top:0">${calendarHTML()}</div>`;
+  ensureCal();
+  const calTitleTxt = calY + "年" + (calM + 1) + "月";
+  html += `<div class="sec-head">${t("calendar")}</div>
+    <div class="card" style="margin-top:0">
+      <div class="cal-bar">
+        <button class="cal-nav" data-calprev aria-label="上个月">‹</button>
+        <div class="cal-title" id="calTitle">${calTitleTxt}</div>
+        <button class="cal-nav" data-calnext aria-label="下个月">›</button>
+        <button class="cal-today" data-caltoday>${t("calBackToday")}</button>
+      </div>
+      <div id="calWrap">${calendarHTML()}</div>
+    </div>`;
 
   // 补剂列表（按时段分组）
   const slots = {morning:[], noon:[], evening:[], bed:[]};
@@ -3652,6 +3716,14 @@ document.addEventListener("click", e=>{
     else if(g==="settings") openSettings();
     return;
   }
+  const calPrev = tgt.closest("[data-calprev]");
+  if(calPrev){ ensureCal(); calM--; if(calM < 0){ calM = 11; calY--; } renderCal(); return; }
+  const calNext = tgt.closest("[data-calnext]");
+  if(calNext){ ensureCal(); calM++; if(calM > 11){ calM = 0; calY++; } renderCal(); return; }
+  const calTodayBtn = tgt.closest("[data-caltoday]");
+  if(calTodayBtn){ const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); renderCal(); return; }
+  const calDay = tgt.closest("[data-calday]");
+  if(calDay){ openCalDay(calDay.dataset.calday); return; }
 });
 document.addEventListener("input", e=>{
   const ingName = e.target.closest(".ing-name");
