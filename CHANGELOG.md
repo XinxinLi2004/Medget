@@ -1,5 +1,13 @@
 # CHANGELOG
 
+2026-08-14 12:05 · 功能 · 药丸图标 + 补给库卡片化（原瓶图）+ 成分自动匹配 + 人体图视觉优化
+- 文件清单：index.html、www/index.html
+- 药丸图标：预设 6 种剂型 SVG 图标（胶囊/圆片/软胶囊/长片/粉剂/滴剂），补剂加 icon 字段；今日打卡列表项前显示图标；添加表单加图标选择器（点选高亮）
+- 补给库卡片化：从文字列表改为卡片布局，显示瓶身图（用户上传拍照压缩 / Open Food Facts 远程图 / 占位药瓶 SVG+品牌首字母）+ 品牌 + 余量花费；添加表单加「瓶身照片」上传（canvas 压缩到 480px JPEG 存 localStorage）；扫码查到 OF 产品自动带入 image_front_url；详情页也显示瓶身图
+- 成分自动匹配：新增 COMPONENT_DB 成分元数据字典（从 LIB 提取），成分名 input 加 datalist 联想；输入已知成分名自动切换单位
+- 人体图视觉优化：环形进度圈 36→46px、营养素名称/数值字号上调、摄入数字语义化着色（达标绿/不足橙/超标红）
+- 部署标记：[前端] 需 `cp index.html www/ && npx cap sync android` 后重新构建 APK
+
 2026-08-14 11:30 · 重构 · 数据模型升级为多成分（鱼油拆 EPA/DHA）+ 人体图用 AI 重绘
 - 文件清单：index.html、www/index.html、assets/human_clean.png
 - 数据模型：补剂从单成分 `ing` 升级为 `ings[]` 多成分数组；鱼油示例拆为 EPA 550mg + DHA 450mg；RDA 加 `parts` 字段合成 EPA+DHA；migrate 自动重建旧数据

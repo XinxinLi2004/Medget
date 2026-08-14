@@ -64,6 +64,21 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.65), 0 8px 28px rgba(0,0,0,.05)}
   .dark .card{border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 8px 28px rgba(0,0,0,.3)}
   .card.first{margin-top:8px}
+  .stack-card{display:flex;align-items:center;gap:14px;padding:12px;margin:10px 16px 0;border-radius:var(--r);
+    background:var(--card);border:1px solid rgba(255,255,255,.55);
+    -webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.65), 0 8px 28px rgba(0,0,0,.05);cursor:pointer}
+  .dark .stack-card{border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 8px 28px rgba(0,0,0,.3)}
+  .stack-img{width:62px;height:62px;border-radius:13px;overflow:hidden;flex:0 0 auto;background:rgba(60,60,67,.05)}
+  .stack-img img{width:100%;height:100%;object-fit:cover;display:block}
+  .stack-info{flex:1;min-width:0}
+  .stack-name{font-size:16px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center}
+  .stack-brand{font-size:12px;color:var(--label2);margin-top:1px}
+  .stack-meta{font-size:12.5px;color:var(--label2);margin-top:3px;font-variant-numeric:tabular-nums}
+  .bottle-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:rgba(0,122,255,.45);background:rgba(0,122,255,.05)}
+  .bottle-ph svg{width:30px;height:42px}
+  .bottle-ph span{font-size:13px;font-weight:700;margin-top:2px;color:var(--label2)}
   .row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:.5px solid var(--sep)}
   .row:last-child{border-bottom:none}
   .row-main{flex:1;min-width:0}
@@ -81,6 +96,13 @@
   .check.done{background:var(--green);border-color:var(--green)}
   .check.done svg{opacity:1;transform:scale(1)}
   .check:active{transform:scale(.9)}
+
+  .pill-icon{width:44px;height:44px;border-radius:13px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--blue-soft);color:var(--blue)}
+  .pill-icon svg{width:24px;height:24px}
+  .pill-icon.sm{width:36px;height:36px;border-radius:11px}
+  .pill-icon.sm svg{width:20px;height:20px}
 
   .tag{display:inline-flex;align-items:center;font-size:12px;font-weight:600;
     padding:3px 10px;border-radius:100px;line-height:1.3;white-space:nowrap}
@@ -178,6 +200,21 @@
     border-radius:14px;font-size:16px;line-height:1;cursor:pointer}
   .dark .ing-row .ing-del{background:rgba(255,255,255,.12)}
 
+  .icon-picker{display:flex;gap:8px;padding:2px 16px;flex-wrap:wrap}
+  .icon-opt{width:44px;height:44px;border-radius:13px;border:1px solid rgba(60,60,67,.12);
+    background:rgba(255,255,255,.5);color:var(--label2);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all .18s var(--ease)}
+  .dark .icon-opt{background:rgba(60,60,67,.3)}
+  .icon-opt svg{width:24px;height:24px}
+  .icon-opt.on{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}
+
+  .photo-row{display:flex;align-items:center;gap:12px;padding:0 16px}
+  .photo-preview{width:64px;height:64px;border-radius:14px;overflow:hidden;flex:0 0 auto;
+    background:rgba(60,60,67,.06);display:flex;align-items:center;justify-content:center;
+    border:1px dashed rgba(60,60,67,.18)}
+  .photo-preview img{width:100%;height:100%;object-fit:cover}
+  .ph-empty{font-size:11px;color:var(--label2);text-align:center;padding:4px}
+
   .seg{position:relative;display:flex;background:var(--seg-bg);border-radius:9px;padding:2px;margin:0 16px 12px}
   .seg .seg-thumb{position:absolute;top:2px;bottom:2px;left:0;width:0;border-radius:7px;
     background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);
@@ -246,13 +283,14 @@
     -webkit-mask-position:center;mask-position:center;
     background:var(--label);opacity:.55}
   .dark .human-mask{opacity:.45}
-  .nut{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:12px;
+  .nut{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:14px;
     background:rgba(255,255,255,.55);border:1px solid rgba(60,60,67,.06)}
   .dark .nut{background:rgba(60,60,67,.28)}
   .nut .ring{flex:0 0 auto;display:block}
   .nut .tx{flex:1;min-width:0}
-  .nut .n{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .nut .v{font-size:10.5px;color:var(--label2);font-variant-numeric:tabular-nums;margin-top:1px}
+  .nut .n{font-size:13px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nut .v{font-size:11px;color:var(--label2);font-variant-numeric:tabular-nums;margin-top:2px}
+  .nut .v b{font-weight:700}
   .legend{display:flex;gap:16px;justify-content:center;margin-top:14px;font-size:11px;color:var(--label2)}
   .legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
 
@@ -338,6 +376,7 @@ const I18N = {
     foundBarcode:"识别到条码", notFound:"本地库与 Open Food Facts 均未收录，可尝试 AI 补全或手动添加", aiFillInfo:"用 AI 补全信息",
     fName:"名称", fPrice:"瓶价（¥）", fServ:"一瓶总份数（粒/勺）", fAmt:"每份剂量", fTakes:"每天几次", fDose:"每次几份",
     ingName:"成分名", addIngredient:"添加成分", perServingShort:"每份剂量",
+    pillShape:"剂型图标", bottlePhoto:"瓶身照片", noPhoto:"未上传", uploadPhoto:"上传/拍照",
     evStrong:"强", evMid:"中", evWeak:"弱", formGood:"优", formMid:"中", formBad:"差",
     customItem:"自定义补剂",
     usage:"服用方式", uMeal:"随餐", uEmpty:"空腹", uBed:"睡前", uAny:"不限",
@@ -381,6 +420,7 @@ const I18N = {
     foundBarcode:"Barcode scanned", notFound:"Not in local library or Open Food Facts. Try AI or add manually.", aiFillInfo:"Fill with AI",
     fName:"Name", fPrice:"Price (¥)", fServ:"Servings per bottle", fAmt:"Dose per serving", fTakes:"Times per day", fDose:"Servings per time",
     ingName:"Ingredient", addIngredient:"Add ingredient", perServingShort:"Per serving",
+    pillShape:"Pill shape", bottlePhoto:"Bottle photo", noPhoto:"None", uploadPhoto:"Upload / photo",
     evStrong:"Strong", evMid:"Moderate", evWeak:"Weak", formGood:"Good", formMid:"Fair", formBad:"Poor",
     customItem:"Custom supplement",
     usage:"Usage", uMeal:"With meal", uEmpty:"Empty", uBed:"Bedtime", uAny:"Any",
@@ -495,6 +535,7 @@ function migrate(s){
   (s.stack||[]).forEach(x=>{
     if(x.usage===undefined)x.usage="any";
     if(x.remindAt===undefined)x.remindAt="";
+    if(!x.icon)x.icon="capsule";
     if(!x.ings){
       if(x.ingName){ x.ings=[{name:x.ingName, amt:x.amt, unit:x.unit||"mg", min:x.ingMin||0, max:x.ingMax||0}]; }
       else if(x.lib && x.lib.ings){ x.ings=x.lib.ings.map(g=>({...g})); }
@@ -520,6 +561,27 @@ function nutrientMeta(name){
   for(const s of state.stack){ for(const g of (s.ings||[])){ if(g.name===name) return {unit:g.unit, max:g.max}; } }
   return null;
 }
+
+/* ============ 剂型图标 ============ */
+const PILL_ICONS = {
+  capsule: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="9" width="19" height="6" rx="3"/><path d="M12 9v6"/></svg>`,
+  tablet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17"/></svg>`,
+  softgel: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="7" ry="9"/><path d="M9.2 8.3c.7-1.3 1.6-2 2.8-2"/></svg>`,
+  oblong: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="9.5" width="17" height="5" rx="2.5"/><path d="M12 9.5v5"/></svg>`,
+  powder: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6.5" rx="5.5" ry="2.8"/><path d="M12 9.3v11.2"/><path d="M8.5 20.5h7"/></svg>`,
+  dropper: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4h5"/><path d="M11 4v8"/><path d="M12 12v3.5a3.5 3.5 0 0 1-7 0V12z"/><circle cx="8.5" cy="18.5" r="1.3" fill="currentColor" stroke="none"/></svg>`
+};
+const PILL_ORDER = ["capsule","tablet","softgel","oblong","powder","dropper"];
+const pillIcon = id => PILL_ICONS[id] || PILL_ICONS.capsule;
+
+/* ============ 成分元数据（自动匹配） ============ */
+function buildComponentDB(){
+  const db = {};
+  LIB.forEach(l=>{ getIngs(l).forEach(g=>{ if(g.name) db[g.name] = {unit:g.unit||"mg", min:g.min||0, max:g.max||0}; }); });
+  return db;
+}
+const COMPONENT_DB = buildComponentDB();
+const COMPONENT_NAMES = Object.keys(COMPONENT_DB);
 
 /* ============ 评分引擎 ============ */
 function median(a){const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
@@ -585,15 +647,15 @@ function reportHTML(l, dose=1){
 
 /* ============ 人体营养图 ============ */
 function ringSVG(pct, color, label){
-  const r = 15, c = 2*Math.PI*r;
+  const r = 18, c = 2*Math.PI*r;
   const v = Math.max(0, Math.min(pct, 1.5));
   const off = c*(1 - Math.min(v, 1));
-  return `<svg class="ring" width="36" height="36" viewBox="0 0 36 36">
-    <circle cx="18" cy="18" r="${r}" fill="none" stroke="rgba(60,60,67,.12)" stroke-width="4.5"/>
-    <circle cx="18" cy="18" r="${r}" fill="none" stroke="var(--${color})" stroke-width="4.5"
+  return `<svg class="ring" width="46" height="46" viewBox="0 0 46 46">
+    <circle cx="23" cy="23" r="${r}" fill="none" stroke="rgba(60,60,67,.1)" stroke-width="4"/>
+    <circle cx="23" cy="23" r="${r}" fill="none" stroke="var(--${color})" stroke-width="4"
       stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
-      transform="rotate(-90 18 18)" style="transition:stroke-dashoffset .6s var(--ease)"/>
-    <text x="18" y="22" text-anchor="middle" font-size="10.5" font-weight="700"
+      transform="rotate(-90 23 23)" style="transition:stroke-dashoffset .6s var(--ease)"/>
+    <text x="23" y="27" text-anchor="middle" font-size="13" font-weight="700"
       fill="var(--label)" font-family="var(--font-num)">${label}</text>
   </svg>`;
 }
@@ -612,7 +674,7 @@ function bodyChartHTML(){
   const left = entries.slice(0,half), right = entries.slice(half);
   const nut = e=>`<div class="nut">${ringSVG(e.pct, e.cls, e.label)}
     <div class="tx"><div class="n">${e.n}</div>
-    <div class="v">${e.val} / ${e.rda}${e.unit}</div></div></div>`;
+    <div class="v"><b style="color:var(--${e.cls})">${e.val}</b> / ${e.rda}${e.unit}</div></div></div>`;
   return `<div class="sec-head">${t("bodyChart")}</div>
   <div class="card human-card" style="margin-top:0">
     <div class="human-layout">
@@ -651,6 +713,7 @@ function viewToday(){
     const done = taken>=s.takes || s.remaining<=0;
     const low = s.remaining<=s.takes*3;
     html += `<div class="row">
+      <div class="pill-icon">${pillIcon(s.icon)}</div>
       <div class="row-main" data-stack="${s.uid}" style="cursor:pointer">
         <div class="row-title">${s.name}</div>
         <div class="row-sub">${usageLabel(s.usage)}${s.remindAt?` · ⏰ ${s.remindAt}`:""} · ${t("remaining")} ${s.remaining}${low?" · <span style='color:var(--red)'>"+t("lowWarn")+"</span>":""}</div>
@@ -680,22 +743,29 @@ function viewStack(){
     view.innerHTML = `<div class="empty"><div class="glyph">＋</div>${t("empty2")}<br><br>
       <a href="#" data-goto="add">${t("addFirstShort")}</a></div>`;return;
   }
-  let html = `<div class="card first">`;
+  let html = ``;
   state.stack.forEach(s=>{
     const per = (s.price/s.serv).toFixed(2);
     const day = (per*s.takes).toFixed(2);
     const days = s.takes>0 ? Math.floor(s.remaining/s.takes) : 0;
     const low = s.remaining<=s.takes*3;
-    html += `<div class="row" data-stack="${s.uid}">
-      <div class="row-main">
-        <div class="row-title">${s.name}${low?` <span class="tag red" style="margin-left:4px">${t("lowStock")}</span>`:""}</div>
-        <div class="row-sub">${usageLabel(s.usage)} · ${t("remaining")} ${s.remaining} · ${days}${t("days")} · ¥${day}/${t("daily")}</div>
+    const brand = (s.lib && s.lib.brand) || "";
+    const img = s.image ? `<img src="${s.image}" alt="">` : bottlePlaceholder(brand || s.name);
+    html += `<div class="stack-card" data-stack="${s.uid}">
+      <div class="stack-img">${img}</div>
+      <div class="stack-info">
+        <div class="stack-name">${s.name}${low?` <span class="tag red" style="margin-left:6px">${t("lowStock")}</span>`:""}</div>
+        ${brand?`<div class="stack-brand">${escapeHtml(brand)}</div>`:""}
+        <div class="stack-meta">${usageLabel(s.usage)} · ${t("remaining")} ${s.remaining} · ${days}${t("days")} · ¥${day}/${t("daily")}</div>
       </div>
       <span class="chev">›</span>
     </div>`;
   });
-  html += `</div>`;
   view.innerHTML = html;
+}
+function bottlePlaceholder(name){
+  const letter = (name||"?").charAt(0).toUpperCase();
+  return `<div class="bottle-ph"><svg viewBox="0 0 40 56" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="3" width="14" height="7" rx="2"/><rect x="9" y="10" width="22" height="42" rx="5"/></svg><span>${escapeHtml(letter)}</span></div>`;
 }
 
 /* ============ 补剂详情 + 服用设置 ============ */
@@ -705,9 +775,10 @@ function openStackDetail(uid){
   const ingRows = (s.ings||[]).length
     ? `<div class="row"><div class="row-main"><div class="row-sub">${t("ingredient")}</div><div class="row-title" style="font-size:14px">${s.ings.map(g=>`${g.name} ${g.amt}${g.unit}`).join(" · ")} / ${t("servings")}</div></div></div>`
     : "";
-  const body = l ? reportHTML(l, s.dose)
+  const imgBlock = s.image ? `<div class="card first" style="padding:12px;display:flex;justify-content:center"><img src="${escapeHtml(s.image)}" style="width:100%;max-height:190px;object-fit:contain;border-radius:10px" alt=""></div>` : "";
+  const body = imgBlock + (l ? reportHTML(l, s.dose)
     : `<div class="card first"><div class="row"><div class="row-main"><div class="row-title">${s.name}</div>
-      <div class="row-sub">${t("customItem")} · ${t("remaining")} ${s.remaining}</div></div></div>${ingRows}</div>`;
+      <div class="row-sub">${t("customItem")} · ${t("remaining")} ${s.remaining}</div></div></div>${ingRows}</div>`);
   const seg = USAGES.map(u=>`<button data-usage="${u}" class="${s.usage===u?"on":""}">${usageLabel(u)}</button>`).join("");
   openSheet(`<button class="x" data-x>×</button><h2>${s.name}</h2>`+body+
     `<div class="sec-head" style="padding:8px 0 6px">${t("usage")}</div>
@@ -834,23 +905,64 @@ function ingRowHTML(g){
   g = g||{name:"", amt:"", unit:"mg"};
   const opts = ING_UNITS.map(u=>`<option value="${u}" ${u===g.unit?"selected":""}>${u}</option>`).join("");
   return `<div class="ing-row">
-    <input class="ing-name" placeholder="${t("ingName")}" value="${escapeHtml(g.name||"")}">
+    <input class="ing-name" placeholder="${t("ingName")}" value="${escapeHtml(g.name||"")}" list="ingdatalist">
     <input class="ing-amt" type="number" inputmode="decimal" placeholder="${t("perServingShort")}" value="${g.amt==null?"":g.amt}">
     <select class="ing-unit">${opts}</select>
     <button class="ing-del" type="button" data-ingdel>×</button>
   </div>`;
 }
+let tmpPhoto = "";
+function compressImage(file, maxW, cb){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const scale = Math.min(1, maxW/img.width);
+      const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      cb(c.toDataURL("image/jpeg", 0.82));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function pickPhoto(){
+  const input = document.createElement("input");
+  input.type = "file"; input.accept = "image/*"; input.capture = "environment";
+  input.onchange = e=>{
+    const f = e.target.files[0]; if(!f) return;
+    compressImage(f, 480, dataUrl=>{
+      tmpPhoto = dataUrl;
+      const prev = document.getElementById("photoPrev");
+      if(prev) prev.innerHTML = `<img src="${dataUrl}" alt="">`;
+    });
+  };
+  input.click();
+}
 function openConfig(libObj, prefillName){
   currentLib = libObj || null;
   const l = currentLib;
+  tmpPhoto = (lastFound && lastFound.image) || "";
   const name=l?l.name:(prefillName||""), price=l?l.price:"", serv=l?l.serv:"";
   const ings = l ? getIngs(l) : [{name:"",amt:"",unit:"mg"}];
+  const icon = "capsule";
+  const iconPicker = PILL_ORDER.map(id=>`<button type="button" class="icon-opt ${id===icon?"on":""}" data-icon="${id}">${PILL_ICONS[id]}</button>`).join("");
   let html = `<button class="x" data-x>×</button><h2>${l?l.name:t("manualAdd")}</h2>`;
   if(l) html += `<div style="margin-top:8px">${reportHTML(l,1)}</div>`;
   html += `<div class="field"><label>${t("fName")}</label><input id="f_name" value="${escapeHtml(name)}"></div>
     <div class="field"><label>${t("fPrice")}</label><input id="f_price" type="number" inputmode="decimal" value="${price}"></div>
     <div class="field"><label>${t("fServ")}</label><input id="f_serv" type="number" inputmode="numeric" value="${serv}"></div>
+    <div class="sec-head" style="padding:10px 0 6px">${t("pillShape")}</div>
+    <div class="icon-picker">${iconPicker}</div>
+    <div class="sec-head" style="padding:10px 0 6px">${t("bottlePhoto")}</div>
+    <div class="photo-row">
+      <div class="photo-preview" id="photoPrev">${tmpPhoto?`<img src="${tmpPhoto}" alt="">`:`<div class="ph-empty">${t("noPhoto")}</div>`}</div>
+      <button class="btn plain" type="button" data-pickphoto>${t("uploadPhoto")}</button>
+    </div>
     <div class="sec-head" style="padding:10px 0 6px">${t("ingredients")}</div>
+    <datalist id="ingdatalist">${COMPONENT_NAMES.map(n=>`<option value="${escapeHtml(n)}">`).join("")}</datalist>
     <div id="ingList">${ings.map(ingRowHTML).join("")}</div>
     <button class="btn plain block" style="margin-top:8px" data-ingadd>+ ${t("addIngredient")}</button>
     <div class="field"><label>${t("fTakes")}</label><input id="f_takes" type="number" inputmode="numeric" value="1"></div>
@@ -871,9 +983,11 @@ function saveStack(){
     const unit = row.querySelector(".ing-unit").value;
     return {name:n, amt, unit, min:0, max:0};
   }).filter(g=>g.name && g.amt>0);
+  const iconEl = document.querySelector(".icon-opt.on");
+  const icon = iconEl ? iconEl.dataset.icon : "capsule";
   state.stack.push({
     uid:"s"+Date.now(), libId:l?l.id:"custom", lib:l, name, price, serv,
-    takes, dose, remaining:serv, history:{}, ings, usage:"any", remindAt:""
+    takes, dose, remaining:serv, history:{}, ings, icon, image:tmpPhoto, usage:"any", remindAt:""
   });
   save(); closeSheet(); setTab("stack");
 }
@@ -985,6 +1099,10 @@ document.addEventListener("click", e=>{
   if(del){ remove(del.dataset.del); return; }
   const takeBtn = tgt.closest("[data-take]");
   if(takeBtn){ take(takeBtn.dataset.take); return; }
+  const iconOpt = tgt.closest("[data-icon]");
+  if(iconOpt){ const p=iconOpt.closest(".icon-picker"); if(p) p.querySelectorAll("[data-icon]").forEach(b=>b.classList.toggle("on",b===iconOpt)); return; }
+  const pickPhotoBtn = tgt.closest("[data-pickphoto]");
+  if(pickPhotoBtn){ pickPhoto(); return; }
   const ingAdd = tgt.closest("[data-ingadd]");
   if(ingAdd){ const list=document.getElementById("ingList"); if(list) list.insertAdjacentHTML("beforeend", ingRowHTML()); return; }
   const ingDel = tgt.closest("[data-ingdel]");
@@ -1006,6 +1124,16 @@ document.addEventListener("click", e=>{
     else if(g==="photo") pickImage();
     else if(g==="settings") openSettings();
     return;
+  }
+});
+document.addEventListener("input", e=>{
+  const ingName = e.target.closest(".ing-name");
+  if(!ingName) return;
+  const meta = COMPONENT_DB[ingName.value.trim()];
+  if(meta){
+    const row = ingName.closest(".ing-row");
+    const unitSel = row && row.querySelector(".ing-unit");
+    if(unitSel && meta.unit) unitSel.value = meta.unit;
   }
 });
 
@@ -1186,7 +1314,8 @@ function onCode(code){
         name: product.product_name_zh || product.product_name || "未命名补剂",
         brand: product.brands || "",
         ing: product.ingredients_text || "",
-        qty: product.quantity || ""
+        qty: product.quantity || "",
+        image: product.image_front_url || ""
       };
       const _ap=getActiveProfile(); if(_ap&&_ap.apiKey){
         toast(t("aiGen"));
@@ -1206,6 +1335,7 @@ function showOffFound(code){
   openSheet(`<button class="x" data-x>×</button><h2>${t("foundProduct")}</h2>
     <div class="card" style="margin-top:12px">
       <div class="row"><div class="row-main"><div class="row-sub">${t("name")}</div><div class="row-title">${escapeHtml(f.name)}</div></div></div>
+      ${f.image?`<div class="row"><div class="row-main"><div class="row-sub">${t("bottlePhoto")}</div><img src="${escapeHtml(f.image)}" style="width:72px;height:72px;border-radius:12px;object-fit:cover;margin-top:6px" alt=""></div></div>`:""}
       ${f.brand?`<div class="row"><div class="row-main"><div class="row-sub">${t("brand")}</div><div class="row-title" style="font-size:15px">${escapeHtml(f.brand)}</div></div></div>`:""}
       ${f.ing?`<div class="row"><div class="row-main"><div class="row-sub">${t("ingredients")}</div><div class="row-title" style="font-size:13px;color:var(--label2);line-height:1.5">${escapeHtml(f.ing.slice(0,180))}${f.ing.length>180?"…":""}</div></div></div>`:""}
       <div class="row"><div class="row-main"><div class="row-sub">${t("barcode")}</div><div class="row-title" style="font-variant-numeric:tabular-nums">${code}</div></div></div>
