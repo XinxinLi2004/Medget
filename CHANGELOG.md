@@ -1,5 +1,22 @@
 # CHANGELOG
 
+2026-08-14 11:30 · 重构 · 数据模型升级为多成分（鱼油拆 EPA/DHA）+ 人体图用 AI 重绘
+- 文件清单：index.html、www/index.html、assets/human_clean.png
+- 数据模型：补剂从单成分 `ing` 升级为 `ings[]` 多成分数组；鱼油示例拆为 EPA 550mg + DHA 450mg；RDA 加 `parts` 字段合成 EPA+DHA；migrate 自动重建旧数据
+- 自定义添加表单：动态成分行（成分名 + 每份剂量 + 单位），可增删；从知识库添加时预填所有成分
+- 摄入累加（take）、今日汇总、人体图、详情报告全部按多成分分别显示
+- 人体图：用 ImageGen 生成透明背景人体 PNG，裁掉 AI 水印，阈值化分离线条，base64 内嵌到 CSS mask-image，线条颜色随主题自适应（浅/深色模式都精致）
+- AI_SCHEMA 升级：识别结果支持 `ings` 数组（多成分），鱼油等可由 AI 自动拆 EPA/DHA
+- 部署标记：[前端] 需 `cp index.html www/ && npx cap sync android` 后重新构建 APK
+
+2026-08-14 00:40 · 功能 · AI 接入重构为多服务商 + 自定义系统提示词
+- 文件清单：index.html、www/index.html
+- AI 配置由单组（baseUrl/apiKey/model）改为多服务商数组 profiles + active 启用项 + sysPrompt 系统提示词；旧单对象格式自动迁移
+- 设置页：服务商列表支持「使用/编辑/删除」一键切换，新增「添加服务商」表单；预设（OpenAI/智谱/通义）点选后填入表单
+- 新增自定义识别提示词（系统角色）编辑框，默认值为原 AI_SCHEMA；callAI 将提示词放入 system 角色、用户指令放入 user 角色
+- 三处 callAI 调用（拍照/Open Food Facts/条码）去掉硬编码 AI_SCHEMA 前缀，改用 aiPhotoPrompt/aiOffPrompt/aiCodePrompt 文案键
+- 部署标记：[前端]（改代码 push 后云端重构建出 APK）
+
 2026-08-14 00:50 · 功能 · 人体图重绘 + 接入扫码/后台提醒原生插件
 - 文件清单：index.html、www/index.html、package.json、package-lock.json、android/app/capacitor.build.gradle、android/capacitor.settings.gradle、android/app/src/main/AndroidManifest.xml
 - 人体图：SVG 人体轮廓重绘（渐变填充+圆润线条），营养素改为环形进度圈展示（达标绿/不足橙/超标红）
