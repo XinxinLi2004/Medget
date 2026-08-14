@@ -1,5 +1,16 @@
 # CHANGELOG
 
+2026-08-14 15:55 · 功能 · 功能标签 + 真实原料形态 + 成分好处明细 + 两处修复 + 自有数据库工程化
+- 文件清单：index.html、db/supplements.json（新增）、tools/export-lib.mjs（新增）、tools/build-lib.mjs（新增）、tools/import-iherb.mjs（新增）
+- **功能标签体系 FUNC_TAGS（16 个）**：改善认知/睡眠/骨骼/免疫/心脏/护眼/情绪/精力/抗压/抗炎等；今日页每行、我的补剂卡片自动按成分汇总显示功能标签
+- **成分知识库 INGREDIENT_INFO**：覆盖全 B 族、镁/钙/铁/锌形态、鱼油 EPA-DHA、辅酶Q10、叶酸、B12、D3、K2、胆碱等，含真实化学形式（如 B1 的盐酸硫胺/呋喃硫胺/苯磷硫胺）、吸收率、代谢负担、身体益处
+- **详情/评分"真实原料·好处"明细**：reportHTML 新增"成分·真实原料·好处"卡片，逐成分显示真实原料形态（产品已标显示"真实原料"，未标显示"推荐形式"）+ 吸收/负担标签 + 益处；并给出"真材实料"评分（活性/高吸收形式加分）
+- **添加补剂时可记录真实原料形态**：openConfig 成分行新增"形态"下拉（来自 INGREDIENT_INFO.forms），保存进 ingredient.form
+- **修复①**：#ingList 改为独立滚动容器（max-height+overflow），解决"增加成分"面板无法下滑
+- **修复②**：添加补剂入口"手动添加/自定义补剂"从列表末尾移至最前
+- **iHerb 建库工程化**：导出 LIB→db/supplements.json 为结构化自有数据库；编写 iHerb 官方联盟 API 导入器 import-iherb.mjs（带 HMAC 签名，需 key，拿到即可自动合并建库）；build-lib.mjs 可把 JSON 回注 App。注：iHerb 直连被 Cloudflare 拦截（403/连接失败），必须走官方 API
+- 已验证：JS 语法 OK；import-iherb 无 key 分支正常运行并探测确认网络封锁
+
 2026-08-14 15:30 · 功能 · iHerb 资料库大扩充 + 补剂库检索模式
 - 文件清单：index.html、www/index.html
 - **补剂库从 16 → 65 款**：以 iHerb 畅销榜真实品牌（California Gold Nutrition / Life Extension / NOW / Doctor's Best / Jarrow / Thorne / 21st Century 等）为种子，覆盖维生素(17)、矿物质(13)、脂肪酸/胆碱(4)、抗氧化(6)、氨基酸(4)、认知(4)、蛋白(2)、肠道(3)、植提(3)、适应原(2)、运动(6)、睡眠(1)、美容(1)

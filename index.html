@@ -110,6 +110,23 @@
   .tag.red{background:var(--red-soft);color:var(--red)}
   .tag.blue{background:var(--blue-soft);color:var(--blue)}
   .tag.gray{background:rgba(60,60,67,.08);color:var(--label2)}
+  .func-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .ftag{display:inline-flex;align-items:center;font-size:11px;font-weight:600;line-height:1;
+    padding:4px 8px;border-radius:100px;white-space:nowrap}
+  .stack-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .ing-d{padding:11px 0;border-top:1px solid rgba(60,60,67,.08)}
+  .ing-d:first-of-type{border-top:0}
+  .ing-d-h{display:flex;align-items:baseline;gap:8px}
+  .ing-d-h b{font-size:15px;font-weight:600}
+  .ing-d-amt{font-size:13px;color:var(--label2);font-variant-numeric:tabular-nums}
+  .ing-d-f{font-size:13px;margin-top:5px;color:var(--label)}
+  .ing-d-f b{color:var(--text)}
+  .ing-d-b{font-size:13px;margin-top:5px;color:var(--label2);line-height:1.45}
+  .ing-d-n{font-size:12px;margin-top:5px;color:var(--label2);opacity:.85;line-height:1.4}
+  .mat-chip{display:inline-flex;font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px;margin-left:6px;white-space:nowrap}
+  .mat-chip.green{background:var(--green-soft);color:var(--green)}
+  .mat-chip.orange{background:var(--orange-soft);color:var(--orange)}
+  .mat-chip.red{background:var(--red-soft);color:var(--red)}
 
   .btn{appearance:none;border:0;cursor:pointer;font-family:var(--font);font-weight:600;
     font-size:16px;border-radius:14px;padding:14px 16px;background:var(--blue);color:#fff;
@@ -186,18 +203,25 @@
   .dark .field input:focus{background:rgba(60,60,67,.5)}
   .field:first-child label{margin-top:0}
 
-  .ing-row{display:flex;gap:6px;align-items:center;padding:6px 16px}
+  .ing-row{display:flex;flex-direction:column;gap:6px;padding:8px 16px;border-top:1px solid rgba(60,60,67,.08)}
+  .ing-row:first-child{border-top:0}
+  .ing-line1{display:flex;gap:6px;align-items:center}
   .ing-row input,.ing-row select{border:none;border-top:.5px solid var(--sep);border-bottom:.5px solid var(--sep);
     background:rgba(255,255,255,.6);color:var(--label);font-size:16px;font-family:var(--font);padding:11px 10px}
   .dark .ing-row input,.dark .ing-row select{background:rgba(60,60,67,.3)}
   .ing-row .ing-name{flex:1.2;min-width:0}
   .ing-row .ing-amt{flex:1;min-width:0}
   .ing-row .ing-unit{flex:0 0 74px}
+  .ing-row .ing-form{font-size:13px;color:var(--label);padding:9px 10px;border:.5px solid var(--sep);border-radius:10px;
+    background:rgba(255,255,255,.5)}
+  .dark .ing-row .ing-form{background:rgba(60,60,67,.25)}
   .ing-row input:focus,.ing-row select:focus{outline:none;background:rgba(255,255,255,.9)}
   .dark .ing-row input:focus,.dark .ing-row select:focus{background:rgba(60,60,67,.5)}
   .ing-row .ing-del{flex:0 0 28px;height:28px;border:none;background:rgba(60,60,67,.08);color:var(--label2);
     border-radius:14px;font-size:16px;line-height:1;cursor:pointer}
   .dark .ing-row .ing-del{background:rgba(255,255,255,.12)}
+  #ingList{max-height:46vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    border:1px solid rgba(60,60,67,.1);border-radius:14px;margin:2px 16px 0}
 
   .pill-preview{display:flex;justify-content:center;padding:8px 0 2px}
   .pill-preview svg{width:72px;height:72px}
@@ -467,7 +491,9 @@ const I18N = {
     personalTips:"个性化提示", general:"通用知识", noInteractions:"暂无相互作用提醒",
     allDone:"今日已全部完成", keepGoing:"继续加油",
     searchLib:"搜索补剂 / 成分 / 品牌", noResult:"没有匹配的补剂", addToMine:"加入我的补剂",
-    allCat:"全部", resultCount:"个结果", libDesc:"从常用补剂中挑选，点击查看详情并加入"
+    allCat:"全部", resultCount:"个结果", libDesc:"从常用补剂中挑选，点击查看详情并加入",
+    ingMaterial:"成分 · 真实原料 · 好处", realMat:"真实原料", recForm:"推荐形式（产品未标）", formAuto:"形态（自动）", matAbsorb:"吸收", matBurden:"代谢负担",
+    matBenefit:"对身体的好处", compFunc:"综合功能", formQual:"真材实料"
   },
   en: {
     today:"Today", stack:"Supps", lib:"Library", cost:"Cost", know:"Notes",
@@ -520,7 +546,9 @@ const I18N = {
     personalTips:"Personal tips", general:"General", noInteractions:"No interaction alerts",
     allDone:"All done today!", keepGoing:"Keep going",
     searchLib:"Search supplements / ingredients / brands", noResult:"No matching supplement", addToMine:"Add to my supplements",
-    allCat:"All", resultCount:"results", libDesc:"Pick from common supplements, tap to view and add"
+    allCat:"All", resultCount:"results", libDesc:"Pick from common supplements, tap to view and add",
+    ingMaterial:"Ingredients · Real material · Benefits", realMat:"Real material", recForm:"Recommended (not labeled)", formAuto:"Form (auto)", matAbsorb:"Absorb", matBurden:"Burden",
+    matBenefit:"Benefits", compFunc:"Functions", formQual:"Material quality"
   }
 };
 const SET_KEY = "gaichiyao_settings";
@@ -583,19 +611,19 @@ const LIB = [
   {id:"bcomplex",name:"B 族复合（活性）",fullName:"BioActive 活性 B 族复合胶囊 含全B族",brand:"Life Extension",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:79,serv:60,
     ing:{name:"维生素 B12",amt:300,unit:"mcg",min:2.4,max:1000},
     ings:[
-      {name:"维生素 B1",amt:100,unit:"mg",min:1.2,max:100},
-      {name:"维生素 B2",amt:25,unit:"mg",min:1.4,max:100},
-      {name:"维生素 B3",amt:50,unit:"mg",min:16,max:35},
+      {name:"维生素 B1",amt:100,unit:"mg",min:1.2,max:100,form:"苯磷硫胺 (Benfotiamine)"},
+      {name:"维生素 B2",amt:25,unit:"mg",min:1.4,max:100,form:"核黄素-5'-磷酸 (FMN)"},
+      {name:"维生素 B3",amt:50,unit:"mg",min:16,max:35,form:"烟酰胺 (Niacinamide)"},
       {name:"维生素 B5",amt:100,unit:"mg",min:5,max:100},
-      {name:"维生素 B6",amt:25,unit:"mg",min:1.4,max:100},
+      {name:"维生素 B6",amt:25,unit:"mg",min:1.4,max:100,form:"磷酸吡哆醛 (P-5-P / PLP)"},
       {name:"维生素 B7",amt:300,unit:"mcg",min:30,max:1000},
-      {name:"叶酸",amt:400,unit:"mcg",min:400,max:1000},
-      {name:"维生素 B12",amt:300,unit:"mcg",min:2.4,max:1000},
-      {name:"胆碱",amt:10,unit:"mg",min:500,max:3500},
-      {name:"肌醇",amt:10,unit:"mg",min:0,max:0},
+      {name:"叶酸",amt:400,unit:"mcg",min:400,max:1000,form:"5-甲基四氢叶酸 (5-MTHF / L-甲基叶酸)"},
+      {name:"维生素 B12",amt:300,unit:"mcg",min:2.4,max:1000,form:"甲钴胺 (Methylcobalamin)"},
+      {name:"胆碱",amt:10,unit:"mg",min:500,max:3500,form:"CDP-胆碱 (Citicoline)"},
+      {name:"肌醇",amt:10,unit:"mg",min:0,max:0,form:"Myo-肌醇"},
       {name:"PABA",amt:10,unit:"mg",min:0,max:0}
     ],
-    good:"B1/B2/B6/B12 多为活性形式，吸收利用好",bad:"",note:"参与能量代谢，建议晨服；晚间可能影响睡眠。"},
+    good:"B1/B2/B6/B12/叶酸均为活性形式，吸收利用好",bad:"",note:"参与能量代谢，建议晨服；晚间可能影响睡眠。"},
   {id:"lulu",name:"女士综合维生素（全B族）",fullName:"女士复合维生素 含全部B族+胆碱+铁",brand:"lululab",storage:"阴凉干燥处，避光",cat:"维生素",form:"优",ev:"强",trans:true,price:149,serv:60,
     ing:{name:"维生素 B12",amt:6,unit:"mcg",min:2.4,max:1000},
     ings:[
@@ -1043,6 +1071,175 @@ function buildComponentDB(){
 const COMPONENT_DB = buildComponentDB();
 const COMPONENT_NAMES = Object.keys(COMPONENT_DB);
 
+/* ============ 功能标签（补剂对身体擅长什么） ============ */
+const FUNC_TAGS = {
+  cognitive:{zh:"改善认知",en:"Brain",c:"#5e5ce6"},
+  sleep:{zh:"改善睡眠",en:"Sleep",c:"#af52de"},
+  mood:{zh:"调节情绪",en:"Mood",c:"#ff2d55"},
+  energy:{zh:"提升精力",en:"Energy",c:"#ff9500"},
+  bone:{zh:"骨骼健康",en:"Bone",c:"#007aff"},
+  immunity:{zh:"免疫支持",en:"Immunity",c:"#34c759"},
+  heart:{zh:"心脏健康",en:"Heart",c:"#ff3b30"},
+  eye:{zh:"护眼",en:"Eye",c:"#30b0c7"},
+  skin:{zh:"护肤护发",en:"Skin·Hair",c:"#ff6482"},
+  muscle:{zh:"肌肉恢复",en:"Muscle",c:"#a2845e"},
+  gut:{zh:"肠道健康",en:"Gut",c:"#7cb305"},
+  antiox:{zh:"抗氧化",en:"Antioxidant",c:"#32adc4"},
+  hormone:{zh:"激素平衡",en:"Hormone",c:"#c9801a"},
+  metab:{zh:"代谢支持",en:"Metabolism",c:"#b8860b"},
+  detox:{zh:"肝脏解毒",en:"Liver",c:"#8e8e93"},
+  stress:{zh:"抗压舒缓",en:"Calm",c:"#5ac8fa"},
+  inflam:{zh:"抗炎",en:"Anti-inflammatory",c:"#e8736b"},
+  vision:{zh:"视力",en:"Vision",c:"#30b0c7"}
+};
+function funcTag(key){ return FUNC_TAGS[key] ? FUNC_TAGS[key][lang] : key; }
+function funcTagEl(key){
+  const t = FUNC_TAGS[key]; if(!t) return "";
+  return `<span class="ftag" style="background:${t.c}1f;color:${t.c}">${lang==="zh"?t.zh:t.en}</span>`;
+}
+const A_T = k => (FUNC_TAGS[k]?FUNC_TAGS[k].c:"#8e8e93");
+
+/* ============ 成分知识库：真实原料形态 + 吸收率 + 代谢负担 + 身体益处 ============
+   说明：forms 为该成分在市售补剂中常见的"化学原料形式"，absorb=吸收率，burden=代谢负担，
+   这是综合评价补剂"真材实料"的关键维度。数据为依据公开营养学资料整理的代表性知识。 */
+const INGREDIENT_INFO = {
+  "维生素 A":{benefit:"维持视力、免疫与皮肤黏膜健康；脂溶性。",func:["eye","immunity","skin"],
+    forms:[{name:"视黄醇 (Retinol)",absorb:"高",burden:"中",note:"直接利用，但过量有蓄积毒性，孕妇慎超。"},
+      {name:"β-胡萝卜素 (Beta-carotene)",absorb:"中",burden:"低",note:"需转化，安全但吸烟者高剂量或增风险。"}]},
+  "维生素 B1":{benefit:"碳水与能量代谢核心，维持神经、心脏与认知功能。",func:["energy","cognitive","heart"],
+    forms:[{name:"盐酸硫胺 (Thiamine HCl)",absorb:"中",burden:"低",note:"最常用、成本低；水溶、吸收有限，需分次服用。"},
+      {name:"呋喃硫胺 (Fursultiamine/TTFD)",absorb:"高",burden:"低",note:"脂溶性，吸收率高、可入脑、长效，适合神经支持。"},
+      {name:"苯磷硫胺 (Benfotiamine)",absorb:"高",burden:"低",note:"脂溶性前体，生物利用度显著高于盐酸硫胺。"},
+      {name:"硫酸硫胺 (Thiamine nitrate)",absorb:"中",burden:"低",note:"与盐酸硫胺类似，稳定性好。"}]},
+  "维生素 B2":{benefit:"能量代谢、抗氧化与黏膜健康。",func:["energy","antiox","skin"],
+    forms:[{name:"核黄素 (Riboflavin)",absorb:"中",burden:"低",note:"高剂量尿液偏黄属正常。"},
+      {name:"核黄素-5'-磷酸 (FMN)",absorb:"高",burden:"低",note:"活性辅酶形式，直接利用。"}]},
+  "维生素 B3":{benefit:"能量代谢、心血管与皮肤健康。",func:["energy","heart","skin"],
+    forms:[{name:"烟酰胺 (Niacinamide)",absorb:"高",burden:"低",note:"不引起潮红，温和安全。"},
+      {name:"烟酸 (Niacin)",absorb:"高",burden:"中",note:"可升 HDL，但高剂量潮红、伤肝需监测。"}]},
+  "维生素 B5":{benefit:"辅酶 A 组成，参与能量与皮脂代谢。",func:["energy","skin","metab"],
+    forms:[{name:"泛酸钙 (Calcium D-pantothenate)",absorb:"高",burden:"低",note:"最常用稳定形式。"}]},
+  "维生素 B6":{benefit:"氨基酸代谢、神经递质与免疫。",func:["mood","cognitive","immunity"],
+    forms:[{name:"盐酸吡哆醇 (Pyridoxine HCl)",absorb:"中",burden:"低",note:"常见合成形式。"},
+      {name:"磷酸吡哆醛 (P-5-P / PLP)",absorb:"高",burden:"低",note:"活性辅酶形式，直接利用，更适合 MTHFR 人群。"}]},
+  "维生素 B7":{benefit:"头发、皮肤、指甲与糖代谢。",func:["skin","metab"],
+    forms:[{name:"生物素 (D-biotin)",absorb:"高",burden:"低",note:"形式单一，注意检测前停服以免干扰。"}]},
+  "叶酸":{benefit:"细胞分裂、造血与胎儿神经管发育。",func:["heart","mood","immunity"],
+    forms:[{name:"合成叶酸 (Folic acid)",absorb:"中",burden:"中",note:"需肝脏转化，MTHFR 突变者利用差、可能蓄积。"},
+      {name:"5-甲基四氢叶酸 (5-MTHF / L-甲基叶酸)",absorb:"高",burden:"低",note:"活性形式，MTHFR 人群直接利用，备孕首选。"}]},
+  "维生素 B12":{benefit:"神经髓鞘、红细胞与同型半胱氨酸代谢。",func:["cognitive","mood","heart"],
+    forms:[{name:"氰钴胺 (Cyanocobalamin)",absorb:"中",burden:"中",note:"稳定便宜，需转化、含微量氰根。"},
+      {name:"甲钴胺 (Methylcobalamin)",absorb:"高",burden:"低",note:"活性形式，偏好神经与同型半胱氨酸。"},
+      {name:"腺苷钴胺 (Adenosylcobalamin)",absorb:"高",burden:"低",note:"线粒体能量相关活性形式。"}]},
+  "维生素 C":{benefit:"抗氧化、胶原合成、免疫与铁吸收。",func:["immunity","antiox","skin"],
+    forms:[{name:"抗坏血酸 (Ascorbic acid)",absorb:"高",burden:"低",note:"基础形式，高剂量可能腹泻。"},
+      {name:"抗坏血酸+生物类黄酮",absorb:"高",burden:"低",note:"协同吸收、更温和。"},
+      {name:"缓释抗坏血酸",absorb:"高",burden:"低",note:"分次释放，胃肠道更友好。"}]},
+  "维生素 D3":{benefit:"钙磷代谢、免疫与情绪。",func:["bone","immunity","mood"],
+    forms:[{name:"胆钙化醇 (Cholecalciferol / D3)",absorb:"高",burden:"低",note:"优于 D2，日照不足者常缺。"},
+      {name:"麦角钙化醇 (Ergocalciferol / D2)",absorb:"中",burden:"低",note:"植物源，利用率略低。"}]},
+  "维生素 E":{benefit:"脂溶性抗氧化，保护细胞膜。",func:["antiox","heart","skin"],
+    forms:[{name:"混合生育酚 (Mixed tocopherols)",absorb:"高",burden:"低",note:"天然全谱，优于单一 α。"},
+      {name:"dl-α-生育酚 (合成)",absorb:"中",burden:"低",note:"半量生物活性，性价比低。"}]},
+  "维生素 K2":{benefit:"激活骨钙素与基质 Gla 蛋白，引钙入骨、防血管钙化。",func:["bone","heart"],
+    forms:[{name:"MK-7 (甲基萘醌-7)",absorb:"高",burden:"低",note:"长效（半衰期长），每日一次即可。"},
+      {name:"MK-4 (甲基萘醌-4)",absorb:"中",burden:"低",note:"短效，需多次服用。"}]},
+  "钙":{benefit:"骨骼与牙齿主要成分，神经肌肉传导。",func:["bone"],
+    forms:[{name:"柠檬酸钙 (Calcium citrate)",absorb:"高",burden:"低",note:"不依赖胃酸，随餐空腹皆可，温和不便秘。"},
+      {name:"碳酸钙 (Calcium carbonate)",absorb:"中",burden:"中",note:"便宜但需随餐、影响铁锌吸收、易便秘。"},
+      {name:"海藻钙 (Algae calcium)",absorb:"中",burden:"低",note:"含多种矿物，天然来源。"}]},
+  "镁":{benefit:"300+ 酶反应，放松神经肌肉、助眠、心血管。",func:["sleep","stress","heart","bone"],
+    forms:[{name:"甘氨酸镁 (Magnesium glycinate)",absorb:"高",burden:"低",note:"吸收好、不腹泻，助眠放松首选。"},
+      {name:"柠檬酸镁 (Magnesium citrate)",absorb:"高",burden:"中",note:"吸收好但轻泻，适合便秘者。"},
+      {name:"苏糖酸镁 (Magnesium L-threonate)",absorb:"高",burden:"低",note:"可穿越血脑屏障，专注认知/睡眠。"},
+      {name:"氧化镁 (Magnesium oxide)",absorb:"低",burden:"中",note:"含量高但吸收差，多用于通便。"}]},
+  "锌":{benefit:"免疫、伤口愈合、睾酮与味觉。",func:["immunity","hormone","skin"],
+    forms:[{name:"吡啶甲酸锌 (Zinc picolinate)",absorb:"高",burden:"低",note:"吸收好。"},
+      {name:"甘氨酸锌 (Zinc glycinate)",absorb:"高",burden:"低",note:"温和、胃肠友好。"},
+      {name:"葡萄糖酸锌 (Zinc gluconate)",absorb:"中",burden:"低",note:"常见、温和。"}]},
+  "铁":{benefit:"血红蛋白与氧运输，精力。",func:["energy","immunity"],
+    forms:[{name:"甘氨酸亚铁 (Ferrous bisglycinate)",absorb:"高",burden:"低",note:"螯合、温和少便秘，吸收佳。"},
+      {name:"富马酸亚铁 (Ferrous fumarate)",absorb:"中",burden:"中",note:"含铁量高，可能胃肠刺激。"},
+      {name:"硫酸亚铁 (Ferrous sulfate)",absorb:"中",burden:"高",note:"便宜但易便秘恶心，空腹大剂量不友好。"}]},
+  "铜":{benefit:"铁利用、结缔组织与抗氧化酶。",func:["immunity","antiox"],
+    forms:[{name:"甘氨酸铜 (Copper glycinate)",absorb:"高",burden:"低",note:"吸收好、温和。"}]},
+  "硒":{benefit:"谷胱甘肽过氧化物酶成分，抗氧化、甲状腺。",func:["antiox","immunity","hormone"],
+    forms:[{name:"硒代蛋氨酸 (Selenomethionine)",absorb:"高",burden:"低",note:"有机形式，吸收储存好。"},
+      {name:"亚硒酸钠 (Sodium selenite)",absorb:"中",burden:"中",note:"无机形式，便宜。"}]},
+  "碘":{benefit:"甲状腺激素原料。",func:["hormone","immunity"],
+    forms:[{name:"碘化钾 (Potassium iodide)",absorb:"高",burden:"低",note:"常见稳定形式。"},
+      {name:"海带提取物 (Kelp)",absorb:"中",burden:"低",note:"天然来源，但含量波动大。"}]},
+  "锰":{benefit:"骨骼形成与抗氧化酶辅因子。",func:["bone","antiox"],
+    forms:[{name:"葡萄糖酸锰 (Manganese gluconate)",absorb:"中",burden:"低",note:"常见温和形式。"}]},
+  "铬":{benefit:"增强胰岛素敏感性，糖代谢。",func:["metab","hormone"],
+    forms:[{name:"吡啶甲酸铬 (Chromium picolinate)",absorb:"高",burden:"低",note:"吸收好，研究最多。"},
+      {name:"烟酸铬 (Chromium nicotinate)",absorb:"中",burden:"低",note:"温和。"}]},
+  "钾":{benefit:"细胞与心肌电活动、血压。",func:["heart","muscle"],
+    forms:[{name:"柠檬酸钾 (Potassium citrate)",absorb:"高",burden:"低",note:"碱性、护肾石。"},
+      {name:"氯化钾 (Potassium chloride)",absorb:"高",burden:"中",note:"咸味、胃肠刺激。"}]},
+  "硼":{benefit:"影响钙镁利用与性激素。",func:["bone","hormone"],
+    forms:[{name:"硼砂/硼酸 (Borax/boric acid)",absorb:"中",burden:"低",note:"补剂常用微量形式。"}]},
+  "胆碱":{benefit:"细胞膜（磷脂）、神经递质乙酰胆碱前体，脑与肝健康。",func:["cognitive","detox","heart"],
+    forms:[{name:"CDP-胆碱 (Citicoline)",absorb:"高",burden:"低",note:"入脑快，认知与专注支持强。"},
+      {name:"Alpha-GPC",absorb:"高",burden:"低",note:"高生物利用度，认知与运动表现。"},
+      {name:"甜菜碱 (TMG / Betaine)",absorb:"高",burden:"低",note:"同时供甲基，助同型半胱氨酸代谢。"},
+      {name:"酒石酸胆碱 (Choline bitartrate)",absorb:"中",burden:"低",note:"便宜基础形式。"}]},
+  "肌醇":{benefit:"胰岛素信号与情绪（尤其 PCOS、焦虑）。",func:["mood","hormone","metab"],
+    forms:[{name:"Myo-肌醇",absorb:"高",burden:"低",note:"主流，PCOS/情绪常用。"},
+      {name:"D-手性肌醇 (DCI)",absorb:"高",burden:"低",note:"与 Myo 协同，改善胰岛素敏感。"}]},
+  "PABA":{benefit:"叶酸辅因子，传统护肤护发。",func:["skin"],
+    forms:[{name:"对氨基苯甲酸 (PABA)",absorb:"中",burden:"低",note:"B 族相关，护发传统用途。"}]},
+  "EPA":{benefit:"抗炎、心血管与情绪。",func:["heart","inflam","mood"],
+    forms:[{name:"rTG 型 EPA",absorb:"高",burden:"低",note:"再酯化甘油三酯，吸收好。"},
+      {name:"EE 型 EPA (乙酯)",absorb:"中",burden:"中",note:"需随脂餐，吸收较差。"}]},
+  "DHA":{benefit:"脑与视网膜结构脂肪酸，认知与视力。",func:["cognitive","vision","heart"],
+    forms:[{name:"rTG 型 DHA",absorb:"高",burden:"低",note:"再酯化甘油三酯，吸收好。"},
+      {name:"EE 型 DHA (乙酯)",absorb:"中",burden:"中",note:"需随脂餐。"}]},
+  "EPA+DHA":{benefit:"Omega-3 总合，抗炎与心脑血管。",func:["heart","inflam","cognitive"],
+    forms:[{name:"鱼油 rTG",absorb:"高",burden:"低",note:"优先看 EPA+DHA 总量而非鱼油重量。"},
+      {name:"藻油 DHA",absorb:"高",burden:"低",note:"纯植物源，适合素食。"},
+      {name:"鱼肝油",absorb:"中",burden:"低",note:"兼含 A/D，注意总量。"}]},
+  "辅酶 Q10":{benefit:"线粒体能量与抗氧化，他汀使用者常缺。",func:["heart","energy","antiox"],
+    forms:[{name:"泛醇 (Ubiquinol)",absorb:"高",burden:"低",note:"还原型，直接利用，吸收优于泛醌。"},
+      {name:"泛醌 (Ubiquinone)",absorb:"中",burden:"低",note:"需体内转化，年轻者可用。"}]},
+  "肌酸":{benefit:"ATP 再生，力量与认知。",func:["muscle","cognitive","energy"],
+    forms:[{name:"一水肌酸 (Creatine monohydrate)",absorb:"高",burden:"低",note:"证据最充分、性价比最高。"}]},
+  "乳清蛋白":{benefit:"优质完全蛋白，肌肉合成。",func:["muscle"],
+    forms:[{name:"分离乳清 (Whey isolate)",absorb:"高",burden:"低",note:"乳糖低，适合不耐。"},
+      {name:"浓缩乳清 (Whey concentrate)",absorb:"高",burden:"低",note:"含乳糖，便宜。"},
+      {name:"水解乳清 (Whey hydrolysate)",absorb:"高",burden:"低",note:"预分解、吸收快、低敏。"}]},
+  "益生菌":{benefit:"肠道菌群平衡、免疫与消化。",func:["gut","immunity"],
+    forms:[{name:"多菌株活菌 (CFU)",absorb:"高",burden:"低",note:"看菌株编号与活菌数，冷藏更佳。"}]},
+  "NAC":{benefit:"谷胱甘肽前体，抗氧化与化痰。",func:["antiox","detox","immunity"],
+    forms:[{name:"N-乙酰半胱氨酸 (NAC)",absorb:"高",burden:"低",note:"支持肝脏解毒与呼吸。"}]},
+  "姜黄素":{benefit:"强抗炎抗氧化。",func:["inflam","antiox","joint?"],
+    forms:[{name:"姜黄素+黑胡椒素 (Curcumin+Piperine)",absorb:"高",burden:"低",note:"黑胡椒素提升吸收数十倍。"},
+      {name:"脂质体姜黄素",absorb:"高",burden:"低",note:"包裹提升生物利用度。"}]},
+  "镁(关节)":{benefit:"传统用于关节舒适度。",func:["inflam"],
+    forms:[{name:"MSM + 姜黄 + 软骨素复合",absorb:"中",burden:"低",note:"复合配方针对关节。"}]}
+};
+
+function ingInfo(name){ return INGREDIENT_INFO[name] || null; }
+// 由补剂成分汇总功能标签
+function funcTagsOf(s){
+  const set = new Set();
+  getIngs(s).forEach(g=>{ const info = ingInfo(g.name); if(info && info.func) info.func.forEach(f=>set.add(f)); });
+  return [...set];
+}
+// 综合评价：真实原料形态评分（活性/高吸收形式加分，低吸收/高负担减分）
+function formQualityOf(s){
+  let score = 0, n = 0;
+  getIngs(s).forEach(g=>{
+    const info = ingInfo(g.name); if(!info || !info.forms || !info.forms.length) return;
+    const fm = info.forms.find(f=>f.name===g.form) || info.forms[0];
+    n++;
+    if(fm.absorb==="高") score += 10; else if(fm.absorb==="中") score += 4;
+    if(fm.burden==="低") score += 4; else if(fm.burden==="高") score -= 4;
+  });
+  return n? Math.round(60 + score/n*2) : null; // 60~约84 区间
+}
+
+
 /* ============ 评分引擎 ============ */
 function median(a){const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
 const vp = l => l.price/l.serv;
@@ -1073,11 +1270,39 @@ mask.addEventListener("click", closeSheet);
 const CHECK = `<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
 
 /* ============ 评分报告 ============ */
+function matChip(label, val){
+  const cls = val==="高"?"green":val==="中"?"orange":"red";
+  return `<span class="mat-chip ${cls}">${label} ${val}</span>`;
+}
+function ingMaterialHTML(l){
+  const fq = formQualityOf(l);
+  let h = `<div class="card" style="margin:0 0 16px">
+    <div class="sec-head" style="padding:12px 0 4px">${t("ingMaterial")}</div>`;
+  if(fq!=null){
+    h += `<div class="dim" style="margin-bottom:3px"><span>${t("formQual")}</span><b>${fq}</b></div>
+      <div class="meter ${fq>=80?'green':fq>=70?'orange':'red'}"><i style="width:${fq}%"></i></div>`;
+  }
+  getIngs(l).forEach(g=>{
+    const info = ingInfo(g.name);
+    const explicit = info && info.forms && g.form && info.forms.find(f=>f.name===g.form);
+    const fm = explicit || (info && info.forms ? info.forms[0] : null);
+    const fLabel = explicit ? t("realMat") : (fm ? t("recForm") : "");
+    h += `<div class="ing-d">
+      <div class="ing-d-h"><b>${g.name}</b><span class="ing-d-amt">${g.amt}${g.unit}</span></div>
+      ${fm?`<div class="ing-d-f">${fLabel}：<b>${fm.name}</b>${matChip(t("matAbsorb"),fm.absorb)}${matChip(t("matBurden"),fm.burden)}</div>`:""}
+      ${info?`<div class="ing-d-b">${info.benefit}</div>`:""}
+      ${fm&&fm.note?`<div class="ing-d-n">${fm.note}</div>`:""}
+    </div>`;
+  });
+  h += `</div>`;
+  return h;
+}
 function reportHTML(l, dose=1){
   const s = scoreOf(l, dose);
   const doseLabel = {达标:t("doseOk"),不足:t("doseLow"),超标:t("doseHigh")}[s.dose];
   const doseCls = s.dose==="达标" ? "good" : s.dose==="不足" ? "warn" : "bad";
   const rows = [[t("quality"),s.quality],[t("efficacy"),s.efficacy],[t("transparency"),s.transparency],[t("value"),s.value]];
+  const fTags = funcTagsOf(l);
   return `
   <div class="rep-hero">
     <div class="num" style="color:var(--${s.band==="谨慎"?"red":s.band==="一般"?"orange":"green"})">${s.composite}</div>
@@ -1085,6 +1310,7 @@ function reportHTML(l, dose=1){
       <div class="who">${l.name}</div>
       <div class="what">${l.brand||""} · ${l.cat}</div>
       <span class="tag ${bandTag(s.band)}" style="margin-top:8px;display:inline-block">${bandLabel(s.band)}</span>
+      ${fTags.length?`<div class="func-tags" style="margin-top:10px">${fTags.map(funcTagEl).join("")}</div>`:""}
     </div>
   </div>
   <div class="card" style="margin:0 0 16px">
@@ -1094,6 +1320,7 @@ function reportHTML(l, dose=1){
     <div class="row"><div class="row-main"><div class="row-sub">${t("effRange")}</div><div class="row-title" style="font-size:14px">${l.ing.min}–${l.ing.max}${l.ing.unit}</div></div></div>
     <div class="row"><div class="row-main"><div class="row-sub">${t("intakeNow")}</div><div class="row-title" style="font-size:14px;color:var(--${doseCls==="bad"?"red":doseCls==="warn"?"orange":"green"})">${getIngs(l).map(g=>`${g.name} ${g.amt*dose}${g.unit}`).join(" · ")} · ${doseLabel}</div></div></div>
   </div>
+  ${ingMaterialHTML(l)}
   <div class="card" style="margin:0 0 16px;padding:4px 16px 14px">
     <div class="sec-head" style="padding:12px 0 6px">${t("scoreParts")}</div>
     ${rows.map(r=>`<div class="dim"><span>${r[0]}</span><b>${r[1]}</b></div><div class="meter ${bandColor(s.band)}"><i style="width:${r[1]}%"></i></div>`).join("")}
@@ -1268,6 +1495,7 @@ function viewToday(){
         <div class="row-main" data-stack="${s.uid}" style="cursor:pointer">
           <div class="row-title">${s.name}</div>
           <div class="row-sub">${usageLabel(s.usage)}${s.remindAt?` · ⏰ ${s.remindAt}`:""} · ${t("remaining")} ${s.remaining}${low?" · <span style='color:var(--red)'>"+t("lowWarn")+"</span>":""}</div>
+          <div class="func-tags">${funcTagsOf(s).map(funcTagEl).join("")}</div>
         </div>
         <button class="check ${done?"done":""}" ${done?"disabled":""} data-take="${s.uid}">${CHECK}</button>
       </div>`;
@@ -1314,6 +1542,7 @@ function viewStack(){
         <div class="stack-name">${s.name}${low?` <span class="tag red" style="margin-left:6px">${t("lowStock")}</span>`:""}</div>
         ${brand?`<div class="stack-brand">${escapeHtml(brand)}</div>`:""}
         <div class="stack-meta">${usageLabel(s.usage)} · ${t("remaining")} ${s.remaining} · ${days}${t("days")} · ¥${day}/${t("daily")}</div>
+        <div class="stack-tags">${funcTagsOf(s).map(funcTagEl).join("")}</div>
       </div>
       <span class="chev">›</span>
     </div>`;
@@ -1502,15 +1731,15 @@ function renderPickLib(){
     const hay = (l.name+" "+l.brand+" "+l.cat+" "+getIngs(l).map(g=>g.name).join(" ")).toLowerCase();
     return hay.includes(q);
   });
-  if(!list.length){ box.innerHTML = `<div class="empty" style="padding:30px 0">${t("noResult")}</div>`; return; }
-  box.innerHTML = list.map(l=>`<div class="row" data-start="${l.id}">
+  const customRow = `<div class="row" data-start="custom"><div class="row-main">
+      <div class="row-title">${t("manualAdd")}</div><div class="row-sub">${t("custom")}</div></div>
+      <span class="tag blue">＋</span><span class="chev">›</span></div>`;
+  if(!list.length){ box.innerHTML = customRow + `<div class="empty" style="padding:24px 0">${t("noResult")}</div>`; return; }
+  box.innerHTML = customRow + list.map(l=>`<div class="row" data-start="${l.id}">
       <div class="row-main"><div class="row-title">${l.name}</div>
         <div class="row-sub">${l.brand}</div></div>
       <span class="tag ${bandTag(scoreOf(l).band)}">${scoreOf(l).composite}</span>
-      <span class="chev">›</span></div>`).join("")
-    + `<div class="row" data-start="custom"><div class="row-main">
-      <div class="row-title">${t("manualAdd")}</div><div class="row-sub">${t("custom")}</div></div>
-      <span class="tag blue">＋</span><span class="chev">›</span></div>`;
+      <span class="chev">›</span></div>`).join("");
 }
 function openPick(){
   let html = `<button class="x" data-x>×</button><h2>${t("addSupplement")}</h2>
@@ -1532,14 +1761,31 @@ function openPick(){
 let currentLib = null;
 const ING_UNITS = ["mg","mcg","g","IU","亿CFU"];
 function ingRowHTML(g){
-  g = g||{name:"", amt:"", unit:"mg"};
+  g = g||{name:"", amt:"", unit:"mg", form:""};
   const opts = ING_UNITS.map(u=>`<option value="${u}" ${u===g.unit?"selected":""}>${u}</option>`).join("");
+  const info = ingInfo(g.name);
+  const formOpts = info && info.forms && info.forms.length
+    ? `<option value="">${t("formAuto")}</option>` + info.forms.map(f=>`<option value="${escapeHtml(f.name)}" ${f.name===g.form?"selected":""}>${f.name}</option>`).join("")
+    : "";
   return `<div class="ing-row">
-    <input class="ing-name" placeholder="${t("ingName")}" value="${escapeHtml(g.name||"")}" list="ingdatalist">
-    <input class="ing-amt" type="number" inputmode="decimal" placeholder="${t("perServingShort")}" value="${g.amt==null?"":g.amt}">
-    <select class="ing-unit">${opts}</select>
-    <button class="ing-del" type="button" data-ingdel>×</button>
+    <div class="ing-line1">
+      <input class="ing-name" placeholder="${t("ingName")}" value="${escapeHtml(g.name||"")}" list="ingdatalist">
+      <input class="ing-amt" type="number" inputmode="decimal" placeholder="${t("perServingShort")}" value="${g.amt==null?"":g.amt}">
+      <select class="ing-unit">${opts}</select>
+      <button class="ing-del" type="button" data-ingdel>×</button>
+    </div>
+    ${formOpts?`<select class="ing-form" title="${t("realMat")}">${formOpts}</select>`:`<input class="ing-form" placeholder="${t("realMat")}" disabled readonly>`}
   </div>`;
+}
+function refreshIngForm(row){
+  const name = row.querySelector(".ing-name").value.trim();
+  const info = ingInfo(name);
+  const sel = row.querySelector(".ing-form");
+  if(!info || !info.forms || !info.forms.length){ sel.outerHTML = `<input class="ing-form" placeholder="${t("realMat")}" disabled readonly>`; return; }
+  const cur = sel.value;
+  const html = `<select class="ing-form" title="${t("realMat")}"><option value="">${t("formAuto")}</option>` +
+    info.forms.map(f=>`<option value="${escapeHtml(f.name)}" ${f.name===cur?"selected":""}>${f.name}</option>`).join("") + `</select>`;
+  sel.outerHTML = html;
 }
 let tmpPhoto = "";
 function compressImage(file, maxW, cb){
@@ -1628,7 +1874,9 @@ function saveStack(){
     const n = row.querySelector(".ing-name").value.trim();
     const amt = +row.querySelector(".ing-amt").value||0;
     const unit = row.querySelector(".ing-unit").value;
-    return {name:n, amt, unit, min:0, max:0};
+    const fsel = row.querySelector(".ing-form");
+    const form = fsel && fsel.value ? fsel.value : "";
+    return {name:n, amt, unit, form, min:0, max:0};
   }).filter(g=>g.name && g.amt>0);
   const icon = {shape:pickShape, color:pickColor, detail:pickDetail};
   state.stack.push({
@@ -1791,6 +2039,8 @@ document.addEventListener("input", e=>{
     const unitSel = row && row.querySelector(".ing-unit");
     if(unitSel && meta.unit) unitSel.value = meta.unit;
   }
+  const row2 = ingName.closest(".ing-row");
+  if(row2) refreshIngForm(row2);
 });
 
 /* ============ Toast ============ */
