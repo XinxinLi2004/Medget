@@ -41,10 +41,12 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            // 瘦身：R8 死代码消除 + 未使用资源裁剪。Capacitor Android AAR 自带 consumer ProGuard 规则，
-            // 会保留 WebView / JS 桥所需类，对"纯 WebView 壳 + 少量原生插件"的 App 安全。
-            minifyEnabled true
-            shrinkResources true
+            // 瘦身（稳健版）：先只做 ABI 拆分（砍 x86/x86_64 模拟器架构），资源/代码裁剪暂缓。
+            // 备注：minifyEnabled true + shrinkResources true 在 CI 上导致 assembleRelease 失败，
+            // 本项目默认 proguard-rules.pro 为空、仅靠 Capacitor/MLKit 的 consumer ProGuard 规则不够稳，
+            // 故暂不开启 R8。待本地 Android Studio 验证 keep 规则后再单独评估。
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
