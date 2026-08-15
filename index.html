@@ -165,9 +165,9 @@
 
   .empty{text-align:center;color:var(--label2);padding:60px 24px}
   .empty .glyph{width:72px;height:72px;margin:0 auto 16px;border-radius:26px;
-    background:linear-gradient(145deg,var(--card),rgba(255,255,255,.3));
+    background:linear-gradient(145deg,var(--card),rgba(118,118,128,.18));
     -webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);
-    border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 24px rgba(0,0,0,.06);
+    border:1px solid rgba(60,60,67,.14);box-shadow:0 8px 24px rgba(0,0,0,.06);
     display:flex;align-items:center;justify-content:center;color:var(--label3);font-size:32px}
   .dark .empty .glyph{border-color:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.3)}
   .empty a{color:var(--blue);text-decoration:none}
@@ -466,29 +466,30 @@
     *{ -webkit-backdrop-filter:none!important; backdrop-filter:none!important; }
     .card,.stack-card,.ing-d,.field,.field input,.ing-row input,.ing-row select{ border-color:rgba(60,60,67,.14)!important; }
     .card,.stack-card,.ing-d{ box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05)!important; }
-    .lib-search{ background:rgba(228,228,233,1)!important; border-color:rgba(60,60,67,.16)!important; }
-    .chip{ background:rgba(216,216,221,1)!important; border-color:rgba(60,60,67,.14)!important; box-shadow:0 1px 6px rgba(0,0,0,.05)!important; }
+    .lib-search{ background:rgba(0,122,255,.1)!important; border-color:rgba(0,122,255,.2)!important; }
+    .chip{ background:transparent!important; border-color:rgba(60,60,67,.14)!important; }
     .chip.on{ background:var(--blue)!important; color:#fff!important; border-color:var(--blue)!important; }
     .shape-opt{ background:rgba(216,216,221,1); }
     .detail-opt{ background:rgba(216,216,221,1); }
     .nav{ box-shadow:inset 0 -1px 0 rgba(60,60,67,.18)!important; }
     .dark .card,.dark .stack-card,.dark .ing-d,.dark .field,.dark .field input,.dark .ing-row input,.dark .ing-row select{ border-color:rgba(255,255,255,.12)!important; }
-    .dark .lib-search{ background:rgba(28,28,30,.96)!important; border-color:rgba(255,255,255,.14)!important; }
-    .dark .chip,.dark .shape-opt,.dark .detail-opt{ background:rgba(60,60,67,.5)!important; border-color:rgba(255,255,255,.12)!important; }
+    .dark .lib-search{ background:rgba(255,255,255,.1)!important; border-color:rgba(255,255,255,.16)!important; }
+    .dark .chip,.dark .shape-opt,.dark .detail-opt{ background:rgba(255,255,255,.12)!important; border-color:rgba(255,255,255,.18)!important; }
   }
   /* ============ 补剂库检索 ============ */
-  .lib-bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 2px}
-  .lib-search{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.5);border-radius:12px;padding:9px 12px;-webkit-backdrop-filter:blur(20px) saturate(200%);backdrop-filter:blur(20px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 10px rgba(0,0,0,.04);transition:border-color .18s var(--ease),box-shadow .18s var(--ease)}
-  .lib-search:focus-within{border-color:var(--blue);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 3px var(--blue-soft)}
-  .dark .lib-search{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 10px rgba(0,0,0,.25)}
-  .dark .lib-search:focus-within{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 3px var(--blue-soft)}
-  .lib-search .si{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:var(--label2);stroke-width:2;stroke-linecap:round}
+  .lib-bar{background:transparent;padding:10px 16px 6px}
+  .lib-search{display:flex;align-items:center;gap:8px;background:rgba(0,122,255,.08);border:1px solid rgba(0,122,255,.18);border-radius:12px;padding:9px 12px;-webkit-backdrop-filter:blur(20px) saturate(200%);backdrop-filter:blur(20px) saturate(200%);transition:border-color .18s var(--ease),box-shadow .18s var(--ease);margin-bottom:10px}
+  .lib-search:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+  .dark .lib-search{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+  .dark .lib-search:focus-within{box-shadow:0 0 0 3px var(--blue-soft)}
+  .lib-search .si{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:var(--blue);stroke-width:2;stroke-linecap:round}
   .lib-search input{flex:1;border:0;outline:0;background:transparent;font-size:16px;color:var(--label)}
   .lib-search input::-webkit-search-cancel-button{display:none}
   .chip-row{display:flex;gap:8px;overflow-x:auto;padding:10px 16px 4px;scrollbar-width:none}
   .chip-row::-webkit-scrollbar{display:none}
-  .chip{flex:0 0 auto;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.3);color:var(--label2);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;white-space:nowrap;-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 1px 6px rgba(0,0,0,.04);transition:all .18s var(--ease)}
-  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 8px rgba(0,122,255,.35)}
+  .chip{flex:0 0 auto;border:1px solid rgba(60,60,67,.12);background:transparent;color:var(--label2);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;white-space:nowrap;transition:all .18s var(--ease)}
+  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(0,122,255,.35)}
+  .chip:active{background:var(--blue-soft);color:var(--blue)}
   .lib-count{padding:2px 16px 8px;font-size:12px;color:var(--label2)}
   .lib-desc{padding:0 16px 6px;font-size:12px;color:var(--label2)}
 </style>
@@ -598,7 +599,7 @@ const I18N = {
     copyStack:"复制", copyHint:"复制当前信息后可修改再添加，免重复输入",
     emptyBox:"空瓶收藏", emptyBoxTitle:"空瓶收集箱", toBox:"收入空瓶", fromBox:"放回进行中", boxEmpty:"暂无空瓶", boxHint:"吃完的补剂可存入空瓶收集箱，留作纪念",
     filterActive:"进行中", filterBox:"空瓶收藏",
-    backfill:"补录记录", backfillTaken:"已服用总份数", backfillRemain:"当前剩余份数", backfillDesc:"为中途开始使用的老用户补登历史，保证数据连贯", backfilled:"已补录", backfillDays:"补录天数"
+    backfill:"补录记录", backfillTaken:"已服用总份数", backfillRemain:"当前剩余份数", backfillDesc:"为中途开始使用的老用户补登历史，保证数据连贯", backfilled:"已补录", backfillDays:"补录天数", sources:"权威来源", srcODS:"NIH ODS 权威来源"
   },
   en: {
     today:"Today", stack:"Supps", lib:"Library", cost:"Cost", know:"Notes",
@@ -664,7 +665,7 @@ const I18N = {
     copyStack:"Duplicate", copyHint:"Duplicate this entry, then edit and add — no re-typing",
     emptyBox:"Empty bottles", emptyBoxTitle:"Empty Bottle Box", toBox:"Store as empty", fromBox:"Move back to active", boxEmpty:"No empty bottles", boxHint:"Store finished bottles here as mementos",
     filterActive:"Active", filterBox:"Empty box",
-    backfill:"Backfill", backfillTaken:"Total taken", backfillRemain:"Current remaining", backfillDesc:"Backfill history for users who started mid-way, to keep data continuous", backfilled:"Backfilled", backfillDays:"Days filled"
+    backfill:"Backfill", backfillTaken:"Total taken", backfillRemain:"Current remaining", backfillDesc:"Backfill history for users who started mid-way, to keep data continuous", backfilled:"Backfilled", backfillDays:"Days filled", sources:"Authoritative Sources", srcODS:"NIH ODS"
   }
 };
 const SET_KEY = "gaichiyao_settings";
@@ -2556,7 +2557,1233 @@ const LIB = [
       }
     ]
   }
+,
+{
+    "id": "omega3",
+    "name": "深海鱼油（EPA+DHA）",
+    "fullName": "高纯度 Omega-3 鱼油胶囊 每粒含 EPA 500mg + DHA 250mg",
+    "brand": "Nordic Naturals",
+    "storage": "冷藏或阴凉处，避光",
+    "cat": "脂肪酸",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 198,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每粒 EPA 500mg + DHA 250mg",
+    "ingred": [
+      {"name": "EPA", "amt": 500, "unit": "mg", "min": 250, "max": 1000},
+      {"name": "DHA", "amt": 250, "unit": "mg", "min": 125, "max": 500}
+    ]
+  },
+  {
+    "id": "fishoil_high",
+    "name": "高纯度鱼油（90%+）",
+    "fullName": "医药级高纯度 Omega-3 鱼油 90%+ 纯度 rTG 结构",
+    "brand": "Viva Naturals",
+    "storage": "冷藏或阴凉干燥处",
+    "cat": "脂肪酸",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 289,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每次 2 粒，共 EPA 1000mg + DHA 500mg",
+    "ingred": [
+      {"name": "EPA", "amt": 1000, "unit": "mg", "min": 500, "max": 2000},
+      {"name": "DHA", "amt": 500, "unit": "mg", "min": 250, "max": 1000}
+    ]
+  },
+  {
+    "id": "algae_oil",
+    "name": "藻油 DHA",
+    "fullName": "纯素藻油 DHA 胶囊 每粒 250mg DHA",
+    "brand": "Nordic Naturals",
+    "storage": "阴凉干燥处，避光",
+    "cat": "脂肪酸",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 168,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每粒含 DHA 250mg",
+    "ingred": [
+      {"name": "DHA", "amt": 250, "unit": "mg", "min": 200, "max": 500}
+    ]
+  },
+  {
+    "id": "krill_oil",
+    "name": "磷虾油",
+    "fullName": "南极磷虾油软胶囊 含虾青素天然抗氧化",
+    "brand": "Ovega-3",
+    "storage": "冷藏或阴凉处",
+    "cat": "脂肪酸",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 158,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每粒含 Omega-3 300mg",
+    "ingred": [
+      {"name": "EPA", "amt": 150, "unit": "mg", "min": 100, "max": 300},
+      {"name": "DHA", "amt": 100, "unit": "mg", "min": 50, "max": 200}
+    ]
+  },
+  {
+    "id": "glucosamine",
+    "name": "氨糖软骨素",
+    "fullName": "氨基葡萄糖 + 硫酸软骨素 + MSm 关节配方",
+    "brand": "Cenovis",
+    "storage": "阴凉干燥处",
+    "cat": "关节",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 128,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每次 1 粒，每日 2 次，含氨糖 1500mg",
+    "ingred": [
+      {"name": "氨基葡萄糖", "amt": 1500, "unit": "mg", "min": 1000, "max": 2000},
+      {"name": "硫酸软骨素", "amt": 1200, "unit": "mg", "min": 800, "max": 1400},
+      {"name": "MSM", "amt": 500, "unit": "mg", "min": 0, "max": 1000}
+    ]
+  },
+  {
+    "id": "ashwagandha_ksm66",
+    "name": "KSM-66 南非醉茄",
+    "fullName": "KSM-66 全谱根提取物 600mg 临床验证适应原",
+    "brand": "Himalaya",
+    "storage": "阴凉干燥处",
+    "cat": "适应原",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 98,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，含 KSM-66 提取物 600mg",
+    "ingred": [
+      {"name": "南非醉茄提取物", "amt": 600, "unit": "mg", "min": 300, "max": 900}
+    ]
+  },
+  {
+    "id": "ginkgo",
+    "name": "银杏叶提取物",
+    "fullName": "标准化银杏叶提取物 EGb 761 支持脑循环与认知",
+    "brand": "Doctor's Best",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 79,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，含银杏提取物 120mg（24%黄酮苷）",
+    "ingred": [
+      {"name": "银杏叶提取物", "amt": 120, "unit": "mg", "min": 60, "max": 240}
+    ]
+  },
+  {
+    "id": "bacopa",
+    "name": "假马齿苋（巴科帕）",
+    "fullName": "标准化假马齿苋提取物 50% bacosides 增强记忆",
+    "brand": "Himalaya",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 88,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 粒，每粒含假马齿苋提取物 300mg",
+    "ingred": [
+      {"name": "假马齿苋提取物", "amt": 300, "unit": "mg", "min": 250, "max": 600}
+    ]
+  },
+  {
+    "id": "lion_mane",
+    "name": "猴头菇提取物",
+    "fullName": "猴头菇子实体提取物 支持神经生长因子 NGF",
+    "brand": "Real Mushrooms",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 128,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 粒，含猴头菇提取物 1000mg",
+    "ingred": [
+      {"name": "猴头菇提取物", "amt": 1000, "unit": "mg", "min": 500, "max": 1500}
+    ]
+  },
+  {
+    "id": "mushroom_complex",
+    "name": "药用蘑菇复合物",
+    "fullName": "灵芝 + 香菇 + 杏鲍菇 三磨萃取 支持免疫",
+    "brand": "Real Mushrooms",
+    "storage": "阴凉干燥处",
+    "cat": "免疫",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 138,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 粒，含三种药用蘑菇萃取物",
+    "ingred": [
+      {"name": "灵芝提取物", "amt": 500, "unit": "mg", "min": 300, "max": 1000},
+      {"name": "香菇提取物", "amt": 300, "unit": "mg", "min": 200, "max": 500},
+      {"name": "杏鲍菇提取物", "amt": 200, "unit": "mg", "min": 100, "max": 300}
+    ]
+  },
+  {
+    "id": "echinacea",
+    "name": "紫锥菊",
+    "fullName": "紫锥菊根部提取物 支持免疫系统健康",
+    "brand": "Nature's Way",
+    "storage": "阴凉干燥处",
+    "cat": "免疫",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 58,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，含紫锥菊提取物 400mg",
+    "ingred": [
+      {"name": "紫锥菊提取物", "amt": 400, "unit": "mg", "min": 300, "max": 600}
+    ]
+  },
+  {
+    "id": "elderberry",
+    "name": "接骨木莓",
+    "fullName": "接骨木莓浓缩提取物 支持呼吸道免疫防御",
+    "brand": "Sambucol",
+    "storage": "阴凉干燥处",
+    "cat": "免疫",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 78,
+    "serv": 30,
+    "servPerDay": 1,
+    "dosage": "每日 1 片，含接骨木莓浓缩提取物",
+    "ingred": [
+      {"name": "接骨木莓提取物", "amt": 450, "unit": "mg", "min": 300, "max": 600}
+    ]
+  },
+  {
+    "id": "probiotic_multi",
+    "name": "广谱益生菌",
+    "fullName": "16 菌株复合益生菌 CFU 500 亿 肠道免疫支持",
+    "brand": "Garden of Life",
+    "storage": "冷藏或阴凉干燥处",
+    "cat": "肠道",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 188,
+    "serv": 30,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，含 16 种菌株 500 亿 CFU",
+    "ingred": [
+      {"name": "益生菌复合", "amt": 500, "unit": "亿 CFU", "min": 100, "max": 1000}
+    ]
+  },
+  {
+    "id": "probiotic_digest",
+    "name": "消化益生菌",
+    "fullName": "含消化酶复合益生菌 支持营养吸收与肠道健康",
+    "brand": "Align",
+    "storage": "阴凉干燥处",
+    "cat": "肠道",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 128,
+    "serv": 28,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，含益生菌 + 消化酶",
+    "ingred": [
+      {"name": "益生菌", "amt": 50, "unit": "亿 CFU", "min": 10, "max": 100},
+      {"name": "消化酶", "amt": 100, "unit": "mg", "min": 50, "max": 200}
+    ]
+  },
+  {
+    "id": "berberine",
+    "name": "小檗碱（黄连素）",
+    "fullName": "盐酸小檗碱 500mg 支持血糖代谢健康",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "代谢",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 68,
+    "serv": 100,
+    "servPerDay": 2,
+    "dosage": "餐前 30 分钟服 1 粒，每日 2 次",
+    "ingred": [
+      {"name": "小檗碱", "amt": 500, "unit": "mg", "min": 300, "max": 1500}
+    ]
+  },
+  {
+    "id": "astaxanthin",
+    "name": "虾青素",
+    "fullName": "天然雨生红球藻虾青素 12mg 超强抗氧化",
+    "brand": "iHerb Brand",
+    "storage": "冷藏避光",
+    "cat": "抗氧化",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 158,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "随餐服 1 粒，含天然虾青素 12mg",
+    "ingred": [
+      {"name": "虾青素", "amt": 12, "unit": "mg", "min": 4, "max": 12}
+    ]
+  },
+  {
+    "id": "lutein",
+    "name": "叶黄素+玉米黄质",
+    "fullName": "叶黄素 10mg + 玉米黄质 2mg 眼部抗氧化保护",
+    "brand": "AstaReal",
+    "storage": "阴凉干燥处",
+    "cat": "眼部",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 118,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "随餐服 1 粒",
+    "ingred": [
+      {"name": "叶黄素", "amt": 10, "unit": "mg", "min": 10, "max": 20},
+      {"name": "玉米黄质", "amt": 2, "unit": "mg", "min": 2, "max": 4}
+    ]
+  },
+  {
+    "id": "d3_k2_combo",
+    "name": "维生素D3+K2",
+    "fullName": "D3 5000IU + K2 (MK-7) 100mcg 协同补钙",
+    "brand": "Doctor's Best",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 89,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐服用",
+    "ingred": [
+      {"name": "维生素D3", "amt": 5000, "unit": "IU", "min": 1000, "max": 10000},
+      {"name": "维生素K2", "amt": 100, "unit": "mcg", "min": 45, "max": 200}
+    ]
+  },
+  {
+    "id": "magnesium_citrate",
+    "name": "柠檬酸镁",
+    "fullName": "柠檬酸镁 200mg 元素镁 高吸收率易耐受",
+    "brand": "Doctor's Best",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 58,
+    "serv": 120,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 粒，随餐服用",
+    "ingred": [
+      {"name": "镁", "amt": 200, "unit": "mg", "min": 100, "max": 400}
+    ]
+  },
+  {
+    "id": "zinc_picolinate",
+    "name": "吡啶甲酸锌",
+    "fullName": "吡啶甲酸锌 25mg 高生物利用度锌补充",
+    "brand": "Thorne",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 78,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐服用",
+    "ingred": [
+      {"name": "锌", "amt": 25, "unit": "mg", "min": 8, "max": 40}
+    ]
+  },
+  {
+    "id": "calcium_d3",
+    "name": "柠檬酸钙+D3",
+    "fullName": "柠檬酸钙 600mg + D3 200IU 好吸收不便秘",
+    "brand": "Citracal",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 78,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 2 粒，随餐服用",
+    "ingred": [
+      {"name": "钙", "amt": 600, "unit": "mg", "min": 500, "max": 1200},
+      {"name": "维生素D3", "amt": 200, "unit": "IU", "min": 100, "max": 400}
+    ]
+  },
+  {
+    "id": "iron_gentle",
+    "name": "温和铁剂",
+    "fullName": "甘氨酸亚铁 18mg 温和不刺激肠胃",
+    "brand": "Pure Encapsulations",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 88,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，空腹或与维C同服",
+    "ingred": [
+      {"name": "铁", "amt": 18, "unit": "mg", "min": 8, "max": 27}
+    ]
+  },
+  {
+    "id": "milk_thistle",
+    "name": "水飞蓟素标准提取物",
+    "fullName": "标准化水飞蓟素 80% silymarin 护肝抗氧化",
+    "brand": "Nature's Way",
+    "storage": "阴凉干燥处",
+    "cat": "肝脏",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 98,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 粒，随餐服用",
+    "ingred": [
+      {"name": "水飞蓟素", "amt": 175, "unit": "mg", "min": 150, "max": 400}
+    ]
+  },
+  {
+    "id": "pqq",
+    "name": "PQQ",
+    "fullName": "Pyrocatechol-3,4-dione 线粒体氧化还原辅酶 细胞能量",
+    "brand": "Renue By Science",
+    "storage": "冷藏避光",
+    "cat": "认知",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 398,
+    "serv": 30,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，空腹服用",
+    "ingred": [
+      {"name": "PQQ", "amt": 20, "unit": "mg", "min": 10, "max": 40}
+    ]
+  },
+  {
+    "id": "nmn",
+    "name": "NMN",
+    "fullName": "β-烟酰胺单核苷酸 1000mg NAD+ 前体 抗衰老",
+    "brand": "Renue By Science",
+    "storage": "冷藏避光",
+    "cat": "抗衰老",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 398,
+    "serv": 30,
+    "servPerDay": 1,
+    "dosage": "每日 1 袋，舌下含服或溶于水",
+    "ingred": [
+      {"name": "NMN", "amt": 1000, "unit": "mg", "min": 250, "max": 1500}
+    ]
+  },
+  {
+    "id": "resveratrol",
+    "name": "白藜芦醇",
+    "fullName": "反式白藜芦醇 500mg 葡萄籽提取 抗氧化抗衰老",
+    "brand": "Intellianity",
+    "storage": "阴凉干燥处",
+    "cat": "抗衰老",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 168,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "随餐服用 1 粒",
+    "ingred": [
+      {"name": "白藜芦醇", "amt": 500, "unit": "mg", "min": 100, "max": 1000}
+    ]
+  },
+  {
+    "id": "quercetin",
+    "name": "槲皮素",
+    "fullName": "槲皮素 500mg 类黄酮抗氧化 支持呼吸道与免疫",
+    "brand": "Seek Truth",
+    "storage": "阴凉干燥处",
+    "cat": "抗氧化",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 128,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 粒，随餐服用",
+    "ingred": [
+      {"name": "槲皮素", "amt": 500, "unit": "mg", "min": 250, "max": 1000}
+    ]
+  },
+  {
+    "id": "turmeric_curcumin",
+    "name": "姜黄素（黑胡椒素）",
+    "fullName": "姜黄素 500mg + 黑胡椒素 5mg 高吸收配方",
+    "brand": "Thorne",
+    "storage": "阴凉干燥处",
+    "cat": "抗炎",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 158,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 粒，随餐服用",
+    "ingred": [
+      {"name": "姜黄素", "amt": 500, "unit": "mg", "min": 250, "max": 1500},
+      {"name": "黑胡椒素", "amt": 5, "unit": "mg", "min": 5, "max": 10}
+    ]
+  },
+  {
+    "id": "green_tea_ext",
+    "name": "绿茶提取物",
+    "fullName": "标准化绿茶提取物 EGCG 400mg 抗氧化代谢支持",
+    "brand": "Double Wood",
+    "storage": "阴凉干燥处",
+    "cat": "抗氧化",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 58,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，餐前服用",
+    "ingred": [
+      {"name": "绿茶提取物", "amt": 400, "unit": "mg", "min": 250, "max": 800}
+    ]
+  },
+  {
+    "id": "magnesium_glycinate",
+    "name": "甘氨酸镁",
+    "fullName": "双甘氨酸镁 200mg 元素镁 高吸收不腹泻",
+    "brand": "Pure Encapsulations",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 88,
+    "serv": 90,
+    "servPerDay": 2,
+    "dosage": "睡前服 2 粒，有助于放松与睡眠",
+    "ingred": [
+      {"name": "镁", "amt": 200, "unit": "mg", "min": 100, "max": 400}
+    ]
+  },
+  {
+    "id": "magnesium_threonate",
+    "name": "苏糖酸镁",
+    "fullName": "Magtein 苏糖酸镁 穿越血脑屏障支持认知",
+    "brand": "Life Extension",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 168,
+    "serv": 60,
+    "servPerDay": 3,
+    "dosage": "每日 3 次，每次 2 粒，随餐服用",
+    "ingred": [
+      {"name": "镁", "amt": 100, "unit": "mg", "min": 50, "max": 200}
+    ]
+  },
+  {
+    "id": "coq10_ubiquinol",
+    "name": "泛醇 CoQ10",
+    "fullName": "还原型泛醇 CoQ10 100mg 心脏能量支持",
+    "brand": "Kaneka",
+    "storage": "阴凉干燥处，避光",
+    "cat": "心血管",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 158,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "随餐服用 1 粒",
+    "ingred": [
+      {"name": "CoQ10", "amt": 100, "unit": "mg", "min": 50, "max": 300}
+    ]
+  },
+  {
+    "id": "gaba",
+    "name": "GABA",
+    "fullName": "γ-氨基丁酸 500mg 支持放松与睡眠质量",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "睡眠",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 48,
+    "serv": 120,
+    "servPerDay": 1,
+    "dosage": "睡前 30 分钟服 1 粒",
+    "ingred": [
+      {"name": "GABA", "amt": 500, "unit": "mg", "min": 100, "max": 750}
+    ]
+  },
+  {
+    "id": "5htp",
+    "name": "5-HTP",
+    "fullName": "5-羟色氨酸 100mg 支持情绪与睡眠",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "睡眠",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 58,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "睡前 30 分钟服 1 粒，不建议与抗抑郁药同服",
+    "ingred": [
+      {"name": "5-HTP", "amt": 100, "unit": "mg", "min": 50, "max": 300}
+    ]
+  },
+  {
+    "id": "valerian",
+    "name": "缬草提取物",
+    "fullName": "缬草根提取物 标准化 支持自然睡眠",
+    "brand": "Nature's Way",
+    "storage": "阴凉干燥处",
+    "cat": "睡眠",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 58,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "睡前 30 分钟服 1 粒",
+    "ingred": [
+      {"name": "缬草提取物", "amt": 400, "unit": "mg", "min": 300, "max": 600}
+    ]
+  },
+  {
+    "id": "l_theanine_combo",
+    "name": "茶氨酸+GABA",
+    "fullName": "L-茶氨酸 200mg + GABA 100mg 专注放松配方",
+    "brand": "Pure Encapsulations",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 98,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，工作与休息前均可",
+    "ingred": [
+      {"name": "L-茶氨酸", "amt": 200, "unit": "mg", "min": 100, "max": 400},
+      {"name": "GABA", "amt": 100, "unit": "mg", "min": 50, "max": 200}
+    ]
+  },
+  {
+    "id": "acetyl_l Carnitine",
+    "name": "乙酰左旋肉碱",
+    "fullName": "ALCAR 500mg 支持大脑能量与线粒体功能",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "认知",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 68,
+    "serv": 120,
+    "servPerDay": 1,
+    "dosage": "早餐后服 1 粒",
+    "ingred": [
+      {"name": "乙酰左旋肉碱", "amt": 500, "unit": "mg", "min": 250, "max": 1500}
+    ]
+  },
+  {
+    "id": "SAMe",
+    "name": "SAMe",
+    "fullName": "活性 SAMe 400mg 支持情绪与肝脏代谢",
+    "brand": "Life Extension",
+    "storage": "冷藏",
+    "cat": "情绪",
+    "form": "优",
+    "ev": "中",
+    "trans": true,
+    "price": 128,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "空腹服 1 粒，每日 1 次",
+    "ingred": [
+      {"name": "SAMe", "amt": 400, "unit": "mg", "min": 200, "max": 1600}
+    ]
+  },
+  {
+    "id": "methyl_folate",
+    "name": "甲基叶酸",
+    "fullName": "Metafolin 活性叶酸 400mcg 5-MTHF 直接利用",
+    "brand": "Pure Encapsulations",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 68,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐或空腹均可",
+    "ingred": [
+      {"name": "叶酸", "amt": 400, "unit": "mcg", "min": 200, "max": 1000}
+    ]
+  },
+  {
+    "id": "B_complex_active",
+    "name": "活性B族复合",
+    "fullName": "全活性B族复合 含甲基化形式 支持能量代谢",
+    "brand": "Pure Encapsulations",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 98,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 粒，早餐与午餐后",
+    "ingred": [
+      {"name": "维生素B1", "amt": 50, "unit": "mg", "min": 50, "max": 100},
+      {"name": "维生素B2", "amt": 50, "unit": "mg", "min": 50, "max": 100},
+      {"name": "维生素B3", "amt": 50, "unit": "mg", "min": 50, "max": 100},
+      {"name": "维生素B6", "amt": 50, "unit": "mg", "min": 50, "max": 100},
+      {"name": "叶酸", "amt": 400, "unit": "mcg", "min": 200, "max": 1000},
+      {"name": "维生素B12", "amt": 500, "unit": "mcg", "min": 250, "max": 1000}
+    ]
+  },
+  {
+    "id": "inositol",
+    "name": "肌醇",
+    "fullName": "肌醇 5000mg 支持情绪与胰岛素敏感性",
+    "brand": "Pure Encapsulations",
+    "storage": "阴凉干燥处",
+    "cat": "情绪",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 58,
+    "serv": 120,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 粒，可溶于水",
+    "ingred": [
+      {"name": "肌醇", "amt": 5000, "unit": "mg", "min": 2000, "max": 12000}
+    ]
+  },
+  {
+    "id": "lycopene",
+    "name": "番茄红素",
+    "fullName": "番茄红素 10mg 强大抗氧化支持男性健康",
+    "brand": "Klear Image",
+    "storage": "阴凉干燥处，避光",
+    "cat": "抗氧化",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 78,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "随餐服用 1 粒",
+    "ingred": [
+      {"name": "番茄红素", "amt": 10, "unit": "mg", "min": 5, "max": 20}
+    ]
+  },
+  {
+    "id": "grape_seed",
+    "name": "葡萄籽提取物",
+    "fullName": "标准化葡萄籽提取物 OPC 95% 强效抗氧化",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "抗氧化",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 58,
+    "serv": 120,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐服用",
+    "ingred": [
+      {"name": "葡萄籽提取物", "amt": 400, "unit": "mg", "min": 200, "max": 800}
+    ]
+  },
+  {
+    "id": "ganoderma",
+    "name": "灵芝提取物",
+    "fullName": "赤芝子实体提取物 标准化多糖与三萜 免疫调节",
+    "brand": "Host Defense",
+    "storage": "阴凉干燥处",
+    "cat": "免疫",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 128,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 粒，随餐服用",
+    "ingred": [
+      {"name": "灵芝提取物", "amt": 500, "unit": "mg", "min": 250, "max": 1000}
+    ]
+  },
+  {
+    "id": "cordyceps",
+    "name": "冬虫夏草提取物",
+    "fullName": "蛹虫草 Cordyceps militaris 支持能量与运动表现",
+    "brand": "Host Defense",
+    "storage": "阴凉干燥处",
+    "cat": "适应原",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 158,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，早餐前服用",
+    "ingred": [
+      {"name": "冬虫夏草提取物", "amt": 500, "unit": "mg", "min": 250, "max": 1000}
+    ]
+  },
+  {
+    "id": "psyllium_husk",
+    "name": "洋车前子壳粉",
+    "fullName": "纯洋车前子壳粉 可溶性膳食纤维 支持肠道健康",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "肠道",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 48,
+    "serv": 120,
+    "servPerDay": 1,
+    "dosage": "每日 1 勺（5g），溶于水后立即饮用",
+    "ingred": [
+      {"name": "洋车前子壳", "amt": 5000, "unit": "mg", "min": 3000, "max": 10000}
+    ]
+  },
+  {
+    "id": "digestive_enzymes",
+    "name": "消化酶复合",
+    "fullName": "广谱消化酶 含淀粉酶、蛋白酶、脂肪酶 支持营养吸收",
+    "brand": "Now Foods",
+    "storage": "阴凉干燥处",
+    "cat": "肠道",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 68,
+    "serv": 120,
+    "servPerDay": 2,
+    "dosage": "餐前服 2 粒，大餐时可加量",
+    "ingred": [
+      {"name": "消化酶复合", "amt": 500, "unit": "mg", "min": 250, "max": 1000}
+    ]
+  },
+  {
+    "id": "women_multi",
+    "name": "女士复合维生素",
+    "fullName": "专为女性配方 含铁+叶酸+B族 支持日常营养",
+    "brand": "Rainbow Light",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 128,
+    "serv": 90,
+    "servPerDay": 3,
+    "dosage": "每日 3 粒，随餐服用",
+    "ingred": [
+      {"name": "复合维生素矿物质", "amt": 100, "unit": "% DV", "min": 100, "max": 200}
+    ]
+  },
+  {
+    "id": "men_multi",
+    "name": "男士复合维生素",
+    "fullName": "男士专属配方 含锌+硒+番茄红素 支持全面健康",
+    "brand": "Rainbow Light",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "良",
+    "ev": "中",
+    "trans": true,
+    "price": 128,
+    "serv": 90,
+    "servPerDay": 3,
+    "dosage": "每日 3 粒，随餐服用",
+    "ingred": [
+      {"name": "复合维生素矿物质", "amt": 100, "unit": "% DV", "min": 100, "max": 200}
+    ]
+  },
+  {
+    "id": "pregnancy_multi",
+    "name": "孕产妇复合维生素",
+    "fullName": "孕期专用配方 高叶酸+DHA+铁 支持胎儿发育",
+    "brand": "Ritual",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 268,
+    "serv": 30,
+    "servPerDay": 2,
+    "dosage": "每日 2 粒，随餐服用",
+    "ingred": [
+      {"name": "叶酸", "amt": 800, "unit": "mcg", "min": 400, "max": 1000},
+      {"name": "DHA", "amt": 200, "unit": "mg", "min": 200, "max": 400},
+      {"name": "铁", "amt": 27, "unit": "mg", "min": 18, "max": 30}
+    ]
+  },
+  {
+    "id": "BYHEALTH_calcium",
+    "name": "汤臣倍健钙",
+    "fullName": "汤臣倍健钙维生素D咀嚼片 含维D促进钙吸收",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 88,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 3 片，嚼服",
+    "ingred": [
+      {"name": "钙", "amt": 600, "unit": "mg", "min": 500, "max": 1200},
+      {"name": "维生素D3", "amt": 200, "unit": "IU", "min": 100, "max": 400}
+    ]
+  },
+  {
+    "id": "BYHEALTH_fishoil",
+    "name": "汤臣倍健鱼油",
+    "fullName": "汤臣倍健深海鱼油软胶囊 EPA+DHA 支持心脑血管",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "脂肪酸",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 158,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 2 粒，随餐服用",
+    "ingred": [
+      {"name": "EPA", "amt": 360, "unit": "mg", "min": 250, "max": 1000},
+      {"name": "DHA", "amt": 252, "unit": "mg", "min": 125, "max": 500}
+    ]
+  },
+  {
+    "id": "CalciCheer",
+    "name": "钙尔奇D",
+    "fullName": "钙尔奇碳酸钙D3片 600mg 钙 + 维D3 支持骨骼",
+    "brand": "钙尔奇",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 68,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 1 片，嚼服",
+    "ingred": [
+      {"name": "钙", "amt": 600, "unit": "mg", "min": 500, "max": 1200},
+      {"name": "维生素D3", "amt": 200, "unit": "IU", "min": 100, "max": 400}
+    ]
+  },
+  {
+    "id": "BYHEALTH_probiotic",
+    "name": "汤臣倍健益生菌",
+    "fullName": "汤臣倍健健益菌益生菌粉 含 5 种菌株",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "肠道",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 168,
+    "serv": 30,
+    "servPerDay": 1,
+    "dosage": "每日 1 袋，溶于 40°C 以下温水",
+    "ingred": [
+      {"name": "益生菌复合", "amt": 50, "unit": "亿 CFU", "min": 10, "max": 100}
+    ]
+  },
+  {
+    "id": "BYHEALTH_coq10",
+    "name": "汤臣倍健辅酶Q10",
+    "fullName": "汤臣倍健辅酶Q10软胶囊 支持心脏能量代谢",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "心血管",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 198,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐服用",
+    "ingred": [
+      {"name": "CoQ10", "amt": 50, "unit": "mg", "min": 50, "max": 200}
+    ]
+  },
+  {
+    "id": "BYHEALTH_vitC",
+    "name": "汤臣倍健维生素C",
+    "fullName": "汤臣倍健维生素C片 100mg/片 支持免疫与胶原合成",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 38,
+    "serv": 100,
+    "servPerDay": 1,
+    "dosage": "每日 1 片，随餐服用",
+    "ingred": [
+      {"name": "维生素C", "amt": 100, "unit": "mg", "min": 65, "max": 200}
+    ]
+  },
+  {
+    "id": "BYHEALTH_vitE",
+    "name": "汤臣倍健维生素E",
+    "fullName": "汤臣倍健天然维生素E软胶囊 α-生育酚抗氧化",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 68,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐服用",
+    "ingred": [
+      {"name": "维生素E", "amt": 30, "unit": "mg", "min": 15, "max": 100}
+    ]
+  },
+  {
+    "id": "BYHEALTH_iron",
+    "name": "汤臣倍健铁",
+    "fullName": "汤臣倍健多糖铁复合物胶囊 温和补铁不伤胃",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "矿物质",
+    "form": "优",
+    "ev": "强",
+    "trans": true,
+    "price": 78,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，与维C同服促进吸收",
+    "ingred": [
+      {"name": "铁", "amt": 15, "unit": "mg", "min": 8, "max": 27}
+    ]
+  },
+  {
+    "id": "BYHEALTH_Bcomplex",
+    "name": "汤臣倍健B族",
+    "fullName": "汤臣倍健多种维生素B族片 支持能量代谢",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 58,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 片，随餐服用",
+    "ingred": [
+      {"name": "维生素B1", "amt": 10, "unit": "mg", "min": 1.1, "max": 50},
+      {"name": "维生素B2", "amt": 10, "unit": "mg", "min": 1.1, "max": 50},
+      {"name": "维生素B6", "amt": 10, "unit": "mg", "min": 1.3, "max": 50},
+      {"name": "维生素B12", "amt": 10, "unit": "mcg", "min": 2.4, "max": 50},
+      {"name": "叶酸", "amt": 200, "unit": "mcg", "min": 200, "max": 1000}
+    ]
+  },
+  {
+    "id": "BYHEALTH_vitD3",
+    "name": "汤臣倍健维生素D3",
+    "fullName": "汤臣倍健维生素D3软胶囊 400IU/粒 支持钙吸收",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "维生素",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 48,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐服用",
+    "ingred": [
+      {"name": "维生素D3", "amt": 400, "unit": "IU", "min": 400, "max": 4000}
+    ]
+  },
+  {
+    "id": "BYHEALTH_melatonin",
+    "name": "汤臣倍健褪黑素",
+    "fullName": "汤臣倍健褪黑素素片 支持睡眠节律",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "睡眠",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 58,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "睡前 30 分钟服 1 片",
+    "ingred": [
+      {"name": "褪黑素", "amt": 3, "unit": "mg", "min": 0.5, "max": 5}
+    ]
+  },
+  {
+    "id": "BYHEALTH_joint",
+    "name": "汤臣倍健氨糖",
+    "fullName": "汤臣倍健氨糖软骨素钙片 含钙+VD 支持关节骨骼",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "关节",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 158,
+    "serv": 60,
+    "servPerDay": 3,
+    "dosage": "每日 3 次，每次 2 片，嚼服",
+    "ingred": [
+      {"name": "氨基葡萄糖", "amt": 1000, "unit": "mg", "min": 500, "max": 1500},
+      {"name": "硫酸软骨素", "amt": 500, "unit": "mg", "min": 250, "max": 1000},
+      {"name": "钙", "amt": 200, "unit": "mg", "min": 200, "max": 500}
+    ]
+  },
+  {
+    "id": "BYHEALTH_liver",
+    "name": "汤臣倍健水飞蓟",
+    "fullName": "汤臣倍健水飞蓟葛根胶囊 支持肝脏健康",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "肝脏",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 128,
+    "serv": 60,
+    "servPerDay": 2,
+    "dosage": "每日 2 次，每次 2 粒，随餐服用",
+    "ingred": [
+      {"name": "水飞蓟提取物", "amt": 200, "unit": "mg", "min": 150, "max": 400}
+    ]
+  },
+  {
+    "id": "BYHEALTH_eye",
+    "name": "汤臣倍健叶黄素",
+    "fullName": "汤臣倍健叶黄素酯软胶囊 护眼抗氧化",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "眼部",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 98,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 粒，随餐服用",
+    "ingred": [
+      {"name": "叶黄素", "amt": 10, "unit": "mg", "min": 6, "max": 20}
+    ]
+  },
+  {
+    "id": "BYHEALTH_immune",
+    "name": "汤臣倍健 VC+锌",
+    "fullName": "汤臣倍健维生素C加锌片 支持免疫系统",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "免疫",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 58,
+    "serv": 60,
+    "servPerDay": 1,
+    "dosage": "每日 1 片，随餐服用",
+    "ingred": [
+      {"name": "维生素C", "amt": 100, "unit": "mg", "min": 65, "max": 200},
+      {"name": "锌", "amt": 5, "unit": "mg", "min": 8, "max": 40}
+    ]
+  },
+  {
+    "id": "BYHEALTH_protein",
+    "name": "汤臣倍健蛋白粉",
+    "fullName": "汤臣倍健乳清蛋白粉 高蛋白低脂肪 运动恢复",
+    "brand": "汤臣倍健",
+    "storage": "阴凉干燥处",
+    "cat": "蛋白",
+    "form": "良",
+    "ev": "强",
+    "trans": true,
+    "price": 198,
+    "serv": 30,
+    "servPerDay": 1,
+    "dosage": "运动后 1 勺（约 25g），溶于水或牛奶",
+    "ingred": [
+      {"name": "乳清蛋白", "amt": 20000, "unit": "mg", "min": 15000, "max": 30000}
+    ]
+  }
 ];
+
+/* 数据归一化：兼容旧版 ing/ings 与新版 ingred 两种结构，确保 scoreOf / getIngs / 评估报告 都能取到成分 */
+LIB.forEach(l=>{
+  if(!l.ings){ l.ings = Array.isArray(l.ingred) ? l.ingred : []; }
+  if(!l.ing){ l.ing = (l.ings && l.ings.length) ? l.ings[0] : {}; }
+});
+
 const KNOW = [
   {t:"维生素 D3 与 K2 协同",b:"D3 促钙吸收，K2 引钙入骨、防钙沉积血管。长期补 D3 建议同补 K2。",cat:"协同"},
   {t:"镁的形式很关键",b:"甘氨酸盐/柠檬酸盐吸收好且不易腹泻；氧化镁吸收差，多用于通便。",cat:"选购"},
@@ -2911,49 +4138,6 @@ const INGREDIENT_INFO = {
   "维生素 K2":{benefit:"激活骨钙素与基质 Gla 蛋白，引钙入骨、防血管钙化。",func:["bone","heart"],
     forms:[{name:"MK-7 (甲基萘醌-7)",absorb:"高",burden:"低",note:"长效（半衰期长），每日一次即可。"},
       {name:"MK-4 (甲基萘醌-4)",absorb:"中",burden:"低",note:"短效，需多次服用。"}]},
-  "钙":{benefit:"骨骼与牙齿主要成分，神经肌肉传导。",func:["bone"],
-    forms:[{name:"柠檬酸钙 (Calcium citrate)",absorb:"高",burden:"低",note:"不依赖胃酸，随餐空腹皆可，温和不便秘。"},
-      {name:"碳酸钙 (Calcium carbonate)",absorb:"中",burden:"中",note:"便宜但需随餐、影响铁锌吸收、易便秘。"},
-      {name:"海藻钙 (Algae calcium)",absorb:"中",burden:"低",note:"含多种矿物，天然来源。"}]},
-  "镁":{benefit:"300+ 酶反应，放松神经肌肉、助眠、心血管。",func:["sleep","stress","heart","bone"],
-    forms:[{name:"甘氨酸镁 (Magnesium glycinate)",absorb:"高",burden:"低",note:"吸收好、不腹泻，助眠放松首选。"},
-      {name:"柠檬酸镁 (Magnesium citrate)",absorb:"高",burden:"中",note:"吸收好但轻泻，适合便秘者。"},
-      {name:"苏糖酸镁 (Magnesium L-threonate)",absorb:"高",burden:"低",note:"可穿越血脑屏障，专注认知/睡眠。"},
-      {name:"氧化镁 (Magnesium oxide)",absorb:"低",burden:"中",note:"含量高但吸收差，多用于通便。"}]},
-  "锌":{benefit:"免疫、伤口愈合、睾酮与味觉。",func:["immunity","hormone","skin"],
-    forms:[{name:"吡啶甲酸锌 (Zinc picolinate)",absorb:"高",burden:"低",note:"吸收好。"},
-      {name:"甘氨酸锌 (Zinc glycinate)",absorb:"高",burden:"低",note:"温和、胃肠友好。"},
-      {name:"葡萄糖酸锌 (Zinc gluconate)",absorb:"中",burden:"低",note:"常见、温和。"}]},
-  "铁":{benefit:"血红蛋白与氧运输，精力。",func:["energy","immunity"],
-    forms:[{name:"甘氨酸亚铁 (Ferrous bisglycinate)",absorb:"高",burden:"低",note:"螯合、温和少便秘，吸收佳。"},
-      {name:"富马酸亚铁 (Ferrous fumarate)",absorb:"中",burden:"中",note:"含铁量高，可能胃肠刺激。"},
-      {name:"硫酸亚铁 (Ferrous sulfate)",absorb:"中",burden:"高",note:"便宜但易便秘恶心，空腹大剂量不友好。"}]},
-  "铜":{benefit:"铁利用、结缔组织与抗氧化酶。",func:["immunity","antiox"],
-    forms:[{name:"甘氨酸铜 (Copper glycinate)",absorb:"高",burden:"低",note:"吸收好、温和。"}]},
-  "硒":{benefit:"谷胱甘肽过氧化物酶成分，抗氧化、甲状腺。",func:["antiox","immunity","hormone"],
-    forms:[{name:"硒代蛋氨酸 (Selenomethionine)",absorb:"高",burden:"低",note:"有机形式，吸收储存好。"},
-      {name:"亚硒酸钠 (Sodium selenite)",absorb:"中",burden:"中",note:"无机形式，便宜。"}]},
-  "碘":{benefit:"甲状腺激素原料。",func:["hormone","immunity"],
-    forms:[{name:"碘化钾 (Potassium iodide)",absorb:"高",burden:"低",note:"常见稳定形式。"},
-      {name:"海带提取物 (Kelp)",absorb:"中",burden:"低",note:"天然来源，但含量波动大。"}]},
-  "锰":{benefit:"骨骼形成与抗氧化酶辅因子。",func:["bone","antiox"],
-    forms:[{name:"葡萄糖酸锰 (Manganese gluconate)",absorb:"中",burden:"低",note:"常见温和形式。"}]},
-  "铬":{benefit:"增强胰岛素敏感性，糖代谢。",func:["metab","hormone"],
-    forms:[{name:"吡啶甲酸铬 (Chromium picolinate)",absorb:"高",burden:"低",note:"吸收好，研究最多。"},
-      {name:"烟酸铬 (Chromium nicotinate)",absorb:"中",burden:"低",note:"温和。"}]},
-  "钾":{benefit:"细胞与心肌电活动、血压。",func:["heart","muscle"],
-    forms:[{name:"柠檬酸钾 (Potassium citrate)",absorb:"高",burden:"低",note:"碱性、护肾石。"},
-      {name:"氯化钾 (Potassium chloride)",absorb:"高",burden:"中",note:"咸味、胃肠刺激。"}]},
-  "硼":{benefit:"影响钙镁利用与性激素。",func:["bone","hormone"],
-    forms:[{name:"硼砂/硼酸 (Borax/boric acid)",absorb:"中",burden:"低",note:"补剂常用微量形式。"}]},
-  "胆碱":{benefit:"细胞膜（磷脂）、神经递质乙酰胆碱前体，脑与肝健康。",func:["cognitive","detox","heart"],
-    forms:[{name:"CDP-胆碱 (Citicoline)",absorb:"高",burden:"低",note:"入脑快，认知与专注支持强。"},
-      {name:"Alpha-GPC",absorb:"高",burden:"低",note:"高生物利用度，认知与运动表现。"},
-      {name:"甜菜碱 (TMG / Betaine)",absorb:"高",burden:"低",note:"同时供甲基，助同型半胱氨酸代谢。"},
-      {name:"酒石酸胆碱 (Choline bitartrate)",absorb:"中",burden:"低",note:"便宜基础形式。"}]},
-  "肌醇":{benefit:"胰岛素信号与情绪（尤其 PCOS、焦虑）。",func:["mood","hormone","metab"],
-    forms:[{name:"Myo-肌醇",absorb:"高",burden:"低",note:"主流，PCOS/情绪常用。"},
-      {name:"D-手性肌醇 (DCI)",absorb:"高",burden:"低",note:"与 Myo 协同，改善胰岛素敏感。"}]},
   "PABA":{benefit:"叶酸辅因子，传统护肤护发。",func:["skin"],
     forms:[{name:"对氨基苯甲酸 (PABA)",absorb:"中",burden:"低",note:"B 族相关，护发传统用途。"}]},
   "EPA":{benefit:"抗炎、心血管与情绪。",func:["heart","inflam","mood"],
@@ -2966,25 +4150,395 @@ const INGREDIENT_INFO = {
     forms:[{name:"鱼油 rTG",absorb:"高",burden:"低",note:"优先看 EPA+DHA 总量而非鱼油重量。"},
       {name:"藻油 DHA",absorb:"高",burden:"低",note:"纯植物源，适合素食。"},
       {name:"鱼肝油",absorb:"中",burden:"低",note:"兼含 A/D，注意总量。"}]},
-  "辅酶 Q10":{benefit:"线粒体能量与抗氧化，他汀使用者常缺。",func:["heart","energy","antiox"],
-    forms:[{name:"泛醇 (Ubiquinol)",absorb:"高",burden:"低",note:"还原型，直接利用，吸收优于泛醌。"},
-      {name:"泛醌 (Ubiquinone)",absorb:"中",burden:"低",note:"需体内转化，年轻者可用。"}]},
-  "肌酸":{benefit:"ATP 再生，力量与认知。",func:["muscle","cognitive","energy"],
-    forms:[{name:"一水肌酸 (Creatine monohydrate)",absorb:"高",burden:"低",note:"证据最充分、性价比最高。"}]},
   "乳清蛋白":{benefit:"优质完全蛋白，肌肉合成。",func:["muscle"],
     forms:[{name:"分离乳清 (Whey isolate)",absorb:"高",burden:"低",note:"乳糖低，适合不耐。"},
       {name:"浓缩乳清 (Whey concentrate)",absorb:"高",burden:"低",note:"含乳糖，便宜。"},
       {name:"水解乳清 (Whey hydrolysate)",absorb:"高",burden:"低",note:"预分解、吸收快、低敏。"}]},
   "益生菌":{benefit:"肠道菌群平衡、免疫与消化。",func:["gut","immunity"],
     forms:[{name:"多菌株活菌 (CFU)",absorb:"高",burden:"低",note:"看菌株编号与活菌数，冷藏更佳。"}]},
-  "NAC":{benefit:"谷胱甘肽前体，抗氧化与化痰。",func:["antiox","detox","immunity"],
-    forms:[{name:"N-乙酰半胱氨酸 (NAC)",absorb:"高",burden:"低",note:"支持肝脏解毒与呼吸。"}]},
-  "姜黄素":{benefit:"强抗炎抗氧化。",func:["inflam","antiox","joint?"],
-    forms:[{name:"姜黄素+黑胡椒素 (Curcumin+Piperine)",absorb:"高",burden:"低",note:"黑胡椒素提升吸收数十倍。"},
-      {name:"脂质体姜黄素",absorb:"高",burden:"低",note:"包裹提升生物利用度。"}]},
   "镁(关节)":{benefit:"传统用于关节舒适度。",func:["inflam"],
-    forms:[{name:"MSM + 姜黄 + 软骨素复合",absorb:"中",burden:"低",note:"复合配方针对关节。"}]}
+    forms:[{name:"MSM + 姜黄 + 软骨素复合",absorb:"中",burden:"低",note:"复合配方针对关节。"}]},
+  "叶黄素":{benefit:"黄斑色素主要成分，过滤蓝光，降低年龄相关性黄斑变性风险。",func:["eye","antiox"],
+    forms:[
+      {"name":"叶黄素 (Lutein)",absorb:"高",burden:"低",note:"脂溶性，随餐服用吸收更好；推荐剂量 10-20mg/天。"},
+      {"name":"叶黄素酯 (Lutein Esters)",absorb:"中",burden:"低",note:"植物来源更稳定，需在体内转化为叶黄素。"}
+    ]},
+  "玉米黄质":{benefit:"黄斑色素第二大成分，与叶黄素协同保护视网膜。",func:["eye"],
+    forms:[
+      {"name":"玉米黄质 (Zeaxanthin)",absorb:"高",burden:"低",note:"推荐与叶黄素比例 1:2，每日 2-4mg。"}
+    ]},
+  "虾青素":{benefit:"最强天然抗氧化剂之一，跨越细胞膜保护细胞，支持皮肤与关节。",func:["antiox","skin","joint"],
+    forms:[
+      {"name":"雨生红球藻虾青素",absorb:"高",burden:"低",note:"天然来源，生物利用度高于合成虾青素；推荐 4-12mg/天。"},
+      {"name":"合成虾青素",absorb:"中",burden:"低",note:"成本低但生物活性较低。"}
+    ]},
+  "番茄红素":{benefit:"强效抗氧化类胡萝卜素，支持前列腺健康与心血管。",func:["antiox","prostate","heart"],
+    forms:[
+      {"name":"番茄红素（天然）",absorb:"高",burden:"低",note:"脂溶性，熟番茄+油脂吸收更好；推荐 10-20mg/天。"}
+    ]},
+  "白藜芦醇":{benefit:"多酚类抗氧化剂，激活 Sirtuin 长寿蛋白通路，支持心血管与代谢。",func:["antiox","heart","metabolism"],
+    forms:[
+      {"name":"反式白藜芦醇",absorb:"中",burden:"低",note:"天然存在于葡萄皮、红酒；需与磷脂或脂质体提高吸收。"},
+      {"name":"白藜芦醇+槲皮素复合物",absorb:"高",burden:"低",note:"槲皮素抑制白藜芦醇代谢，提升生物利用度。"}
+    ]},
+  "槲皮素":{benefit:"类黄酮抗氧化剂，支持呼吸道健康、抗过敏与抗炎。",func:["antiox","immune","respiratory"],
+    forms:[
+      {"name":"槲皮素",absorb:"中",burden:"低",note:"生物利用度低，建议与溴溴酶或维生素C同服。"},
+      {"name":"磷酸化槲皮素 (Quercetin Phytosome)",absorb:"高",burden:"低",note:"与磷脂复合，吸收率提升数倍。"}
+    ]},
+  "葡萄籽提取物":{benefit:"原花青素 OPC 强效抗氧化，支持血管弹性与皮肤健康。",func:["antiox","heart","skin"],
+    forms:[
+      {"name":"OPC 95% 标准化",absorb:"高",burden:"低",note:"选择标准化提取物确保 OPC 含量；推荐 100-300mg/天。"}
+    ]},
+  "α-硫辛酸":{benefit:"万能抗氧化剂，水溶+脂溶双重特性，支持血糖代谢与神经保护。",func:["antiox","metabolism","nerves"],
+    forms:[
+      {"name":"还原型 α-硫辛酸 (R-LA)",absorb:"高",burden:"低",note:"生物活性形式，效果优于合成品；推荐 300-600mg/天。"},
+      {"name":"合成 α-硫辛酸 (R,S-LA)",absorb:"中",burden:"低",note:"成本低，但仅一半为活性 R 型。"}
+    ]},
+  "PQQ":{benefit:"线粒体氧化还原辅酶，促进线粒体生物发生，支持大脑能量与认知。",func:["cognitive","antiox","energy"],
+    forms:[
+      {"name":"PQQ 二钠盐",absorb:"高",burden:"低",note:"稳定形式；推荐 10-20mg/天，与 CoQ10 协同效果更佳。"}
+    ]},
+  "NMN":{benefit:"NAD+ 前体，支持细胞能量代谢与抗衰老通路。",func:["anti-aging","energy","metabolism"],
+    forms:[
+      {"name":"β-烟酰胺单核苷酸",absorb:"中",burden:"低",note:"舌下含服或脂质体形式吸收更好；推荐 250-500mg/天。"},
+      {"name":"NMN 脂质体",absorb:"高",burden:"低",note:"脂质体包裹提高稳定性与吸收率。"}
+    ]},
+  "α-KG":{benefit:"三羧酸循环中间产物，支持能量代谢、蛋白质合成与运动恢复。",func:["energy","metabolism","recovery"],
+    forms:[
+      {"name":"α-酮戊二酸钙盐 (Calcium Alpha-KG)",absorb:"高",burden:"低",note:"稳定形式，常用于抗衰老与运动营养；推荐 500-1500mg/天。"}
+    ]},
+  "GABA":{benefit:"抑制性神经递质，促进放松与睡眠质量，缓解焦虑。",func:["sleep","relaxation","nerves"],
+    forms:[
+      {"name":"GABA",absorb:"中",burden:"低",note:"血脑屏障通透性有争议；推荐 100-750mg/天，睡前服用。"},
+      {"name":"微囊化 GABA",absorb:"高",burden:"低",note:"包裹技术提高稳定性与吸收。"}
+    ]},
+  "5-HTP":{benefit:"5-羟色氨酸，血清素前体，支持情绪、睡眠与食欲调节。",func:["mood","sleep","appetite"],
+    forms:[
+      {"name":"5-HTP（Griffonia 提取物）",absorb:"高",burden:"中",note:"需避开色氨酸食物；不建议与抗抑郁药同服；推荐 50-300mg/天。"}
+    ]},
+  "SAMe":{benefit:"活性甲基供体，支持肝脏解毒、情绪与关节健康。",func:["liver","mood","joint"],
+    forms:[
+      {"name":"SAMe 甲苯磺酸盐",absorb:"高",burden:"中",note:"肠溶包衣防止胃酸破坏；推荐 400-1600mg/天，空腹服用。"}
+    ]},
+  "牛磺酸":{benefit:"条件必需氨基酸，支持心脏功能、神经调节与运动表现。",func:["heart","nerves","performance"],
+    forms:[
+      {"name":"L-牛磺酸",absorb:"高",burden:"低",note:"安全剂量可达 3g/天；运动前服用可提升耐力。"}
+    ]},
+  "甘氨酸":{benefit:"抑制性神经递质，支持胶原蛋白合成、睡眠与解毒。",func:["sleep","collagen","detox"],
+    forms:[
+      {"name":"L-甘氨酸",absorb:"高",burden:"低",note:"口感甜，可直接口服；推荐 3-5g/天，睡前服用助眠。"}
+    ]},
+  "乙酰左旋肉碱":{benefit:"肉碱乙酰化形式，穿越血脑屏障，支持大脑能量与认知。",func:["cognitive","energy","metabolism"],
+    forms:[
+      {"name":"ALCAR",absorb:"高",burden:"低",note:"比 L-肉碱更易进入大脑；推荐 500-1500mg/天，早餐后服用。"}
+    ]},
+  "L-瓜氨酸":{benefit:"一氧化氮前体，支持血管舒张与运动泵感。",func:["performance","heart","circulation"],
+    forms:[
+      {"name":"L-瓜氨酸",absorb:"高",burden:"低",note:"在肾脏转化为精氨酸，提升精氨酸水平优于直接补充精氨酸。"},
+      {"name":"瓜氨酸苹果酸盐",absorb:"高",burden:"低",note:"与苹果酸复合，支持能量代谢与运动表现。"}
+    ]},
+  "L-谷氨酰胺":{benefit:"条件必需氨基酸，肠道黏膜主要燃料，支持免疫与修复。",func:["gut","immunity","recovery"],
+    forms:[
+      {"name":"L-谷氨酰胺",absorb:"高",burden:"低",note:"肠道首选燃料；推荐 5-15g/天，可溶于水或果汁。"}
+    ]},
+  "NAC":{benefit:"谷胱甘肽前体，强效抗氧化，支持肝脏解毒与呼吸道健康。",func:["liver","antiox","respiratory"],
+    forms:[
+      {"name":"NAC",absorb:"高",burden:"低",note:"提升体内谷胱甘肽水平；推荐 600-1800mg/天，空腹服用。"}
+    ]},
+  "甘氨酸锌":{benefit:"螯合锌，高吸收率，支持免疫与皮肤健康。",func:["immunity","skin","metabolism"],
+    forms:[
+      {"name":"甘氨酸锌",absorb:"高",burden:"低",note:"螯合形式吸收率远高于无机锌；推荐 15-30mg 元素锌/天。"}
+    ]},
+  "肌肽锌":{benefit:"锌与肌肽复合物，支持胃肠道黏膜修复。",func:["gut","immunity"],
+    forms:[
+      {"name":"ZINC-CARN",absorb:"高",burden:"低",note:"专利形式，支持溃疡与 leaky gut；推荐 75mg 每日 2 次。"}
+    ]},
+  "吡啶甲酸锌":{benefit:"螯合锌，高生物利用度，支持免疫与酶功能。",func:["immunity","metabolism","skin"],
+    forms:[
+      {"name":"吡啶甲酸锌",absorb:"高",burden:"低",note:"吸收率优于硫酸锌和葡萄糖酸锌。"}
+    ]},
+  "甘氨酸镁":{benefit:"螯合镁，高吸收率，不引起腹泻，支持放松与睡眠。",func:["relaxation","sleep","muscle","nerves"],
+    forms:[
+      {"name":"双甘氨酸镁",absorb:"高",burden:"低",note:"生物利用度高，胃肠耐受性好；推荐 200-400mg 元素镁/天。"}
+    ]},
+  "柠檬酸镁":{benefit:"镁盐形式，良好吸收，兼具轻度通便作用。",func:["muscle","nerves","digestion"],
+    forms:[
+      {"name":"柠檬酸镁",absorb:"高",burden:"低",note:"吸收率高，大剂量可能有轻度泻下作用。"}
+    ]},
+  "苏糖酸镁":{benefit:"穿越血脑屏障的镁形式，支持认知与神经功能。",func:["cognitive","nerves","memory"],
+    forms:[
+      {"name":"Magtein 苏糖酸镁",absorb:"高",burden:"低",note:"唯一能有效提升脑内镁水平的形式；推荐 144mg 元素镁。"}
+    ]},
+  "氯化镁":{benefit:"常见镁补充形式，吸收尚可，价格亲民。",func:["muscle","nerves","energy"],
+    forms:[
+      {"name":"氯化镁",absorb:"中",burden:"低",note:"吸收率中等，大剂量可能引起腹泻。"}
+    ]},
+  "氧化镁":{benefit:"镁含量最高但吸收率低，主要用于通便。",func:["digestion"],
+    forms:[
+      {"name":"氧化镁",absorb:"低",burden:"中",note:"元素镁含量高但吸收差，主要用于缓解便秘。"}
+    ]},
+  "甘氨酸亚铁":{benefit:"螯合铁，温和不刺激肠胃，吸收率高。",func:["blood","energy","immunity"],
+    forms:[
+      {"name":"甘氨酸亚铁",absorb:"高",burden:"低",note:"比硫酸亚铁更温和，胃肠副作用少。"}
+    ]},
+  "血红素铁":{benefit:"来自血红蛋白的铁，吸收率最高，不受植酸影响。",func:["blood","energy"],
+    forms:[
+      {"name":"血红素铁复合物",absorb:"高",burden:"低",note:"来自动物来源，吸收率是非血红素铁的 2-3 倍。"}
+    ]},
+  "柠檬酸钙":{benefit:"有机钙盐，吸收不受胃酸影响，适合胃酸偏低人群。",func:["bone","muscle","nerves"],
+    forms:[
+      {"name":"柠檬酸钙",absorb:"高",burden:"低",note:"不含碳酸盐，不引起胀气；元素钙含量约 21%。"}
+    ]},
+  "甲基钴胺素":{benefit:"活性维生素 B12 形式，直接参与代谢，无需转化。",func:["energy","nerves","blood"],
+    forms:[
+      {"name":"甲基钴胺素 (Methylcobalamin)",absorb:"高",burden:"低",note:"活性形式，舌下含服吸收最佳；推荐 500-1000mcg/天。"},
+      {"name":"腺苷钴胺素 (Adenosylcobalamin)",absorb:"高",burden:"低",note:"另一种活性 B12，在线粒体代谢中起作用。"}
+    ]},
+  "氰钴胺素":{benefit:"合成维生素 B12，需在体内转化为活性形式。",func:["energy","blood"],
+    forms:[
+      {"name":"氰钴胺素 (Cyanocobalamin)",absorb:"中",burden:"低",note:"最稳定、成本最低，但需肝脏转化；舌下含服可绕过转化步骤。"}
+    ]},
+  "5-MTHF":{benefit:"活性叶酸形式，直接参与一碳代谢，不受 MTHFR 基因变异影响。",func:["blood","nerves","heart","pregnancy"],
+    forms:[
+      {"name":"5-MTHF (Metafolin/L-5-MTHF)",absorb:"高",burden:"低",note:"直接利用的活性叶酸；推荐 400-800mcg/天，备孕与孕期尤其重要。"}
+    ]},
+  "合成叶酸":{benefit:"合成维生素 B9，需经 MTHFR 酶转化为活性形式。",func:["blood","pregnancy"],
+    forms:[
+      {"name":"合成叶酸 (Folic Acid)",absorb:"高",burden:"中",note:"部分人群 MTHFR 突变导致转化效率低；优先选择活性叶酸。"}
+    ]},
+  "胆碱":{benefit:"必需营养素，支持肝脏、大脑与细胞膜健康。",func:["liver","cognitive","cell"],
+    forms:[
+      {"name":"磷酸酰胆碱",absorb:"高",burden:"低",note:"卵磷脂主要成分，支持肝脏与神经。"},
+      {"name":"CDP-胆碱 (Citicoline)",absorb:"高",burden:"低",note:"穿越血脑屏障，支持认知与注意力。"},
+      {"name":"胆碱酒石酸盐",absorb:"中",burden:"低",note:"常见补充形式，元素胆碱含量约 41%。"}
+    ]},
+  "肌醇":{benefit:"类维生素物质，支持胰岛素信号传导与情绪平衡。",func:["metabolism","mood","hormone"],
+    forms:[
+      {"name":"肌醇 (Myo-Inositol)",absorb:"高",burden:"低",note:"最普遍形式；推荐 2-5g/天，可溶于水。"},
+      {"name":"D-手性肌醇",absorb:"高",burden:"低",note:"与 Myo-Inositol 2:1 比例对 PCOS 特别有益。"}
+    ]},
+  "生物素":{benefit:"维生素 B7，支持头发、指甲与皮肤健康。",func:["hair","nails","skin","metabolism"],
+    forms:[
+      {"name":"生物素 (Biotin)",absorb:"高",burden:"低",note:"水溶性维生素；推荐 3000-10000mcg/天用于美容。"}
+    ]},
+  "泛酸":{benefit:"维生素 B5，辅酶 A 组成成分，支持能量代谢与激素合成。",func:["energy","hormone","skin"],
+    forms:[
+      {"name":"泛酸钙",absorb:"高",burden:"低",note:"稳定形式；推荐 500-1000mg/天。"}
+    ]},
+  "辅酶 Q10":{benefit:"线粒体电子传递链关键辅酶，支持心脏能量与抗氧化。",func:["heart","energy","antiox"],
+    forms:[
+      {"name":"泛醌 (Ubiquinone)",absorb:"中",burden:"低",note:"氧化形式，需体内转化为泛醇。"},
+      {"name":"泛醇 (Ubiquinol)",absorb:"高",burden:"低",note:"还原型，生物利用度高；推荐 100-200mg/天。"}
+    ]},
+  "Omega-3 脂肪酸":{benefit:"必需脂肪酸，支持心血管、大脑与抗炎。",func:["heart","brain","anti-inflammatory"],
+    forms:[
+      {"name":"EPA（二十碳五烯酸）",absorb:"高",burden:"低",note:"主要抗炎 Omega-3；推荐 500-2000mg/天。"},
+      {"name":"DHA（二十二碳六烯酸）",absorb:"高",burden:"低",note:"大脑与视网膜主要脂肪酸；推荐 250-1000mg/天。"},
+      {"name":"rTG 结构鱼油",absorb:"高",burden:"低",note:"再酯化甘油三酯结构，吸收率高于 EE 型。"},
+      {"name":"EE 结构鱼油",absorb:"中",burden:"低",note:"乙酯结构，需添加脂肪提高吸收。"}
+    ]},
+  "磷脂酰丝氨酸":{benefit:"磷脂类神经递质前体，支持认知与记忆力。",func:["cognitive","memory","stress"],
+    forms:[
+      {"name":"磷脂酰丝氨酸 (PS)",absorb:"高",burden:"低",note:"源自大豆或牛脑；推荐 100-300mg/天。"}
+    ]},
+  "左旋肉碱":{benefit:"脂肪酸转运蛋白，支持能量代谢与运动表现。",func:["energy","performance","metabolism"],
+    forms:[
+      {"name":"L-肉碱 L-酒石酸盐",absorb:"高",burden:"低",note:"运动补充首选形式；推荐 1-3g/天。"},
+      {"name":"乙酰左旋肉碱 (ALCAR)",absorb:"高",burden:"低",note:"穿越血脑屏障，支持认知。"},
+      {"name":"丙酰左旋肉碱",absorb:"中",burden:"低",note:"支持肝脏代谢。"}
+    ]},
+  "肌酸":{benefit:"运动表现补充剂，增加肌肉磷酸肌酸储备，提升力量与爆发力。",func:["performance","muscle","cognitive"],
+    forms:[
+      {"name":"一水肌酸 (Creatine Monohydrate)",absorb:"高",burden:"低",note:"研究最充分、性价比最高的肌酸形式；推荐 3-5g/天。"},
+      {"name":"肌酸盐酸盐",absorb:"高",burden:"低",note:"溶解度更高，用量更少。"}
+    ]},
+  "β-丙氨酸":{benefit:"肌肽前体，肌肉缓冲剂，提升高强度运动耐力。",func:["performance","muscle"],
+    forms:[
+      {"name":"β-丙氨酸",absorb:"高",burden:"低",note:"引起皮肤刺痛感为正常现象；推荐 2-5g/天，分次服用。"}
+    ]},
+  "支链氨基酸":{benefit:"亮氨酸、异亮氨酸、缬氨酸，支持肌肉合成与恢复。",func:["performance","muscle","recovery"],
+    forms:[
+      {"name":"BCAA 2:1:1",absorb:"高",burden:"低",note:"经典比例，亮氨酸:异亮氨酸:缬氨酸。"},
+      {"name":"BCAA 4:1:1",absorb:"高",burden:"低",note:"更高亮氨酸比例，促进肌肉合成。"}
+    ]},
+  "水解乳清蛋白":{benefit:"预消化乳清蛋白，快速吸收，支持肌肉恢复。",func:["muscle","recovery","performance"],
+    forms:[
+      {"name":"水解乳清蛋白 (Hydrolyzed Whey)",absorb:"高",burden:"低",note:"预消化形式，吸收最快；推荐 20-30g/餐后。"},
+      {"name":"乳清蛋白浓缩物 (WPC)",absorb:"中",burden:"低",note:"含 80% 蛋白，残留乳糖。"},
+      {"name":"乳清蛋白 isolate (WPI)",absorb:"高",burden:"低",note:"蛋白含量 90%+，几乎无乳糖。"}
+    ]},
+  "胶原蛋白肽":{benefit:"水解胶原蛋白，小分子易吸收，支持皮肤、关节与骨骼。",func:["skin","joint","bone","hair"],
+    forms:[
+      {"name":"I 型胶原蛋白肽",absorb:"高",burden:"低",note:"主要来自牛皮/鱼皮，支持皮肤与骨骼。"},
+      {"name":"II 型胶原蛋白",absorb:"中",burden:"低",note:"主要来自鸡软骨，支持关节。"},
+      {"name":"Multi-type 复合胶原",absorb:"高",burden:"低",note:"多类型复合，全面支持。"}
+    ]},
+  "精氨酸":{benefit:"一氧化氮前体，支持血管舒张与生长激素分泌。",func:["circulation","performance","immunity"],
+    forms:[
+      {"name":"L-精氨酸",absorb:"中",burden:"低",note:"口服生物利用度有限，大剂量可能引起胃肠不适。"}
+    ]},
+  "L-茶氨酸":{benefit:"茶叶主要氨基酸，促进放松与专注，不与咖啡因拮抗。",func:["cognitive","relaxation","sleep"],
+    forms:[
+      {"name":"L-茶氨酸（Suntheanine）",absorb:"高",burden:"低",note:"专利形式，纯度高；推荐 100-400mg/天。"}
+    ]},
+  "褪黑素":{benefit:"调节睡眠-觉醒周期的激素，支持入睡与时差调整。",func:["sleep","circadian","antiox"],
+    forms:[
+      {"name":"褪黑素（速释）",absorb:"高",burden:"低",note:"推荐 0.5-3mg，睡前 30 分钟服用。"},
+      {"name":"褪黑素（缓释）",absorb:"中",burden:"低",note:"维持整夜血药浓度，适合维持睡眠。"}
+    ]},
+  "南非醉茄提取物":{benefit:"适应原草本，支持抗压、睡眠与睾酮水平。",func:["adaptogen","stress","hormone","sleep"],
+    forms:[
+      {"name":"KSM-66 全谱根提取物",absorb:"高",burden:"低",note:"临床验证；推荐 300-600mg/天。"},
+      {"name":"Sensoril 提取物",absorb:"高",burden:"低",note:"根+叶复合，含灰力奈林；推荐 125-250mg/天。"}
+    ]},
+  "红景天提取物":{benefit:"适应原草本，支持抗疲劳与运动表现。",func:["adaptogen","energy","performance"],
+    forms:[
+      {"name":"红景天提取物 3% rosavins",absorb:"高",burden:"低",note:"标准化提取；推荐 280-600mg/天。"}
+    ]},
+  "假马齿苋提取物":{benefit:"传统益智草本，支持记忆与认知。",func:["cognitive","memory","nerves"],
+    forms:[
+      {"name":"假马齿苋 50% bacosides",absorb:"高",burden:"低",note:"标准化提取物；推荐 300-600mg/天。"}
+    ]},
+  "银杏叶提取物":{benefit:"支持脑循环与认知功能。",func:["cognitive","circulation","antiox"],
+    forms:[
+      {"name":"EGb 761 标准化提取物",absorb:"高",burden:"低",note:"24% 黄酮苷 + 6% 内酯；推荐 120-240mg/天。"}
+    ]},
+  "猴头菇提取物":{benefit:"药用蘑菇，支持神经生长因子 NGF 与认知。",func:["cognitive","nerves","immunity"],
+    forms:[
+      {"name":"猴头菇子实体提取物",absorb:"高",burden:"低",note:"含猴头菌素；推荐 500-1000mg/天。"}
+    ]},
+  "水飞蓟素":{benefit:"护肝草本，支持肝脏解毒与抗氧化。",func:["liver","detox","antiox"],
+    forms:[
+      {"name":"水飞蓟素 80% 标准化",absorb:"高",burden:"低",note:"含 Silymarin 复合物；推荐 140-420mg/天。"},
+      {"name":"水飞蓟宾 (Silybin)",absorb:"高",burden:"低",note:"水飞蓟素主要活性成分。"}
+    ]},
+  "姜黄素":{benefit:"姜黄主要活性成分，强效抗炎抗氧化。",func:["anti-inflammatory","joint","liver","antiox"],
+    forms:[
+      {"name":"姜黄素（Curcuma longa 提取物）",absorb:"中",burden:"低",note:"生物利用度低，需配黑胡椒素或脂质体。"},
+      {"name":"姜黄素+黑胡椒素 (BioPerine)",absorb:"高",burden:"低",note:"黑胡椒素提高吸收率 2000%。"},
+      {"name":"磷脂姜黄素 (Meriva)",absorb:"高",burden:"低",note:"与磷脂复合，吸收率高。"},
+      {"name":"纳米姜黄素",absorb:"高",burden:"低",note:"纳米技术提高生物利用度。"}
+    ]},
+  "乳香提取物":{benefit:"传统抗炎草本，支持关节舒适。",func:["anti-inflammatory","joint"],
+    forms:[
+      {"name":"乳香提取物 65% AKBA",absorb:"高",burden:"低",note:"标准化博莱树脂；推荐 300-500mg/天。"}
+    ]},
+  "锯棕榈提取物":{benefit:"支持前列腺健康与激素平衡。",func:["prostate","hormone","hair"],
+    forms:[
+      {"name":"锯棕榈果提取物",absorb:"高",burden:"低",note:"含脂肪酸与植物固醇；推荐 320-640mg/天。"}
+    ]},
+  "锌":{benefit:"必需微量元素，支持免疫、伤口愈合与激素平衡。",func:["immunity","hormone","skin","wound"],
+    forms:[
+      {"name":"甘氨酸锌",absorb:"高",burden:"低",note:"螯合形式，吸收率高，胃肠温和。"},
+      {"name":"吡啶甲酸锌",absorb:"高",burden:"低",note:"高生物利用度螯合形式。"},
+      {"name":"柠檬酸锌",absorb:"中高",burden:"低",note:"吸收良好，成本适中。"},
+      {"name":"硫酸锌",absorb:"中",burden:"中",note:"成本低但可能引起胃肠不适。"}
+    ]},
+  "镁":{benefit:"参与 300+ 酶反应，支持肌肉、神经与能量代谢。",func:["muscle","nerves","energy","sleep","bone"],
+    forms:[
+      {"name":"甘氨酸镁",absorb:"高",burden:"低",note:"高吸收率，不引起腹泻，支持放松与睡眠。"},
+      {"name":"柠檬酸镁",absorb:"高",burden:"低",note:"吸收率高，大剂量轻度通便。"},
+      {"name":"苏糖酸镁",absorb:"高",burden:"低",note:"唯一有效穿越血脑屏障的镁形式，支持认知。"},
+      {"name":"苹果酸镁",absorb:"高",burden:"低",note:"苹果酸支持能量代谢，适合纤维肌痛。"},
+      {"name":"氯化镁",absorb:"中",burden:"低",note:"常见形式，性价比高。"},
+      {"name":"氧化镁",absorb:"低",burden:"中",note:"元素镁含量高但吸收差，主要用于通便。"}
+    ]},
+  "钙":{benefit:"骨骼主要矿物，支持肌肉收缩与神经传导。",func:["bone","muscle","nerves","heart"],
+    forms:[
+      {"name":"柠檬酸钙",absorb:"高",burden:"低",note:"不依赖胃酸，适合胃酸偏低人群。"},
+      {"name":"碳酸钙",absorb:"中",burden:"低",note:"最常见形式，元素钙含量约 40%。"},
+      {"name":"磷酸钙",absorb:"中",burden:"低",note:"骨骼主要无机成分。"},
+      {"name":"苹果酸钙",absorb:"高",burden:"低",note:"有机钙盐，温和好吸收。"}
+    ]},
+  "铁":{benefit:"血红蛋白核心成分，支持氧气运输与能量代谢。",func:["blood","energy","immunity","cognitive"],
+    forms:[
+      {"name":"甘氨酸亚铁",absorb:"高",burden:"低",note:"螯合形式，温和不刺激肠胃。"},
+      {"name":"血红素铁",absorb:"高",burden:"低",note:"动物来源，吸收率最高。"},
+      {"name":"富马酸亚铁",absorb:"中高",burden:"低",note:"元素铁含量约 33%。"},
+      {"name":"硫酸亚铁",absorb:"中",burden:"中高",note:"常见但胃肠副作用较多。"},
+      {"name":"多糖铁复合物",absorb:"高",burden:"低",note:"温和不刺激，适合敏感肠胃。"}
+    ]},
+  "硒":{benefit:"必需微量元素，支持甲状腺与抗氧化酶。",func:["thyroid","antiox","immunity"],
+    forms:[
+      {"name":"酵母硒（硒代蛋氨酸）",absorb:"高",burden:"低",note:"有机形式，安全有效。"},
+      {"name":"硒代蛋氨酸",absorb:"高",burden:"低",note:"稳定储存形式。"},
+      {"name":"硒代半胱氨酸",absorb:"高",burden:"低",note:"谷胱甘肽过氧化物酶成分。"}
+    ]},
+  "碘":{benefit:"甲状腺激素合成必需，支持代谢与发育。",func:["thyroid","metabolism","development"],
+    forms:[
+      {"name":"碘化钾",absorb:"高",burden:"低",note:"最常见补充形式。"},
+      {"name":"碘酸钾",absorb:"高",burden:"低",note:"更稳定。"},
+      {"name":"海带提取物",absorb:"中",burden:"中",note:"天然来源，含量波动大。"}
+    ]},
+  "铜":{benefit:"必需微量元素，支持铁代谢与结缔组织。",func:["blood","bone","nerves"],
+    forms:[
+      {"name":"甘氨酸铜",absorb:"高",burden:"低",note:"螯合形式，吸收好。"},
+      {"name":"硫酸铜",absorb:"高",burden:"中",note:"无机形式，过量有毒性。"}
+    ]},
+  "锰":{benefit:"微量元素，支持骨骼与抗氧化酶。",func:["bone","antiox","metabolism"],
+    forms:[
+      {"name":"甘氨酸锰",absorb:"高",burden:"低",note:"螯合形式。"},
+      {"name":"硫酸锰",absorb:"高",burden:"中",note:"无机形式。"}
+    ]},
+  "铬":{benefit:"微量元素，支持胰岛素敏感性与糖代谢。",func:["metabolism","blood-sugar"],
+    forms:[
+      {"name":"吡啶甲酸铬",absorb:"高",burden:"低",note:"生物利用度高。"},
+      {"name":"烟酸铬",absorb:"高",burden:"低",note:"与烟酸复合。"},
+      {"name":"葡萄糖酸铬",absorb:"中",burden:"低",note:"常见形式。"}
+    ]},
+  "钼":{benefit:"微量元素，辅助硫化物代谢。",func:["detox","metabolism"],
+    forms:[
+      {"name":"甘氨酸钼",absorb:"高",burden:"低",note:"螯合形式。"}
+    ]},
+  "硼":{benefit:"微量元素，支持骨骼与激素代谢。",func:["bone","hormone","cognitive"],
+    forms:[
+      {"name":"甘氨酸硼",absorb:"高",burden:"低",note:"螯合形式，生物利用度高。"},
+      {"name":"硼酸钠",absorb:"中",burden:"低",note:"常见无机形式。"}
+    ]},
+  "钾":{benefit:"大量矿物质，支持心脏、肌肉与血压调节。",func:["heart","muscle","blood-pressure"],
+    forms:[
+      {"name":"柠檬酸钾",absorb:"高",burden:"低",note:"常见补充形式。"},
+      {"name":"氯化钾",absorb:"高",burden:"中",note:"大剂量可能刺激胃肠。"}
+    ]},
+  "益生菌复合":{benefit:"支持肠道微生态与免疫。",func:["gut","immunity","digestion"],
+    forms:[
+      {"name":"乳酸杆菌属",absorb:"高",burden:"低",note:"如 L. acidophilus, L. rhamnosus, L. casei。"},
+      {"name":"双歧杆菌属",absorb:"高",burden:"低",note:"如 B. lactis, B. longum。"},
+      {"name":"芽孢杆菌属",absorb:"高",burden:"低",note:"耐胃酸，可直达肠道。"},
+      {"name":"布拉氏酵母菌",absorb:"高",burden:"低",note:"益生菌真菌，对抗生素相关腹泻有效。"}
+    ]},
+  "消化酶复合":{benefit:"支持食物分解与营养吸收。",func:["digestion","gut"],
+    forms:[
+      {"name":"淀粉酶",absorb:"高",burden:"低",note:"分解碳水化合物。"},
+      {"name":"蛋白酶",absorb:"高",burden:"低",note:"分解蛋白质。"},
+      {"name":"脂肪酶",absorb:"高",burden:"低",note:"分解脂肪。"},
+      {"name":"纤维素酶",absorb:"中",burden:"低",note:"分解植物纤维。"}
+    ]},
+  "益生元纤维":{benefit:"益生菌的食物，支持肠道菌群平衡。",func:["gut","immunity"],
+    forms:[
+      {"name":"低聚果糖 (FOS)",absorb:"高",burden:"低",note:"选择性促进双歧杆菌。"},
+      {"name":"低聚半乳糖 (GOS)",absorb:"高",burden:"低",note:"模拟母乳低聚糖。"},
+      {"name":"菊粉",absorb:"中",burden:"低",note:"从菊苣提取，可溶性纤维。"},
+      {"name":"洋车前子壳",absorb:"低",burden:"低",note:"可溶性纤维，支持规律排便。"}
+    ]}
+  };;;
+
+/* ============ 权威信息源 ============ */
+// 成分 -> NIH ODS 健康专业人员事实表 slug（已逐一验证可访问）
+const NIH_ODS = {
+  "钙":"Calcium","镁":"Magnesium","锌":"Zinc","铁":"Iron","铜":"Copper","硒":"Selenium","碘":"Iodine",
+  "锰":"Manganese","铬":"Chromium","钾":"Potassium","硼":"Boron","胆碱":"Choline",
+  "维生素 A":"VitaminA","维生素 C":"VitaminC","维生素 D3":"VitaminD","维生素 E":"VitaminE","维生素 K2":"VitaminK","叶酸":"Folate"
 };
+// 知识库参考的权威信息源（已验证可访问）
+const SOURCES = [
+  {name:"NIH ODS 膳食补充剂事实表", url:"https://ods.od.nih.gov/", note:"美国国立卫生研究院 · 循证营养素摄入量 / 安全上限"},
+  {name:"Examine.com", url:"https://examine.com/", note:"独立循证补剂研究数据库（无商业关联）"},
+  {name:"Labdoor", url:"https://labdoor.com/", note:"独立第三方补剂成分检测与评级"},
+  {name:"FDA 膳食补充剂", url:"https://www.fda.gov/food/dietary-supplements", note:"美国食药监局 · 监管与合规"},
+  {name:"中国营养学会", url:"https://www.cnsoc.org/", note:"中国居民膳食营养素参考摄入量（DRIs）发布机构"}
+];
 
 function ingInfo(name){ return INGREDIENT_INFO[name] || null; }
 // 由补剂成分汇总功能标签
@@ -3012,8 +4566,8 @@ function median(a){const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;return s.
 const vp = l => l.price/l.serv;
 function scoreOf(l, dosePerTake=1){
   if(dosePerTake===1 && l._score) return l._score;
-  const quality = {优:90,中:65,差:40}[l.form];
-  const efficacy = {强:90,中:68,弱:45}[l.ev];
+  const quality = ({优:90,良:75,中:65,差:40}[l.form]) ?? 65;
+  const efficacy = ({强:90,中:68,弱:45}[l.ev]) ?? 68;
   const transparency = l.trans ? 85 : 50;
   const group = LIB.filter(x=>x.cat===l.cat);
   const base = group.length>1 ? group : LIB;
@@ -3066,7 +4620,7 @@ function ingMaterialHTML(l){
       <div class="ing-d-h"><b>${g.name}</b><span class="ing-d-amt">${g.amt}${g.unit}</span></div>
       ${fm?`<div class="ing-d-f">${fLabel}：<b>${fm.name}</b></div>
       <div class="ing-d-chips">${matChip(t("matAbsorb"),fm.absorb)}${matChip(t("matBurden"),fm.burden)}</div>`:""}
-      ${info?`<div class="ing-d-b">${info.benefit}</div>`:""}
+      ${info?`<div class="ing-d-b">${info.benefit}</div>`:""}${NIH_ODS[g.name]?`<a class="ing-src" href="https://ods.od.nih.gov/factsheets/${NIH_ODS[g.name]}-HealthProfessional/" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:12px;color:#007AFF;text-decoration:none">🔗 ${t("srcODS")}</a>`:""}
       ${fm&&fm.note?`<div class="ing-d-n">${fm.note}</div>`:""}
     </div>`;
   });
@@ -3314,12 +4868,13 @@ function viewToday(){
     items.forEach(s=>{
       const taken = s.history[d]||0;
       const done = taken>=s.takes || s.remaining<=0;
-      const low = s.remaining<=s.takes*3;
+      const low = s.remaining<=s.takes*(s.dose||1)*3;
+      const days = s.takes>0&&s.dose>0 ? Math.floor(s.remaining/(s.takes*s.dose)) : 0;
       html += `<div class="row">
         <div class="pill-icon">${pillIconOf(s.icon)}</div>
         <div class="row-main" data-stack="${s.uid}" style="cursor:pointer">
           <div class="row-title">${s.name}</div>
-          <div class="row-sub">${usageLabel(s.usage)}${s.remindAt?` · ⏰ ${s.remindAt}`:""} · ${t("remaining")} ${s.remaining}${low?" · <span style='color:var(--red)'>"+t("lowWarn")+"</span>":""}</div>
+          <div class="row-sub">${usageLabel(s.usage)}${s.remindAt?` · ⏰ ${s.remindAt}`:""} · ${t("remaining")} ${s.remaining} · ${days}${t("days")}${low?" · <span style='color:var(--red)'>"+t("lowWarn")+"</span>":""}</div>
           <div class="func-tags">${funcTagsOf(s).map(funcTagEl).join("")}</div>
         </div>
         <button class="check ${done?"done":""}" ${done?"disabled":""} data-take="${s.uid}">${CHECK}</button>
@@ -3358,8 +4913,8 @@ function viewStack(){
   active.forEach(s=>{
     const per = (s.price/s.serv).toFixed(2);
     const day = (per*s.takes).toFixed(2);
-    const days = s.takes>0 ? Math.floor(s.remaining/s.takes) : 0;
-    const low = s.remaining<=s.takes*3;
+    const days = s.takes>0&&s.dose>0 ? Math.floor(s.remaining/(s.takes*s.dose)) : 0;
+    const low = s.remaining<=s.takes*(s.dose||1)*3;
     const brand = s.brand || (s.lib && s.lib.brand) || "";
     const img = s.image ? `<img src="${s.image}" alt="">` : bottlePlaceholder(brand || s.name);
     html += `<div class="stack-card" data-stack="${s.uid}">
@@ -3550,7 +5105,17 @@ function viewKnow(){
     </div></div>`;
   });
   html += `</div>`;
-  view.innerHTML = html;
+  
+  // 权威来源
+  html += `<div class="sec-head">${t("sources")}</div><div class="card" style="margin-top:0">`;
+  SOURCES.forEach(s=>{
+    html += `<a class="row" href="${s.url}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="row-main">
+      <div class="row-title" style="font-size:15px">${s.name}</div>
+      <div class="row-sub">${s.note}</div></div>
+      <span class="chev">↗</span></a>`;
+  });
+  html += `</div>`;
+view.innerHTML = html;
 }
 
 /* ============ 添加流程 ============ */
@@ -3744,7 +5309,7 @@ function saveStack(){
       const totalTaken = Object.values(s.history||{}).reduce((a,b)=>a+(+b||0),0);
       s.name=name; s.price=price; s.serv=serv; s.takes=takes; s.dose=dose;
       s.ings=ings; s.icon=icon; s.image=tmpPhoto; s.lib=l; s.libId=l?l.id:"custom"; s.brand=brand;
-      s.remaining = Math.max(0, serv - totalTaken);
+      s.remaining = Math.max(0, serv - totalTaken*(dose||1));
     }
   } else {
     state.stack.push({
@@ -3762,7 +5327,7 @@ function take(uid){
   const d = today();
   if((s.history[d]||0)>=s.takes || s.remaining<=0) return;
   s.history[d]=(s.history[d]||0)+1;
-  s.remaining=Math.max(0,s.remaining-1);
+  s.remaining=Math.max(0,s.remaining-(s.dose||1));
   (s.ings||[]).forEach(g=>{
     if(g && g.name && g.amt>0){
       if(!state.intake[d]) state.intake[d]={};
@@ -3781,7 +5346,7 @@ function copyStack(uid){
   closeSheet();
   openConfig(s.lib||null, null, cp);
 }
-function backfill(uid, taken, remain){
+function backfill(uid, taken, remain, prevRemain){
   const s=state.stack.find(x=>x.uid===uid); if(!s) return;
   if(!s._bf) s._bf={};
   // 1) 先撤销上一轮补录：只扣掉「补录部分」，应用内已记录原样保留（避免重复累计）
@@ -3809,8 +5374,10 @@ function backfill(uid, taken, remain){
     (s.ings||[]).forEach(g=>{ if(g&&g.name&&g.amt>0) state.intake[key][g.name]=((state.intake[key][g.name]||0)+g.amt*s.dose); });
     cnt--;
   }
-  s.remaining=remainV;
-  s.serv=Math.max(1, effectiveN+remainV);       // 总份数 = 已服用(含补录) + 当前剩余，保持份数/花费自洽
+  // 剩余 = 用户输入剩余；若用户未改动（等于打开时剩余），自动扣减补录份数
+  const autoRemain = Math.max(0, (s.serv||0) - effectiveN*(s.dose||1));
+  s.remaining = (remainV===prevRemain||prevRemain==null) ? autoRemain : remainV;
+  s.serv = Math.max(s.serv||0, effectiveN*(s.dose||1) + s.remaining);
   save(); closeSheet(); toast(t("backfilled")); setTab(curTab);
 }
 function openBackfill(uid){
@@ -3822,7 +5389,7 @@ function openBackfill(uid){
       <div class="field"><label>${t("backfillTaken")}</label><input id="bf_taken" type="number" inputmode="numeric" value="${totalTaken}"></div>
       <div class="field"><label>${t("backfillRemain")}</label><input id="bf_remain" type="number" inputmode="numeric" value="${s.remaining}"></div>
     </div>
-    <button class="btn block" style="margin-top:8px" data-bfsave="${s.uid}">${t("save")}</button>`);
+    <button class="btn block" style="margin-top:8px" data-bfsave="${s.uid}" data-prevremain="${s.remaining}">${t("save")}</button>`);
 }
 function viewBox(){
   const archived=state.stack.filter(s=>s.archived);
@@ -3968,7 +5535,7 @@ document.addEventListener("click", e=>{
   const start = tgt.closest("[data-start]");
   if(start){ const id=start.dataset.start; openConfig(id==="custom"?null:byId(id)); return; }
   const chip = tgt.closest("[data-libcat]");
-  if(chip){ libCat = (chip.dataset.libcat||""); viewLib(); return; }
+  if(chip){ libCat = (chip.dataset.libcat||""); document.querySelectorAll(".chip-row .chip").forEach(c=>c.classList.toggle("on", c.dataset.libcat===(chip.dataset.libcat||""))); renderLibList(); return; }
   const libAdd = tgt.closest("[data-libadd]");
   if(libAdd){ openConfig(byId(libAdd.dataset.libadd)); return; }
   const st = tgt.closest("[data-stack]");
@@ -3982,7 +5549,7 @@ document.addEventListener("click", e=>{
   const archiveBtn = tgt.closest("[data-archive]");
   if(archiveBtn){ const s=state.stack.find(x=>x.uid===archiveBtn.dataset.archive); if(s){ if(s.archived) unarchive(s.uid); else archive(s.uid); } return; }
   const bfSaveBtn = tgt.closest("[data-bfsave]");
-  if(bfSaveBtn){ const taken=+$("#bf_taken").value||0; const remain=+$("#bf_remain").value||0; backfill(bfSaveBtn.dataset.bfsave, taken, remain); return; }
+  if(bfSaveBtn){ const taken=+$("#bf_taken").value||0; const remain=+$("#bf_remain").value||0; backfill(bfSaveBtn.dataset.bfsave, taken, remain, +bfSaveBtn.dataset.prevremain||null); return; }
   const openBoxBtn = tgt.closest("[data-openbox]");
   if(openBoxBtn){ viewBox(); return; }
   const goStackBtn = tgt.closest("[data-gotostack]");
