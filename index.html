@@ -10,7 +10,7 @@
     src:url('https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/latin-wght-normal.woff2') format('woff2')}
   :root{
     --bg:#f2f2f7;
-    --card:rgba(255,255,255,.5);
+    --card:rgba(248,248,250,.5);
     --sep:rgba(60,60,67,.12);
     --label:#1c1c1e;
     --label2:rgba(60,60,67,.6);
@@ -458,6 +458,24 @@
     .dark .nav{background:#161618}.dark .tabbar{background:#161618}.dark .sheet{background:#1c1c1e}.dark .card{background:#2c2c2e}
   }
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+  /* 安卓 WebView 等不渲染 backdrop-filter 的环境：玻璃退化为实色浅灰表面，彻底消除白块 */
+  @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+    :root{ --card: rgba(228,228,233,1); }
+    .dark{ --card: rgba(28,28,30,.96); }
+    *{ -webkit-backdrop-filter:none!important; backdrop-filter:none!important; }
+    .card,.stack-card,.ing-d,.field,.field input,.ing-row input,.ing-row select{ border-color:rgba(60,60,67,.14)!important; }
+    .card,.stack-card,.ing-d{ box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05)!important; }
+    .lib-search{ background:rgba(228,228,233,1)!important; border-color:rgba(60,60,67,.16)!important; }
+    .chip{ background:rgba(216,216,221,1)!important; border-color:rgba(60,60,67,.14)!important; box-shadow:0 1px 6px rgba(0,0,0,.05)!important; }
+    .chip.on{ background:var(--blue)!important; color:#fff!important; border-color:var(--blue)!important; }
+    .shape-opt{ background:rgba(216,216,221,1); }
+    .detail-opt{ background:rgba(216,216,221,1); }
+    .nav{ box-shadow:inset 0 -1px 0 rgba(60,60,67,.18)!important; }
+    .dark .card,.dark .stack-card,.dark .ing-d,.dark .field,.dark .field input,.dark .ing-row input,.dark .ing-row select{ border-color:rgba(255,255,255,.12)!important; }
+    .dark .lib-search{ background:rgba(28,28,30,.96)!important; border-color:rgba(255,255,255,.14)!important; }
+    .dark .chip,.dark .shape-opt,.dark .detail-opt{ background:rgba(60,60,67,.5)!important; border-color:rgba(255,255,255,.12)!important; }
+  }
   /* ============ 补剂库检索 ============ */
   .lib-bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 2px}
   .lib-search{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.5);border-radius:12px;padding:9px 12px;-webkit-backdrop-filter:blur(20px) saturate(200%);backdrop-filter:blur(20px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 10px rgba(0,0,0,.04);transition:border-color .18s var(--ease),box-shadow .18s var(--ease)}
@@ -2636,8 +2654,8 @@ const RDA = {
 const KEY = "gaichiyao_v5";
 
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
-const APP_VERSION = "1.0.0";
-const APP_VERSION_CODE = 1;
+const APP_VERSION = "1.0.1";
+const APP_VERSION_CODE = 2;
 const UPDATE_BASE = "https://raw.githubusercontent.com/XinxinLi2004/Medget/main/version.json";
 function migrate(s){
   (s.stack||[]).forEach(x=>{

@@ -58,26 +58,38 @@ jobs:
           path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
+      # 注意：这一步必须永不失败。首次构建时 latest release/tag 并不存在，
+      # 旧写法 REL_ID=$(curl ... | grep ...) 在 grep 无匹配时返回 1，
+      # 而 Actions 默认 shell 是 bash -e，赋值语句的非零退出码会直接中断整步，
+      # 导致后面的「发布 release」被 skip → release 永远建不出来 → 下次仍失败（死锁）。
       - name: Remove previous 'latest' release/tag
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          REL_ID=$(curl -s -H "Authorization: token $GH_TOKEN" \
+          set +e
+          REL_ID=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/releases/tags/latest" \
-            | grep -o '"id": [0-9]*' | head -1 | grep -o '[0-9]*')
+            | jq -r '.id // empty')
+          echo "existing latest release id: ${REL_ID:-<none>}"
           if [ -n "$REL_ID" ]; then
-            curl -s -X DELETE -H "Authorization: token $GH_TOKEN" \
+            curl -s -o /dev/null -X DELETE -H "Authorization: Bearer $GH_TOKEN" \
               "https://api.github.com/repos/${{ github.repository }}/releases/$REL_ID"
+            echo "deleted release $REL_ID"
           fi
-          curl -s -X DELETE -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/latest" || true
+          curl -s -o /dev/null -X DELETE -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/latest"
+          echo "tag cleanup done"
+          exit 0
 
       - name: Publish 'latest' release (APK + version.json)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
+          target_commitish: ${{ github.sha }}
           prerelease: false
           name: 最新版
+          fail_on_unmatched_files: true
           files: |
             android/app/build/outputs/apk/release/app-release.apk
             version.json

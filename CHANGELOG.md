@@ -1,5 +1,21 @@
 # CHANGELOG
 
+2026-08-15 16:55 · 修复 · CI 发布环节死锁（exit code 1）+ 版本号推进 1.0.1
+- 文件清单：.github/workflows/android.yml、version.json、android/app/build.gradle、index.html
+- 现象：连续 7 次 CI 全部失败（b449fc3 起），报 `Error: Process completed with exit code 1`
+- 定位：APK 构建其实**成功**（步骤 11 Build release APK、步骤 12 Upload artifact 均通过），失败在步骤 13「Remove previous 'latest' release/tag」
+- 根因：`REL_ID=$(curl ... | grep -o '"id": [0-9]*' | ...)`。首次构建时 latest release 不存在，API 返回 404 JSON 无 `"id"` 字段 → grep 无匹配退出 1 → 该赋值语句退出码非零 → Actions 默认 shell 为 `bash -e` 直接中断整步 → 步骤 14 发布 release 被 skip → release 永远建不出来 → 下次运行 grep 仍失败（**自锁死循环**）。已确认仓库当前 0 个 release、0 个 tag，与推断一致
+- 修法：① 该步改 `set +e` + `jq -r '.id // empty'` 取 id + 末尾 `exit 0`，并加 `continue-on-error: true` 双保险，保证永不中断流水线；② 发布步骤加 `fail_on_unmatched_files: true`（APK 路径变动能立刻暴露而非静默发空 release）、加 `target_commitish: ${{ github.sha }}` 让 latest tag 指向本次提交
+- 配套：版本号 1.0.0→1.0.1、versionCode 1→2（三处同步：build.gradle / index.html 的 APP_VERSION(_CODE) / version.json），否则「检查更新」比对 `versionCode >` 恒为 false，朋友端永远收不到更新提示；version.json 的 notes 更新为本轮功能摘要
+- 部署标记：[需部署]（CI 配置变更，push 后自动生效）+ [前端]
+
+2026-08-15 16:34 · 修复 · 安卓 WebView 白块兜底（@supports not backdrop-filter）
+- 文件清单：index.html、www/index.html（纯 CSS）；已 cp index.html www/ 同步
+- 根因：安卓 WebView 不渲染 backdrop-filter，玻璃面退化为 background 半透明白压浅灰页面≈白块；此前仅降 --card 透明度无效
+- 修法：新增 `@supports not (backdrop-filter)` 兜底块——不支持模糊的设备 --card 改实色浅灰 rgba(228,228,233,1)，卡片/输入框换灰边+柔和投影，搜索栏/分类标签/形状/详情选项等硬编码白面改实色浅灰，关闭全部 backdrop-filter；基础 --card 由纯白 .5 微调极淡灰 .5 双保险
+- 暗色模式同样兜底为实色深灰，不受影响
+- 部署标记：[前端]（需 npx cap sync android 重新构建 APK；本机无 Android SDK）
+
 2026-08-15 16:30 · 修复 · 历史补录逻辑重写（消除重复累计 + 保证份数自洽）
 - 文件清单：index.html、www/index.html；已 cp index.html www/ 同步
 - 原 bug：旧 `backfill()` 把用户输入的「已服用总份数」当额外份数直接叠进 history，且 openBackfill 预填值=sum(history) → 原样保存即翻倍；serv=n+remainV 而 history 总和=inApp+n，inApp>0 时 history>serv（已服超过总份数，逻辑矛盾）。
