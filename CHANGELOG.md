@@ -1,5 +1,34 @@
 # CHANGELOG
 
+2026-08-15 15:34 · 功能 · 品牌升级为独立字段 + 国内外常见品牌库备选 + 输入自动匹配/自定义 + 性能优化
+- 文件清单：index.html、www/index.html（新增数据字段与常量、表单加品牌输入、列表/详情展示品牌）；已 cp index.html www/ 同步
+- 品牌独立字段：补剂条目原仅靠 `s.lib.brand` 携带品牌（自定义/AI 添加项无独立品牌），现新增 `s.brand` 一级字段——`openConfig` 基础信息组加「品牌」输入框，`saveStack` 编辑/新增两分支均写入 `brand`，`viewStack` 与详情页（自定义块）优先显示 `s.brand`
+- 品牌库 + 自动匹配：新增 `BRAND_LIB`（约 90 个国内外常见品牌，含 国内/美国/澳洲/日本/欧洲 地区标签）与 `brandDatalistHTML()`；输入框 `list="branddatalist"` 实现输入时下拉自动匹配，未命中可自由输入自定义品牌（option 带 `label` 显示地区）
+- i18n：新增 fBrand（品牌）/fBrandPh（可输入或选择常用品牌），导出结构说明补「品牌」
+- 性能优化：① `libHay(l)` 记忆化知识库检索串（避免每次按键重复拼接+解析成分）；② `scoreOf` 默认剂量结果记忆化（列表渲染不再重复算分）；③ `libSearch`/`pickSearch` 输入加 120ms 防抖，避免逐键重渲列表
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK；CI 需 GitHub Secrets 注入签名）
+
+2026-08-15 15:33 · 样式 · 详细信息成分卡玻璃化 + 弹窗列宽加宽
+- 文件清单：index.html、www/index.html（纯 CSS）；已 cp index.html www/ 同步
+- 成分-真实原料-好处 `.ing-d`：原平铺文本+细分割线（老土、与全站玻璃风脱节）→ 改为玻璃小卡（blur+saturate+内高光+柔影+白边），成分名与剂量左右分布；补 `.dark` 与 reduced-transparency 降级
+- 弹窗 `.sheet` 列宽 `max-width:560px → 600px`，宽屏预览下更舒展不局促
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
+2026-08-15 15:29 · 修复 · 自定义添加成分行截断（改成分/剂量-单位/形态三排式）+ 补剂库搜索栏 Liquid Glass 化
+- 文件清单：index.html、www/index.html（CSS+DOM 结构微调）；已 cp index.html www/ 同步
+- 成分行截断：原 `ingRowHTML` 把 成分名/剂量/单位/删除 全挤在一行，窄屏下成分名 input 被压到截断；改为三排式——行1 成分名+删除、行2 剂量+单位、行3 形态，成分名独占整行不再截断
+- 补剂库搜索栏 `.lib-search`：原仅 `blur(12px)` 无内高光/柔影/聚焦态，相对其它玻璃输入框显旧；补 saturate(180%)+内高光+柔影+ `:focus-within` 蓝色光环，并加 `.dark` 与 `prefers-reduced-transparency` 降级
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
+2026-08-15 15:12 · 样式 · 全站 Liquid Glass 精细化（表单分组/空状态/光斑视差/微光/标签玻璃化）
+- 文件清单：index.html、www/index.html（CSS/JS 调整，DOM 仅 openConfig 做了分组包裹）；已 cp index.html www/ 同步
+- 表单分组玻璃卡 `.form-group`：openConfig 按"基础信息/药丸外观/瓶身照片/成分/服用"分组为圆角磨砂玻璃卡（自带 blur+内高光+柔影），内部 `.field` 外距归零避免双重内缩；新增 i18n grpBasic/grpDose
+- 空状态玻璃插画：`.empty .glyph` 由灰圆改为圆角磨砂玻璃 squircle（blur+内高光+柔影），花费页空状态补"去添加"引导
+- 背景光斑滚动视差：新增 scroll 监听对 `.bg-orbs i` 做 translate3d 视差（多因子 depth），rAF 节流 + prefers-reduced-motion 跳过
+- 关键动效微光：`.check.done` 打卡完成涟漪光环（checkGlow）、`.tag.red` 低库存轻柔脉冲光（tagPulse）
+- 功能标签胶囊玻璃化：`.ftag` 加 backdrop-blur + 内高光，与 `.tag` 视觉统一
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
 2026-08-15 15:10 · 安全 · 钥匙库移出公开仓库 + CI 改由 secret 注入签名（密钥不再明文入库）
 2026-08-15 15:05 · 样式 · 自定义添加表单（openConfig）Liquid Glass 化 + 输入框统一
 - 文件清单：index.html、www/index.html（CSS 仅调整，DOM 结构不变）；已 cp index.html www/ 同步
