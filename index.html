@@ -134,6 +134,7 @@
   .ing-d-f b{color:var(--text)}
   .ing-d-b{font-size:13px;margin-top:7px;color:var(--label2);line-height:1.5}
   .ing-d-n{font-size:12px;margin-top:6px;color:var(--label2);opacity:.85;line-height:1.45}
+  .ing-d-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .mat-chip{display:inline-flex;font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px;margin-left:6px;white-space:nowrap}
   .mat-chip.green{background:var(--green-soft);color:var(--green)}
   .mat-chip.orange{background:var(--orange-soft);color:var(--orange)}
@@ -201,6 +202,9 @@
     max-height:88vh;overflow:auto;transform:translateY(100%);transition:transform .38s var(--ease);z-index:51}
   .dark .sheet{background:rgba(28,28,30,.85);border-top-color:rgba(255,255,255,.08)}
   .sheet.on{transform:translateY(0)}
+  .sheet.full{top:0;bottom:0;height:100%;max-height:100%;border-radius:0;padding-top:calc(env(safe-area-inset-top) + 12px)}
+  .sheet.full .x{top:calc(env(safe-area-inset-top) + 10px)}
+  html.noscroll, html.noscroll body{overflow:hidden;height:100%}
   .sheet .grip{width:38px;height:5px;background:rgba(60,60,67,.2);border-radius:3px;margin:4px auto 12px}
   .sheet .x{position:absolute;right:14px;top:12px;width:28px;height:28px;border-radius:50%;
     background:rgba(60,60,67,.08);color:var(--label2);border:0;cursor:pointer;font-size:15px;
@@ -460,17 +464,17 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   /* ============ 补剂库检索 ============ */
   .lib-bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 2px}
-  .lib-search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--sep);border-radius:12px;padding:9px 12px;-webkit-backdrop-filter:blur(12px) saturate(180%);backdrop-filter:blur(12px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 14px rgba(0,0,0,.05);transition:border-color .18s var(--ease),box-shadow .18s var(--ease)}
+  .lib-search{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.5);border-radius:12px;padding:9px 12px;-webkit-backdrop-filter:blur(20px) saturate(200%);backdrop-filter:blur(20px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 10px rgba(0,0,0,.04);transition:border-color .18s var(--ease),box-shadow .18s var(--ease)}
   .lib-search:focus-within{border-color:var(--blue);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 3px var(--blue-soft)}
-  .dark .lib-search{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 4px 14px rgba(0,0,0,.3)}
+  .dark .lib-search{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 10px rgba(0,0,0,.25)}
   .dark .lib-search:focus-within{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 3px var(--blue-soft)}
   .lib-search .si{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:var(--label2);stroke-width:2;stroke-linecap:round}
   .lib-search input{flex:1;border:0;outline:0;background:transparent;font-size:16px;color:var(--label)}
   .lib-search input::-webkit-search-cancel-button{display:none}
   .chip-row{display:flex;gap:8px;overflow-x:auto;padding:10px 16px 4px;scrollbar-width:none}
   .chip-row::-webkit-scrollbar{display:none}
-  .chip{flex:0 0 auto;border:1px solid var(--sep);background:var(--card);color:var(--label2);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;white-space:nowrap;backdrop-filter:blur(12px)}
-  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .chip{flex:0 0 auto;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.3);color:var(--label2);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;white-space:nowrap;-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 1px 6px rgba(0,0,0,.04);transition:all .18s var(--ease)}
+  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 8px rgba(0,122,255,.35)}
   .lib-count{padding:2px 16px 8px;font-size:12px;color:var(--label2)}
   .lib-desc{padding:0 16px 6px;font-size:12px;color:var(--label2)}
 </style>
@@ -520,6 +524,11 @@ const I18N = {
     today:"今日", stack:"补剂", lib:"补剂库", cost:"花费", know:"知识",
     add:"添加", save:"保存", edit:"编辑", removeArchive:"移除档案", takeOne:"吃一份", done:"完成",
     manualAdd:"手动添加", custom:"自定义补剂", joinStack:"加入我的补剂",
+    copyStack:"复制", emptyBox:"空瓶箱", emptyBoxTitle:"空瓶收集箱",
+    toBox:"存入空瓶箱", fromBox:"移出空瓶箱", boxEmpty:"还没有空瓶，吃完的补剂会收进这里",
+    boxHint:"已吃完的补剂可存入空瓶箱留作纪念", backfill:"历史补录",
+    backfillTaken:"已服用总份数", backfillRemain:"当前剩余份数",
+    backfillDesc:"补录开始使用本应用前已服用的份数，保持打卡数据连贯", backfilled:"已补录",
     settings:"设置", aiSection:"AI 识别（视觉模型）", baseUrl:"API 地址（Base URL）",
     apiKey:"API Key", model:"模型名", saveAI:"保存",
     aiProviders:"AI 服务商", addProvider:"添加服务商", editProvider:"编辑", useProvider:"使用", deleteProvider:"删除", providerName:"名称", activeProvider:"当前使用",
@@ -570,12 +579,22 @@ const I18N = {
     searchLib:"搜索补剂 / 成分 / 品牌", noResult:"没有匹配的补剂", addToMine:"加入我的补剂",
     allCat:"全部", resultCount:"个结果", libDesc:"从常用补剂中挑选，点击查看详情并加入",
     ingMaterial:"成分 · 真实原料 · 好处", realMat:"真实原料", recForm:"推荐形式（产品未标）", formAuto:"形态（自动）", matAbsorb:"吸收", matBurden:"代谢负担",
-    matBenefit:"对身体的好处", compFunc:"综合功能", formQual:"真材实料"
+    matBenefit:"对身体的好处", compFunc:"综合功能", formQual:"真材实料",
+    recogTitle:"拍照识别", recogTake:"拍照 / 相册识别", recogHint:"对准成分表或包装，AI 自动解析品牌、成分与剂量", recogManual:"手动输入",
+    copyStack:"复制", copyHint:"复制当前信息后可修改再添加，免重复输入",
+    emptyBox:"空瓶收藏", emptyBoxTitle:"空瓶收集箱", toBox:"收入空瓶", fromBox:"放回进行中", boxEmpty:"暂无空瓶", boxHint:"吃完的补剂可存入空瓶收集箱，留作纪念",
+    filterActive:"进行中", filterBox:"空瓶收藏",
+    backfill:"补录记录", backfillTaken:"已服用总份数", backfillRemain:"当前剩余份数", backfillDesc:"为中途开始使用的老用户补登历史，保证数据连贯", backfilled:"已补录", backfillDays:"补录天数"
   },
   en: {
     today:"Today", stack:"Supps", lib:"Library", cost:"Cost", know:"Notes",
     add:"Add", save:"Save", edit:"Edit", removeArchive:"Remove", takeOne:"Take", done:"Done",
     manualAdd:"Add manually", custom:"Custom", joinStack:"Add to my supplements",
+    copyStack:"Duplicate", emptyBox:"Empty bottles", emptyBoxTitle:"Empty Bottle Box",
+    toBox:"Move to empty box", fromBox:"Restore from box", boxEmpty:"No empty bottles yet. Finished supplements will be kept here.",
+    boxHint:"Finished supplements can be kept in the Empty Bottle Box as mementos.", backfill:"Backfill history",
+    backfillTaken:"Total doses taken", backfillRemain:"Current remaining",
+    backfillDesc:"Backfill doses taken before you started using the app, to keep your log continuous.", backfilled:"Backfilled",
     settings:"Settings", aiSection:"AI Recognition (Vision)", baseUrl:"Base URL",
     apiKey:"API Key", model:"Model", saveAI:"Save",
     aiProviders:"AI Providers", addProvider:"Add provider", editProvider:"Edit", useProvider:"Use", deleteProvider:"Delete", providerName:"Name", activeProvider:"Active",
@@ -626,7 +645,12 @@ const I18N = {
     searchLib:"Search supplements / ingredients / brands", noResult:"No matching supplement", addToMine:"Add to my supplements",
     allCat:"All", resultCount:"results", libDesc:"Pick from common supplements, tap to view and add",
     ingMaterial:"Ingredients · Real material · Benefits", realMat:"Real material", recForm:"Recommended (not labeled)", formAuto:"Form (auto)", matAbsorb:"Absorb", matBurden:"Burden",
-    matBenefit:"Benefits", compFunc:"Functions", formQual:"Material quality"
+    matBenefit:"Benefits", compFunc:"Functions", formQual:"Material quality",
+    recogTitle:"Photo ID", recogTake:"Photo / Album", recogHint:"Aim at the label or package; AI parses brand, ingredients & dose", recogManual:"Manual input",
+    copyStack:"Duplicate", copyHint:"Duplicate this entry, then edit and add — no re-typing",
+    emptyBox:"Empty bottles", emptyBoxTitle:"Empty Bottle Box", toBox:"Store as empty", fromBox:"Move back to active", boxEmpty:"No empty bottles", boxHint:"Store finished bottles here as mementos",
+    filterActive:"Active", filterBox:"Empty box",
+    backfill:"Backfill", backfillTaken:"Total taken", backfillRemain:"Current remaining", backfillDesc:"Backfill history for users who started mid-way, to keep data continuous", backfilled:"Backfilled", backfillDays:"Days filled"
   }
 };
 const SET_KEY = "gaichiyao_settings";
@@ -2623,6 +2647,7 @@ function migrate(s){
   (s.stack||[]).forEach(x=>{
     if(x.usage===undefined)x.usage="any";
     if(x.remindAt===undefined)x.remindAt="";
+    if(x.archived===undefined)x.archived=false;
     if(!x.icon)x.icon={shape:"capsule",color:"blue",detail:"none"};
     if(!x.ings){
       if(x.ingName){ x.ings=[{name:x.ingName, amt:x.amt, unit:x.unit||"mg", min:x.ingMin||0, max:x.ingMax||0}]; }
@@ -2987,8 +3012,12 @@ const bandLabel = b => ({优秀:t("bExcellent"),良好:t("bGood"),一般:t("bFai
 const $ = s => document.querySelector(s);
 function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
 const view = $("#view"), sheet = $("#sheet"), mask = $("#mask");
-function openSheet(html){sheet.innerHTML = '<div class="grip"></div>'+html;mask.classList.add("on");sheet.classList.add("on");}
-function closeSheet(){mask.classList.remove("on");sheet.classList.remove("on");}
+function refreshScrollLock(){
+  const any = sheet.classList.contains("on") || $("#scanWrap").classList.contains("on") || $("#aiLoading").classList.contains("on");
+  document.documentElement.classList.toggle("noscroll", any);
+}
+function openSheet(html){sheet.innerHTML = '<div class="grip"></div>'+html;mask.classList.add("on");sheet.classList.add("on");refreshScrollLock();}
+function closeSheet(){mask.classList.remove("on");sheet.classList.remove("on","full");refreshScrollLock();}
 mask.addEventListener("click", closeSheet);
 const CHECK = `<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
 
@@ -2999,8 +3028,8 @@ function matChip(label, val){
 }
 function ingMaterialHTML(l){
   const fq = formQualityOf(l);
-  let h = `<div class="card" style="margin:0 0 16px">
-    <div class="sec-head" style="padding:12px 0 4px">${t("ingMaterial")}</div>`;
+  let h = `<div class="card" style="margin:0 0 16px;padding:4px 16px 14px">
+    <div class="sec-head" style="padding:14px 0 8px;font-size:14px;font-weight:600;color:var(--text);text-transform:none;letter-spacing:0">${t("ingMaterial")}</div>`;
   if(fq!=null){
     h += `<div class="dim" style="margin-bottom:3px"><span>${t("formQual")}</span><b>${fq}</b></div>
       <div class="meter ${fq>=80?'green':fq>=70?'orange':'red'}"><i style="width:${fq}%"></i></div>`;
@@ -3012,7 +3041,8 @@ function ingMaterialHTML(l){
     const fLabel = explicit ? t("realMat") : (fm ? t("recForm") : "");
     h += `<div class="ing-d">
       <div class="ing-d-h"><b>${g.name}</b><span class="ing-d-amt">${g.amt}${g.unit}</span></div>
-      ${fm?`<div class="ing-d-f">${fLabel}：<b>${fm.name}</b>${matChip(t("matAbsorb"),fm.absorb)}${matChip(t("matBurden"),fm.burden)}</div>`:""}
+      ${fm?`<div class="ing-d-f">${fLabel}：<b>${fm.name}</b></div>
+      <div class="ing-d-chips">${matChip(t("matAbsorb"),fm.absorb)}${matChip(t("matBurden"),fm.burden)}</div>`:""}
       ${info?`<div class="ing-d-b">${info.benefit}</div>`:""}
       ${fm&&fm.note?`<div class="ing-d-n">${fm.note}</div>`:""}
     </div>`;
@@ -3202,8 +3232,9 @@ function viewToday(){
       <a href="#" data-goto="add">${t("addFirst")}</a></div>`;return;
   }
   const streak = calcStreak();
-  const doneCount = state.stack.filter(s=>((s.history[d]||0)>=s.takes||s.remaining<=0)).length;
-  const total = state.stack.length;
+  const active = state.stack.filter(s=>!s.archived);
+  const doneCount = active.filter(s=>((s.history[d]||0)>=s.takes||s.remaining<=0)).length;
+  const total = active.length;
   const allDone = doneCount >= total;
   const iaHTML = interactionsHTML();
 
@@ -3242,7 +3273,7 @@ function viewToday(){
 
   // 补剂列表（按时段分组）
   const slots = {morning:[], noon:[], evening:[], bed:[]};
-  state.stack.forEach(s=>{
+  active.forEach(s=>{
     const slot = suggestTimeSlot(s);
     if(!slots[slot]) slots[slot] = [];
     slots[slot].push(s);
@@ -3299,8 +3330,9 @@ function viewStack(){
     view.innerHTML = `<div class="empty"><div class="glyph">＋</div>${t("empty2")}<br><br>
       <a href="#" data-goto="add">${t("addFirstShort")}</a></div>`;return;
   }
+  const active = state.stack.filter(s=>!s.archived);
   let html = ``;
-  state.stack.forEach(s=>{
+  active.forEach(s=>{
     const per = (s.price/s.serv).toFixed(2);
     const day = (per*s.takes).toFixed(2);
     const days = s.takes>0 ? Math.floor(s.remaining/s.takes) : 0;
@@ -3318,6 +3350,10 @@ function viewStack(){
       <span class="chev">›</span>
     </div>`;
   });
+  const archivedCount = state.stack.filter(s=>s.archived).length;
+  if(archivedCount>0){
+    html += `<button class="btn plain block" style="margin-top:14px" data-openbox>🫙 ${t("emptyBox")} (${archivedCount})</button>`;
+  }
   view.innerHTML = html;
 }
 function bottlePlaceholder(name){
@@ -3345,6 +3381,9 @@ function openStackDetail(uid){
     <div class="row-sub" style="padding:4px 2px 0">${t("remindDesc")}</div>
     <button class="btn block" style="margin-top:14px" data-saveusage="${s.uid}">${t("save")}</button>
     <button class="btn block" style="margin-top:10px" data-editstack="${s.uid}">${t("edit")}</button>
+    <button class="btn block" style="margin-top:10px" data-copystack="${s.uid}">${t("copyStack")}</button>
+    <button class="btn block" style="margin-top:10px" data-backfill="${s.uid}">${t("backfill")}</button>
+    <button class="btn block" style="margin-top:10px" data-archive="${s.uid}">${s.archived?t("fromBox"):t("toBox")}</button>
     <button class="btn destructive block" style="margin-top:10px" data-del="${s.uid}">${t("removeArchive")}</button>`);
 }
 const capLN = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
@@ -3427,7 +3466,7 @@ function viewCost(){
   if(!state.stack.length){
     view.innerHTML = `<div class="empty"><div class="glyph">¥</div>${t("empty2")}<br><br><a href="#" data-goto="add">${t("addFirstShort")}</a></div>`;return;
   }
-  const rows = state.stack.map(s=>{
+  const rows = state.stack.filter(s=>!s.archived).map(s=>{
     const per = +(s.price/s.serv).toFixed(2);
     const day = +(per*s.takes).toFixed(2);
     return {name:s.name, per, day, month:+(day*30).toFixed(2)};
@@ -3608,7 +3647,7 @@ function pillPickerHTML(){
     <div class="pp-label">${t("pillDetail")}</div>
     <div class="detail-row">${detailBtns}</div>`;
 }
-function openConfig(libObj, prefillName, editItem){
+function openConfig(libObj, prefillName, editItem, full){
   currentLib = libObj || (editItem ? (editItem.lib||null) : null);
   currentEditUid = editItem ? editItem.uid : null;
   const l = currentLib;
@@ -3656,7 +3695,8 @@ function openConfig(libObj, prefillName, editItem){
     <div class="field"><label>${t("fDose")}</label><input id="f_dose" type="number" inputmode="numeric" value="${currentEditUid?(editItem.dose||1):1}"></div>
   </div>
   <button class="btn block" style="margin-top:16px" data-save>${t("joinStack")}</button>`;
-  openSheet(html);
+  if(full){ sheet.innerHTML = html; mask.classList.add("on"); sheet.classList.add("on","full"); refreshScrollLock(); }
+  else openSheet(html);
 }
 function saveStack(){
   const l = currentLib;
@@ -3709,6 +3749,71 @@ function take(uid){
   save(); viewToday();
 }
 function remove(uid){state.stack=state.stack.filter(x=>x.uid!==uid);save();closeSheet();viewStack();}
+function archive(uid){ const s=state.stack.find(x=>x.uid===uid); if(!s) return; s.archived=true; save(); closeSheet(); toast(t("toBox")); viewStack(); }
+function unarchive(uid){ const s=state.stack.find(x=>x.uid===uid); if(!s) return; s.archived=false; save(); viewBox(); }
+function removeArchived(uid){ state.stack=state.stack.filter(x=>x.uid!==uid); save(); viewBox(); }
+function copyStack(uid){
+  const s=state.stack.find(x=>x.uid===uid); if(!s) return;
+  const cp={...s}; delete cp.uid; cp.remaining=cp.serv; cp.history={}; cp.archived=false;
+  closeSheet();
+  openConfig(s.lib||null, null, cp);
+}
+function backfill(uid, taken, remain){
+  const s=state.stack.find(x=>x.uid===uid); if(!s) return;
+  const n=Math.max(0,Math.floor(taken||0));
+  const remainV=Math.max(0,Math.floor(remain||0));
+  let cnt=n;
+  for(let i=0; cnt>0; i++){
+    const d=new Date(); d.setDate(d.getDate()-i); const key=d.toISOString().slice(0,10);
+    const day=s.history[key]||0;
+    const add=Math.max(0, Math.min(s.takes - day, cnt));
+    if(add>0){
+      s.history[key]=day+add;
+      if(!state.intake[key]) state.intake[key]={};
+      (s.ings||[]).forEach(g=>{ if(g&&g.name&&g.amt>0) state.intake[key][g.name]=((state.intake[key][g.name]||0)+g.amt*s.dose*add); });
+    }
+    cnt-=add;
+  }
+  s.remaining=remainV;
+  save(); closeSheet(); toast(t("backfilled")); setTab(curTab);
+}
+function openBackfill(uid){
+  const s=state.stack.find(x=>x.uid===uid); if(!s) return;
+  const totalTaken=Object.values(s.history||{}).reduce((a,b)=>a+(+b||0),0);
+  openSheet(`<button class="x" data-x>×</button><h2>${t("backfill")}</h2>
+    <div class="row-sub" style="padding:8px 2px 12px">${t("backfillDesc")}</div>
+    <div class="form-group">
+      <div class="field"><label>${t("backfillTaken")}</label><input id="bf_taken" type="number" inputmode="numeric" value="${totalTaken}"></div>
+      <div class="field"><label>${t("backfillRemain")}</label><input id="bf_remain" type="number" inputmode="numeric" value="${s.remaining}"></div>
+    </div>
+    <button class="btn block" style="margin-top:8px" data-bfsave="${s.uid}">${t("save")}</button>`);
+}
+function viewBox(){
+  const archived=state.stack.filter(s=>s.archived);
+  if(!archived.length){
+    view.innerHTML = `<div class="empty"><div class="glyph">🫙</div>${t("boxEmpty")}<br><br>
+      <a href="#" data-gotostack>${t("stack")}</a></div>`; return;
+  }
+  let html = `<div class="sec-head" style="padding:6px 0 8px">${t("emptyBoxTitle")}</div>`;
+  archived.forEach(s=>{
+    const brand = s.brand || (s.lib && s.lib.brand) || "";
+    const img = s.image ? `<img src="${escapeHtml(s.image)}" alt="">` : bottlePlaceholder(brand || s.name);
+    html += `<div class="stack-card" style="opacity:.97">
+      <div class="stack-img">${img}</div>
+      <div class="stack-info">
+        <div class="stack-name">${escapeHtml(s.name)}</div>
+        ${brand?`<div class="stack-brand">${escapeHtml(brand)}</div>`:""}
+        <div class="stack-meta">${t("remaining")} ${s.remaining}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-left:auto">
+        <button class="btn plain" data-unarchive="${s.uid}">${t("fromBox")}</button>
+        <button class="btn plain destructive" data-delarch="${s.uid}">${t("removeArchive")}</button>
+      </div>
+    </div>`;
+  });
+  html += `<div class="row-sub" style="padding:10px 2px">${t("boxHint")}</div>`;
+  view.innerHTML = html;
+}
 
 /* ============ 提醒 ============ */
 let remindTimer=null;
@@ -3765,7 +3870,7 @@ document.addEventListener("click", e=>{
   const saveU = tgt.closest("[data-saveusage]");
   if(saveU){ saveUsage(saveU.dataset.saveusage); return; }
   const ofedit = tgt.closest("[data-ofedit]");
-  if(ofedit){ closeSheet(); openConfig(null, lastFound?lastFound.name:""); return; }
+  if(ofedit){ closeSheet(); openConfig(null, lastFound?lastFound.name:"", null, true); return; }
   const codeBtn = tgt.closest("[data-code]");
   if(codeBtn){ aiFromCode(codeBtn.dataset.code); return; }
   const manual = tgt.closest("[data-manual]");
@@ -3834,6 +3939,22 @@ document.addEventListener("click", e=>{
   if(st){ openStackDetail(st.dataset.stack); return; }
   const editStackBtn = tgt.closest("[data-editstack]");
   if(editStackBtn){ const s = state.stack.find(x=>x.uid===editStackBtn.dataset.editstack); if(s){ closeSheet(); openConfig(s.lib||null, null, s); } return; }
+  const copyBtn = tgt.closest("[data-copystack]");
+  if(copyBtn){ copyStack(copyBtn.dataset.copystack); return; }
+  const backfillBtn = tgt.closest("[data-backfill]");
+  if(backfillBtn){ openBackfill(backfillBtn.dataset.backfill); return; }
+  const archiveBtn = tgt.closest("[data-archive]");
+  if(archiveBtn){ const s=state.stack.find(x=>x.uid===archiveBtn.dataset.archive); if(s){ if(s.archived) unarchive(s.uid); else archive(s.uid); } return; }
+  const bfSaveBtn = tgt.closest("[data-bfsave]");
+  if(bfSaveBtn){ const taken=+$("#bf_taken").value||0; const remain=+$("#bf_remain").value||0; backfill(bfSaveBtn.dataset.bfsave, taken, remain); return; }
+  const openBoxBtn = tgt.closest("[data-openbox]");
+  if(openBoxBtn){ viewBox(); return; }
+  const goStackBtn = tgt.closest("[data-gotostack]");
+  if(goStackBtn){ viewStack(); return; }
+  const unarcBtn = tgt.closest("[data-unarchive]");
+  if(unarcBtn){ unarchive(unarcBtn.dataset.unarchive); return; }
+  const delArcBtn = tgt.closest("[data-delarch]");
+  if(delArcBtn){ if(confirm(t("confirmDel"))) removeArchived(delArcBtn.dataset.delarch); return; }
   const libEl = tgt.closest("[data-lib]");
   if(libEl){ const l=byId(libEl.dataset.lib); if(l) openSheet(`<button class="x" data-x>×</button><h2>${l.name}</h2>`+reportHTML(l,1)+`<button class="btn block" style="margin-top:12px" data-libadd="${l.id}">${t("addToMine")}</button>`); return; }
   const el = tgt.closest("[data-goto]");
@@ -3878,9 +3999,9 @@ function toast(msg){
 function showAILoading(title, sub){
   $("#aiLt").textContent = title || t("aiRecognizing");
   $("#aiLs").textContent = sub || t("aiWait");
-  $("#aiLoading").classList.add("on");
+  $("#aiLoading").classList.add("on"); refreshScrollLock();
 }
-function hideAILoading(){ const el=$("#aiLoading"); if(el) el.classList.remove("on"); }
+function hideAILoading(){ const el=$("#aiLoading"); if(el) el.classList.remove("on"); refreshScrollLock(); }
 
 /* ============ AI ============ */
 const AI_KEY = "gaichiyao_ai";
@@ -3916,29 +4037,51 @@ function isReasoningModel(profile){
 const AI_SCHEMA = `你是补剂成分分析专家。请根据用户提供的补剂成分表/包装图片或条码信息，返回一个严格的 JSON 对象（不要任何其他文字、不要 markdown 代码块），字段如下：
 {"name":"补剂名称","cat":"类别，从 维生素/矿物质/脂肪酸/运动/蛋白/抗氧化/植提/肠道/氨基酸 中选","form":"成分形式优劣，优/中/差","ev":"循证等级，强/中/弱","ings":[{"name":"成分名","amt":每份剂量数字,"unit":"单位，IU/mg/mcg/g/亿CFU","min":有效范围下限数字,"max":有效范围上限数字}],"good":"优选点说明","bad":"注意点说明","note":"一句话提示","price":参考瓶价数字(元),"serv":一瓶份数数字}
 若有多个关键活性成分（例如鱼油拆分为 EPA 与 DHA、复合维生素拆为各维生素），请在 ings 数组中分别列出每个成分；若只有一个主成分，ings 数组放一项即可。
-若信息不全，用合理的膳食补充剂常识估计。所有数字字段必须是纯数字，不要带单位。`;
+若信息不全，用合理的膳食补充剂常识估计。所有数字字段必须是纯数字，不要带单位。
+无论国内还是国外品牌，都必须严格使用上面的中文键名（name/brand/cat/form/ev/ings/good/bad/note/price/serv）返回 JSON；字段值用中文描述；brand 保留品牌原始名称（中英文均可，禁止把品牌名翻译、音译或改写）；cat 必须从给定类别中严格选择；若模型只知道英文类别（如 Vitamin/Mineral/Protein/Antioxidant 等），请自动翻译成中文对应类别；ev 用「强/中/弱」，form 用「优/中/差」。`;
 function parseJSON(s){
   try{return JSON.parse(s);}catch(e){}
   const m = s.match(/\{[\s\S]*\}/);
   if(m){try{return JSON.parse(m[0]);}catch(e){}}
   return null;
 }
+/* 识别结果归一化：兼容中英文键名/类别，清洗数字，保证国内外品牌都能正确解析 */
+function pick(o, ...keys){ for(const k of keys){ if(o && o[k]!==undefined && o[k]!==null && o[k]!=="") return o[k]; } return undefined; }
+function num(v){ if(v===undefined||v===null||v==="") return 0; const m = String(v).replace(/,/g,"").match(/-?\d+(\.\d+)?/); return m?parseFloat(m[0]):0; }
+const CAT_MAP = {维生素:"维生素",维他命:"维生素",矿物质:"矿物质",脂肪酸:"脂肪酸",鱼油:"脂肪酸",omega:"脂肪酸","omega 3":"脂肪酸",
+  运动:"运动",蛋白:"蛋白",蛋白质:"蛋白",氨基酸:"氨基酸",抗氧化:"抗氧化",植提:"植提",草本:"植提",
+  肠道:"肠道",益生菌:"肠道",益生元:"肠道",免疫:"维生素",骨骼:"矿物质",睡眠:"植提",能量:"运动",
+  vitamin:"维生素",vitamins:"维生素",mineral:"矿物质",minerals:"矿物质","fatty acid":"脂肪酸","fish oil":"脂肪酸",
+  protein:"蛋白",amino:"氨基酸","amino acid":"氨基酸",antioxidant:"抗氧化",antioxidants:"抗氧化",
+  herbal:"植提",herb:"植提",botanical:"植提",gut:"肠道",probiotic:"肠道","prebiotic":"肠道",immune:"维生素",
+  bone:"矿物质",energy:"运动",sleep:"植提",multivitamin:"维生素",supplement:"维生素"};
+function mapCat(v){ if(!v) return "维生素"; const s=String(v).trim(); if(CAT_MAP[s]) return CAT_MAP[s]; const low=s.toLowerCase(); for(const k in CAT_MAP){ const kl=k.toLowerCase(); if(low===kl||low.includes(kl)||kl.includes(low)) return CAT_MAP[k]; } return "维生素"; }
+const FORM_MAP={优:"优",中:"中",差:"差",good:"优",high:"优",excellent:"优",best:"优",medium:"中",fair:"中",moderate:"中",poor:"差",low:"差",bad:"差"};
+const EV_MAP={强:"强",中:"中",弱:"弱",strong:"强",high:"强",medium:"中",moderate:"中",weak:"弱",low:"弱"};
+function mapForm(v){ const s=v==null?"":String(v).trim().toLowerCase(); return FORM_MAP[s]||"中"; }
+function mapEv(v){ const s=v==null?"":String(v).trim().toLowerCase(); return EV_MAP[s]||"中"; }
+const UNIT_MAP={"μg":"mcg","ug":"mcg","µg":"mcg","mg":"mg","mcg":"mcg","g":"g","iu":"iu","亿cfu":"亿CFU","cfu":"亿CFU"};
+function mapUnit(u){ u=String(u||"").toLowerCase().replace(/\s/g,"").replace(/[^a-z一-龥]/g,""); if(!u) return "mg"; return UNIT_MAP[u]||(ING_UNITS.includes(u)?"mg":"mg"); }
 function normalizeLib(o){
   o = o||{};
-  const rawIngs = Array.isArray(o.ings) && o.ings.length ? o.ings : null;
-  const ing = rawIngs ? rawIngs[0] : (o.ing||{});
-  const ings = rawIngs
-    ? rawIngs.map(g=>({name:g.name||"成分", amt:+g.amt||0, unit:g.unit||"mg", min:+g.min||0, max:+g.max||0}))
-    : [{name:ing.name||"成分", amt:+ing.amt||0, unit:ing.unit||"mg", min:+ing.min||0, max:+ing.max||0}];
-  return {
-    id:"ai", name:o.name||"AI 识别补剂", fullName:o.fullName||o.name||"", brand:o.brand||"",
-    storage:o.storage||"", cat:o.cat||"维生素",
-    form:["优","中","差"].includes(o.form)?o.form:"中",
-    ev:["强","中","弱"].includes(o.ev)?o.ev:"中", trans:true,
-    ing:{name:ing.name||"成分", amt:+ing.amt||0, unit:ing.unit||"mg", min:+ing.min||0, max:+ing.max||0, ul:ing.ul?+ing.ul:undefined},
-    ings,
-    good:o.good||"", bad:o.bad||"", note:o.note||"", price:+o.price||0, serv:+o.serv||60
-  };
+  const name = pick(o,"name","名称","product","title","product_name")||"AI 识别补剂";
+  const brand = pick(o,"brand","品牌","brands")||"";
+  const fullName = pick(o,"fullName","全名","fullname")||name;
+  const cat = mapCat(pick(o,"cat","类别","category","分类"));
+  const form = mapForm(pick(o,"form","形式","quality","formquality"));
+  const ev = mapEv(pick(o,"ev","循证","evidence","effectiveness","efficacy"));
+  const good = pick(o,"good","优点","pros","benefits","advantages")||"";
+  const bad = pick(o,"bad","注意","cons","cautions","warnings","disadvantages")||"";
+  const note = pick(o,"note","提示","tip","summary")||"";
+  const price = num(pick(o,"price","价格","cost"));
+  const serv = num(pick(o,"serv","份数","servings","serves","serving"))||60;
+  const rawIngs = Array.isArray(o.ings) ? o.ings : (Array.isArray(o.ingredients) ? o.ingredients : null);
+  const ing0 = (rawIngs && rawIngs.length) ? rawIngs[0] : (o.ing||{});
+  const cleanIng = g => ({ name:String((g&&g.name)||"成分"), amt:num(g&&g.amt), unit:mapUnit(g&&g.unit), min:num(g&&g.min), max:num(g&&g.max) });
+  const ings = (rawIngs && rawIngs.length) ? rawIngs.map(cleanIng) : [cleanIng(ing0)];
+  const ing = cleanIng(ing0);
+  ing.ul = ing0.ul ? num(ing0.ul) : undefined;
+  return { id:"ai", name, fullName, brand, storage:String(pick(o,"storage","储存","store")||""), cat, form, ev, trans:true, ing, ings, good, bad, note, price, serv };
 }
 async function callAI(prompt, imageDataUrl){
   const p = getActiveProfile();
@@ -3984,7 +4127,7 @@ function pickImage(){
       const lib = await callAI(t("aiPhotoPrompt"), await fileToDataURL(f));
       hideAILoading();
       if(!lib) throw new Error(t("aiNoParse"));
-      openConfig(normalizeLib(lib));
+      openConfig(normalizeLib(lib), "", null, true);
     }catch(err){ hideAILoading(); toast(err.message||t("aiFail")); }
   };
   input.click();
@@ -3993,13 +4136,14 @@ function pickImage(){
 /* ============ 扫码识别 ============ */
 let scanStream=null, scanDetector=null;
 const capBS = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.BarcodeScanner;
-function openScan(){ $("#scanWrap").classList.add("on"); }
+function openScan(){ $("#scanWrap").classList.add("on"); refreshScrollLock(); }
 function closeScan(){
   $("#scanWrap").classList.remove("on");
   document.documentElement.classList.remove("scanner-active");
   if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
   scanDetector=null;
   const BS = capBS(); if(BS){ try{ BS.stopScan(); }catch(e){} }
+  refreshScrollLock();
 }
 $("#scanClose").addEventListener("click", closeScan);
 async function startScan(){
@@ -4072,7 +4216,7 @@ function onCode(code){
       const _ap=getActiveProfile(); if(_ap&&_ap.apiKey){
         showAILoading(t("aiGen"), t("aiWait"));
         callAI(t("aiOffPrompt")+"\n名称："+lastFound.name+"\n品牌："+lastFound.brand+"\n成分表："+(lastFound.ing||"（无）")+"\n规格："+(lastFound.qty||"（无）"), null)
-        .then(lib=>{ hideAILoading(); if(lib){ openConfig(normalizeLib(lib)); return; } showOffFound(code); })
+        .then(lib=>{ hideAILoading(); if(lib){ openConfig(normalizeLib(lib), "", null, true); return; } showOffFound(code); })
         .catch(()=>{ hideAILoading(); showOffFound(code); });
         return;
       }
@@ -4111,7 +4255,7 @@ async function aiFromCode(code){
     const lib = await callAI(t("aiCodePrompt")+"\n用户提供的条码号："+code+"。条码通常无法精确反查产品，请基于常识给出最可能的补剂信息；若完全不确定则 name 填「未知补剂」。", null);
     hideAILoading();
     if(!lib) throw new Error(t("aiNoParse"));
-    openConfig(normalizeLib(lib));
+    openConfig(normalizeLib(lib), "", null, true);
   }catch(err){ hideAILoading(); toast(err.message||t("aiFail")); }
 }
 

@@ -1,5 +1,35 @@
 # CHANGELOG
 
+2026-08-15 16:05 · 功能 · 拍照识别独立界面 + 滚动锁定 + 补剂库管理增强（复制/空瓶箱/历史补录）
+- 文件清单：index.html、www/index.html；已 cp index.html www/ 同步
+- 独立识别界面（#57）：`openConfig` 新增 `full` 全屏模式（`.sheet.full` 覆盖全屏、去圆角、避让安全区），拍照识别 / 扫码 AI 结果 / `data-ofedit` 补录均改用全屏，不再浮于底层库界面之上
+- 滚动锁定：`refreshScrollLock()` 依据 `sheet/scanWrap/aiLoading` 的 `.on` 状态切换 `<html>.noscroll`（overflow:hidden），`openSheet/closeSheet/openScan/closeScan/showAILoading/hideAILoading` 全量接入，多层浮层叠加也不会误触滚动底层
+- AI 多语言鲁棒（#56，上轮已完成代码）：`AI_SCHEMA` 要求严格中文键、品牌原样保留；`normalizeLib` 重写含 `pick/num` 与中英文 `CAT_MAP/FORM_MAP/EV_MAP/UNIT_MAP`，国外全英文牌子正确解析为可用字段
+- 复制（#58）：`openStackDetail` 新增「复制」→ `copyStack()` 克隆条目（清 uid/history、份数复位）后 `openConfig` 改后重加，免去重复录入
+- 空瓶收集箱（#58）：条目新增 `archived` 字段（`migrate` 默认 false）；`archive/unarchive/removeArchived` + 独立 `viewBox()` 视图；`viewStack/viewToday/viewCost` 均排除 archived；补剂页底部「空瓶箱 (n)」入口
+- 历史补录（#58）：`openStackDetail` 新增「历史补录」→ `openBackfill()` 填「已服用总份数 / 当前剩余份数」，`backfill()` 按份数向过去日期回填 `history` 与 `intake` 并设定剩余，保数据连贯
+- i18n：新增 zh/en 词条 copyStack / emptyBox / emptyBoxTitle / toBox / fromBox / boxEmpty / boxHint / backfill / backfillTaken / backfillRemain / backfillDesc / backfilled
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
+2026-08-15 15:56 · 样式 · 补剂库搜索栏+分类标签去白底玻璃化
+- 文件清单：index.html、www/index.html（纯 CSS）；已 cp index.html www/ 同步
+- 搜索栏 `.lib-search`：`transparent` 在浅色下透出页面白底仍显"白坨" → 改为 `rgba(255,255,255,.35)` 微白半透 + `blur(20px) saturate(200%)` + 白色描边 + 内高光，柔影调轻；暗色 `.08` 半透
+- 分类标签 `.chip`：原实心 `var(--card)` 白底 → 玻璃胶囊（`.3` 半透 + `blur(16px) saturate(180%)` + 内高光 + 柔影）；选中态 `.chip.on` 补蓝色内高光+光晕
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
+2026-08-15 15:51 · 修复 · 成分区"真材实料"评分条与总体评分条对齐
+- 文件清单：index.html、www/index.html（仅 ingMaterialHTML 卡片内距）；已 cp index.html www/ 同步
+- 根因：`formQual`("真材实料")评分条所在的成分区 `.card` 无横向内距（贴左 0px），而下方"评分构成"卡片有 `padding:4px 16px 14px`（缩进 16px），两条评分条左缘差 16px 未对齐
+- 修法：成分区 `.card` 加 `padding:4px 16px 14px`，表头内距改 `14px 0 8px`（避免卡片内距二次缩进）；现表头/真材实料条/成分卡/总体评分条统一对齐在 16px
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
+2026-08-15 15:45 · 样式 · 补剂库搜索栏去白底 + 成分胶囊 tag 单列 + 成分区表头对齐修复
+- 文件清单：index.html、www/index.html（纯 CSS + ingMaterialHTML 微调）；已 cp index.html www/ 同步
+- 补剂库搜索栏 `.lib-search`：去掉 `background:var(--card)` 白底 → `transparent`，仅留毛玻璃模糊+边框+内高光+聚焦蓝环，去掉"白块"压抑感（暗色同样透明）
+- 成分胶囊 tag：`.ing-d-f` 内的 matChip（吸收/代谢负担）拆到独立 `.ing-d-chips` 行（flex 换行 + gap:6px），不再和真实原料名挤一行
+- 成分区表头：section 标题"成分 · 真实原料 · 好处"原先左右 padding 为 0、与下方玻璃卡 14px 内距不对齐且被压成灰色小标签 → 改为 `padding:14px 14px 8px`、14px/600/`var(--text)`、取消 uppercase/letter-spacing，与卡片内容左缘对齐、更舒适
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
 2026-08-15 15:34 · 功能 · 品牌升级为独立字段 + 国内外常见品牌库备选 + 输入自动匹配/自定义 + 性能优化
 - 文件清单：index.html、www/index.html（新增数据字段与常量、表单加品牌输入、列表/详情展示品牌）；已 cp index.html www/ 同步
 - 品牌独立字段：补剂条目原仅靠 `s.lib.brand` 携带品牌（自定义/AI 添加项无独立品牌），现新增 `s.brand` 一级字段——`openConfig` 基础信息组加「品牌」输入框，`saveStack` 编辑/新增两分支均写入 `brand`，`viewStack` 与详情页（自定义块）优先显示 `s.brand`
