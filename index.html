@@ -481,6 +481,32 @@
     .dark .lib-search{ background:rgba(255,255,255,.1)!important; border-color:rgba(255,255,255,.16)!important; }
     .dark .chip,.dark .shape-opt,.dark .detail-opt{ background:rgba(255,255,255,.12)!important; border-color:rgba(255,255,255,.18)!important; }
   }
+  /* 安卓 WebView：backdrop-filter 虽被支持但合成代价极高（内容在 Tab Bar 下滚动时每帧重算模糊→掉帧）。
+     实测 prefers-reduced-transparency / @supports not 在安卓上均不触发，故用 UA 检测显式加 .android 类，
+     退化为实色表面（与上方 @supports 降级等价），iOS 仍保留玻璃质感。 */
+  .android{ --card: rgba(228,228,233,1); }
+  .android.dark{ --card: rgba(28,28,30,.96); }
+  .android *{ -webkit-backdrop-filter:none!important; backdrop-filter:none!important; }
+  .android .card,.android .stack-card,.android .ing-d,.android .field,.android .field input,.android .ing-row input,.android .ing-row select{ border-color:rgba(60,60,67,.14)!important; }
+  .android .card,.android .stack-card,.android .ing-d{ box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05)!important; }
+  .android .lib-search{ background:rgba(0,122,255,.1)!important; border-color:rgba(0,122,255,.2)!important; }
+  .android .chip{ background:transparent!important; border-color:rgba(60,60,67,.14)!important; }
+  .android .chip.on{ background:var(--blue)!important; color:#fff!important; border-color:var(--blue)!important; }
+  .android .shape-opt{ background:rgba(216,216,221,1); }
+  .android .detail-opt{ background:rgba(216,216,221,1); }
+  .android .nav{ box-shadow:inset 0 -1px 0 rgba(60,60,67,.18)!important; background:#f2f2f7; }
+  .android.dark .nav{ background:#161618; }
+  .android .tabbar{ background:#f9f9f9; }
+  .android.dark .tabbar{ background:#161618; }
+  .android .sheet{ background:#f8f8fa; }
+  .android.dark .sheet{ background:#1c1c1e; }
+  .android .card{ background:#fff; }
+  .android.dark .card{ background:#2c2c2e; }
+  .android .dark .card,.android.dark .stack-card,.android.dark .ing-d,.android.dark .field,.android.dark .field input,.android.dark .ing-row input,.android.dark .ing-row select{ border-color:rgba(255,255,255,.12)!important; }
+  .android .dark .lib-search{ background:rgba(255,255,255,.1)!important; border-color:rgba(255,255,255,.16)!important; }
+  .android .dark .chip,.android.dark .shape-opt,.android.dark .detail-opt{ background:rgba(255,255,255,.12)!important; border-color:rgba(255,255,255,.18)!important; }
+  /* 全屏 blur(64px) 背景球在安卓上同样昂贵，降到 24px 既保柔和又大幅省合成开销（静态层，仅首帧计算） */
+  .android .bg-orbs i{ filter:blur(24px)!important; }
   /* ============ 补剂库检索 ============ */
   .lib-bar{background:transparent;padding:10px 16px 6px}
   .lib-search{display:flex;align-items:center;gap:8px;background:rgba(0,122,255,.08);border:1px solid rgba(0,122,255,.18);border-radius:12px;padding:9px 12px;-webkit-backdrop-filter:blur(20px) saturate(200%);backdrop-filter:blur(20px) saturate(200%);transition:border-color .18s var(--ease),box-shadow .18s var(--ease);margin-bottom:10px}
@@ -3886,8 +3912,8 @@ const RDA = {
 const KEY = "gaichiyao_v5";
 
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
-const APP_VERSION = "1.0.4";
-const APP_VERSION_CODE = 5;
+const APP_VERSION = "1.0.5";
+const APP_VERSION_CODE = 6;
 // 检查更新的 version.json 源，按顺序尝试，任一成功即用：
 // ① ghproxy.net 镜像代理：国内可达，代理 GitHub Release 资产，最新鲜，优先
 // ② testingcf.jsdelivr.net：国内友好的 jsDelivr 镜像，对 @main 有最多 12h 缓存，作兜底
@@ -6124,6 +6150,8 @@ function openSettings(){
 
 applyTheme();
 applyReduceMotion();
+// 安卓 WebView 下关闭玻璃模糊（见 .android 样式块），避免 Tab Bar 每帧重算模糊掉帧
+if(/Android/i.test(navigator.userAgent||"")) document.documentElement.classList.add("android");
 applyLang();
 viewToday();
 startReminderCheck();

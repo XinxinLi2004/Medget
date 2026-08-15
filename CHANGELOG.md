@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-08-15 22:44 · 性能 · 安卓端关闭毛玻璃模糊修复滚动卡顿（版本 1.0.5 / code 6）
+- 文件清单：index.html（新增 .android 降级样式块 + UA 检测加 .android 类）、android/app/build.gradle（versionCode/Name）、version.json（notes）、www/index.html（CI 同步）
+- 部署标记：[需部署] CI 重新发布 APK；[前端] 改 index.html 即生效
+- 改动要点：
+  - 根因：安卓 WebView 中 `backdrop-filter: blur() saturate()` 虽被支持但合成代价极高，Tab Bar/弹层在内容滚动时每帧重算模糊→掉帧；原 `@media (prefers-reduced-transparency)` 与 `@supports not (backdrop-filter)` 两套降级在安卓上均不触发
+  - 修复：UA 检测 Android 后给 <html> 加 `.android` 类，退化为实色表面（nav/tabbar/sheet/card 用实色，等同既有 @supports 降级），iOS 保留玻璃质感
+  - 背景球 `filter:blur(64px)` 降为 `blur(24px)`（静态层仅首帧计算，省合成开销且不破相）
+  - 版本号三处同步 1.0.5 / code 6，确保已装 1.0.4 用户收到更新提示
+
 ## 2026-08-15 21:11 · 配置 · 更新检测与 APK 下载改走国内可达镜像（版本 1.0.4 / code 5）
 - 文件清单：index.html（UPDATE_URLS 顺序）、android/app/build.gradle（versionCode/Name）、version.json（apk 链接 + notes）、www/index.html（CI 同步）
 - 部署标记：[前端] 改 index.html 即生效；[需部署] CI 重新发布 APK 与 version.json 到 latest release
