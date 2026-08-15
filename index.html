@@ -330,6 +330,11 @@
   html.scanner-active .scan-wrap{background:transparent}
   html.scanner-active .scan-top, html.scanner-active .scan-hint{background:rgba(0,0,0,.45)}
   html.scanner-active .scan-body video{display:none}
+  /* 扫码锁底层：无论原生/Web 路径，均隐藏 #view / #tabbar / 弹层，只保留扫码层，避免其他界面漏出 */
+  html.scan-locked #view,
+  html.scan-locked #tabbar,
+  html.scan-locked .sheet-mask,
+  html.scan-locked .sheet{visibility:hidden;pointer-events:none}
 
   .toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-8px);
     background:rgba(28,28,30,.9);color:#fff;padding:10px 18px;border-radius:14px;font-size:14px;
@@ -582,7 +587,7 @@ const I18N = {
     bodyChart:"营养摄入 vs 推荐", rda:"推荐", intakeS:"摄入", low:"不足", ok:"达标", over:"超标",
     editSetup:"服用设置",
     querying:"查询商品库…", aiGen:"AI 生成评估…", aiQuery:"AI 查询中…", aiRecognizing:"AI 识别成分表中…", aiWait:"正在分析图片，通常需要 10–30 秒，请稍候",
-    needAIKey:"请先在「设置」配置 AI Key", aiFail:"识别失败", noCamera:"无法访问摄像头", noScan:"当前浏览器不支持扫码，请用安卓 Chrome 真机测试",
+    needAIKey:"请先在「设置」配置 AI Key", aiFail:"识别失败", noCamera:"无法访问摄像头", noScan:"当前浏览器不支持扫码，请用安卓 Chrome 真机测试", netTimeout:"网络超时，请检查网络后重试",
     saved:"已保存", aiNoResult:"AI 无返回内容", aiNoParse:"未能解析识别结果", aiHttp:"AI 请求失败（HTTP ",
     notifTitle:"该吃药了", notifPerm:"需要通知权限才能后台提醒",
     streak:"连续打卡", days:"天", calendar:"打卡日历", weekTrend:"近 7 天", calBackToday:"回到今天", calDayTitle:"当日打卡", calTaken:"已服", calMiss:"未服", calFuture:"未来日期",
@@ -648,7 +653,7 @@ const I18N = {
     bodyChart:"Intake vs Recommended", rda:"RDA", intakeS:"Intake", low:"Low", ok:"OK", over:"Over",
     editSetup:"Usage setup",
     querying:"Looking up product…", aiGen:"AI evaluating…", aiQuery:"AI querying…", aiRecognizing:"AI reading label…", aiWait:"Analyzing image, usually takes 10–30 seconds. Please wait",
-    needAIKey:"Set your AI key in Settings first", aiFail:"Recognition failed", noCamera:"Cannot access camera", noScan:"Barcode scanning not supported here; try Android Chrome",
+    needAIKey:"Set your AI key in Settings first", aiFail:"Recognition failed", noCamera:"Cannot access camera", noScan:"Barcode scanning not supported here; try Android Chrome", netTimeout:"Network timeout, please check your connection and retry",
     saved:"Saved", aiNoResult:"AI returned no content", aiNoParse:"Could not parse result", aiHttp:"AI request failed (HTTP ",
     notifTitle:"Time for your supplement", notifPerm:"Notification permission required",
     streak:"Streak", days:"d", calendar:"Calendar", weekTrend:"Last 7 days", calBackToday:"Today", calDayTitle:"That day", calTaken:"Taken", calMiss:"Missed", calFuture:"Future date",
@@ -3881,8 +3886,8 @@ const RDA = {
 const KEY = "gaichiyao_v5";
 
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
-const APP_VERSION = "1.0.2";
-const APP_VERSION_CODE = 3;
+const APP_VERSION = "1.0.3";
+const APP_VERSION_CODE = 4;
 // 检查更新的 version.json 源，按顺序尝试，任一成功即用：
 // ① release 资产：每次 CI 构建都会重新发布，最新鲜，且与 APK 下载走同一条链路
 // ② jsDelivr CDN：国内通常更快，但对 @main 有最多 12h 缓存，故放第二
@@ -5686,6 +5691,13 @@ function normalizeLib(o){
   ing.ul = ing0.ul ? num(ing0.ul) : undefined;
   return { id:"ai", name, fullName, brand, storage:String(pick(o,"storage","储存","store")||""), cat, form, ev, trans:true, ing, ings, good, bad, note, price, serv };
 }
+/* 带超时的 fetch（AbortController）；超时抛出 AbortError，由调用方转 netTimeout */
+async function fetchWithTimeout(url, opts={}, ms=15000){
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), ms);
+  try{ return await fetch(url, Object.assign({}, opts, {signal:ctrl.signal})); }
+  finally{ clearTimeout(timer); }
+}
 async function callAI(prompt, imageDataUrl){
   const p = getActiveProfile();
   if(!p || !p.apiKey) throw new Error(t("needAIKey"));
@@ -5701,11 +5713,14 @@ async function callAI(prompt, imageDataUrl){
   if(isReasoningModel(p)){
     reqBody.chat_template_kwargs = {enable_thinking: false};
   }
-  const res = await fetch(p.baseUrl.replace(/\/+$/,"")+"/chat/completions",{
-    method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+p.apiKey},
-    body: JSON.stringify(reqBody)
-  });
+  let res;
+  try{
+    res = await fetchWithTimeout(p.baseUrl.replace(/\/+$/,"")+"/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+p.apiKey},
+      body: JSON.stringify(reqBody)
+    }, 20000);
+  }catch(err){ if(err && err.name==="AbortError") throw new Error(t("netTimeout")); throw err; }
   if(!res.ok) throw new Error(t("aiHttp")+res.status+"）");
   const data = await res.json();
   const msg = data.choices && data.choices[0] && data.choices[0].message;
@@ -5739,10 +5754,10 @@ function pickImage(){
 /* ============ 扫码识别 ============ */
 let scanStream=null, scanDetector=null;
 const capBS = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.BarcodeScanner;
-function openScan(){ $("#scanWrap").classList.add("on"); refreshScrollLock(); }
+function openScan(){ $("#scanWrap").classList.add("on"); document.documentElement.classList.add("scan-locked"); refreshScrollLock(); }
 function closeScan(){
   $("#scanWrap").classList.remove("on");
-  document.documentElement.classList.remove("scanner-active");
+  document.documentElement.classList.remove("scanner-active","scan-locked");
   if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
   scanDetector=null;
   const BS = capBS(); if(BS){ try{ BS.stopScan(); }catch(e){} }
@@ -5797,7 +5812,9 @@ function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"
 async function queryOpenFoodFacts(code){
   const url = "https://world.openfoodfacts.org/api/v2/product/"+encodeURIComponent(code)+
     ".json?fields=product_name,product_name_zh,brands,categories,ingredients_text,quantity,image_front_url";
-  const res = await fetch(url);
+  let res;
+  try{ res = await fetchWithTimeout(url, {}, 12000); }
+  catch(err){ if(err && err.name==="AbortError") throw new Error(t("netTimeout")); throw err; }
   if(!res.ok) throw new Error("HTTP "+res.status);
   const data = await res.json();
   if(!data || !data.product) return null;

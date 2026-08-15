@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-15 20:55 · 修复 · 扫码锁底层不漏界面 + AI/条码查询 fetch 超时（版本 1.0.3 / code 4）
+- 文件清单：index.html、android/app/build.gradle、version.json（www/ 由 CI 从 index.html 重新生成，已 .gitignore）
+- 现象：① 原生扫码（Capacitor BarcodeScanner）路径下，body 透明透出相机预览的同时，#view/#tabbar/弹层自带背景未隐藏，Tab Bar 与其他页面漏在相机预览上方；② AI 识别、Open Food Facts 条码查询无超时，弱网/挂起会永久挂起。
+- 修复①：保留 `scanner-active`（原生相机仍需 WebView 透明）的同时，新增 `html.scan-locked` 隐藏 #view/#tabbar/.sheet-mask/.sheet（visibility:hidden + pointer-events:none）；openScan 加 scan-locked、closeScan 移除 scanner-active+scan-locked。Web 路径（BarcodeDetector）同样受益。
+- 修复②：新增 `fetchWithTimeout(url,opts,ms)`（AbortController）；callAI 用 20s、queryOpenFoodFacts 用 12s；AbortError 转 t("netTimeout")；补 zh/en 文案「网络超时，请检查网络后重试」。
+- 部署标记：[前端]（CI 触发 assembleRelease，固定签名 → 朋友端覆盖安装即可；覆盖安装不丢 localStorage）；版本号三处同步已做（index.html APP_VERSION/CODE、build.gradle versionName/Code、version.json）。
+- 注意：本机无 Android SDK，APK 由 GitHub Actions 构建；「检查更新」比对 info.versionCode(4) > APP_VERSION_CODE(3) 成立，用户将收到更新提示。
+
 ## 2026-08-15 20:26 · 修复 · 补剂库搜索区回滚恢复（蓝色圆角）+ 分类点击跳顶
 - 文件清单：index.html（www/ 被 .gitignore 忽略，CI 从 index.html 重新生成 www）；已提交 push 到 main（commit 8d46f64）
 - 现象：用户重装 APK 后搜索框变回白底、圆角丢失、点击分类自动跳到第一个

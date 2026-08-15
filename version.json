@@ -1,6 +1,6 @@
 {
-  "version": "1.0.2",
-  "versionCode": 3,
+  "version": "1.0.3",
+  "versionCode": 4,
   "apk": "https://github.com/XinxinLi2004/Medget/releases/download/latest/app-release.apk",
-  "notes": "发布瘦身：单包 APK 去掉 x86/x86_64 两套模拟器原生库（仅保留 arm64-v8a + armeabi-v7a 两套真机架构），体积显著下降，现代手机与老机通用。"
+  "notes": "修复：① 扫码界面锁底层，不再漏出 Tab Bar / 其他页面；② AI 识别与 Open Food Facts 条码查询加超时保护（超时提示网络超时）。"
 }
