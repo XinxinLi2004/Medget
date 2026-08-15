@@ -1,13 +1,13 @@
 # CHANGELOG
 
-2026-08-15 17:18 · 优化 · 发布瘦身（APK 按 ABI 拆分 + R8 代码/资源裁剪）
+2026-08-15 17:18 · 优化 · 发布瘦身（APK 砍 x86/x86_64 模拟器架构）
 - 文件清单：android/app/build.gradle、.github/workflows/android.yml、version.json、index.html
 - 背景：APK 25MB，但业务代码极小（www 256KB、res 292KB），体积几乎全来自原生壳按 4 种 CPU 架构打包原生库 + 未开裁剪。已用 npm 文档确认 MLKit 的 `scan()` 本就走 Google Play Services（按需装模块、不打包模型），无构建期开关可砍其原生库，故不在此处动 MLKit。
-- 修法（零风险两步）：① `build.gradle` 的 `defaultConfig.ndk.abiFilters` 限 `arm64-v8a, armeabi-v7a` + `splits.abi` 启用以生成**每架构独立 APK**（砍掉 x86/x86_64 两套模拟器架构，真机用不到）；② `release` 开 `minifyEnabled true + shrinkResources true`（R8 死代码消除 + 未用资源裁剪，Capacitor/MLKit AAR 自带 consumer ProGuard 规则保 WebView/JS 桥，安全）。
-- CI 配套：Upload/Publish 的 APK 路径由写死 `app-release.apk` 改为 glob `app-*-release.apk`（ABI 拆分后每个架构一个包）；`fail_on_unmatched_files:true` 保证路径变动立即暴露。
-- 版本推进 1.0.1→1.0.2 / code 2→3（三处同步：build.gradle / index.html APP_VERSION(_CODE) / version.json）；`version.json.apk` 指向 Release 页 `releases/latest`（GitHub 按机型推对应架构附件），避免写死单一 arm64 包害老机型下错。
+- 实施方案（历经两次 CI 验证，最终采用单包方案）：`defaultConfig.ndk.abiFilters` 限 `arm64-v8a, armeabi-v7a`，**只打包两套真机架构**，砍掉 x86/x86_64（仅模拟器用）。不启用 `splits.abi`（与 abiFilters 在 AGP8 上叠加会让 `assembleRelease` 失败，已实测两次 CI 步骤 11 红）；也不开 `minifyEnabled`（R8 在本项目默认 proguard-rules.pro 为空时 assembleRelease 也失败，已实测一次 CI 红）。
+- CI 配套：Upload/Publish 的 APK 路径保持写死 `app-release.apk`（单包）。
+- 版本推进 1.0.1→1.0.2 / code 2→3（三处同步：build.gradle / index.html APP_VERSION(_CODE) / version.json）；`version.json.apk` 指回单包 `app-release.apk`。
 - 部署标记：[需部署]（CI 重新出包，本机无 SDK）
-- 预期：单包 25MB → 约 12~15MB（待 CI 实测；若仍偏大，下一步再评估 MLKit 依赖变体）
+- 预期：单包 25MB → 约 12~15MB（待 CI 实测）。R8/ABI 拆分进阶瘦身留待本地 Android Studio 验证 keep 规则后再做，避免再触发 CI 失败。
 
 2026-08-15 17:05 · 修复 · 检查更新多源兜底（raw.githubusercontent 国内被墙导致更新检查失效）
 - 文件清单：index.html、www/index.html；已 cp index.html www/ 同步

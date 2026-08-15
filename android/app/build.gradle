@@ -15,19 +15,11 @@ android {
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
-        // 瘦身：原生库默认按 4 种架构全打包（含 x86/x86_64，仅模拟器用）。
-        // 真机只需 arm64-v8a(现代机) + armeabi-v7a(老机)，砍掉两套模拟器架构可显著减小体积。
+        // 瘦身：原生库默认按 4 种 CPU 架构全打包（含 x86/x86_64，仅模拟器用）。
+        // 真机只需 arm64-v8a(现代机) + armeabi-v7a(老机)，用 abiFilters 只保留这两套，
+        // 砍掉两套模拟器架构即可显著减小单包体积。不启用 splits.abi（与 abiFilters 在 AGP8 上叠加会导致 assembleRelease 失败）。
         ndk {
             abiFilters "arm64-v8a", "armeabi-v7a"
-        }
-    }
-    // 按 ABI 拆分独立 APK（每架构一个），朋友按机型各取所需，单包更小；不再打 universal 包
-    splits {
-        abi {
-            enable true
-            reset()
-            include "arm64-v8a", "armeabi-v7a"
-            universalApk false
         }
     }
     signingConfigs {
