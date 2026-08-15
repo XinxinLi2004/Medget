@@ -1,5 +1,11 @@
 # CHANGELOG
 
+2026-08-15 16:25 · 修复 · 历史补录时总份数(serv)未自动修正
+- 文件清单：index.html、www/index.html；已 cp index.html www/ 同步
+- 根因：`backfill()` 只回填 `history`/`intake` 与 `remaining`，未更新 `s.serv`（整瓶总份数）；而花费页「每份¥/每日¥」与编辑保存的 `remaining=serv-已服用` 都以 `serv` 为准，导致补录后份数与花费对不上
+- 修法：`backfill()` 末行加 `s.serv=Math.max(1, n+remainV)`，总份数自动等于「已服用 + 当前剩余」，数据自洽
+- 部署标记：[前端]（已 push，CI 自动出 APK；本机无 Android SDK）
+
 2026-08-15 16:05 · 功能 · 拍照识别独立界面 + 滚动锁定 + 补剂库管理增强（复制/空瓶箱/历史补录）
 - 文件清单：index.html、www/index.html；已 cp index.html www/ 同步
 - 独立识别界面（#57）：`openConfig` 新增 `full` 全屏模式（`.sheet.full` 覆盖全屏、去圆角、避让安全区），拍照识别 / 扫码 AI 结果 / `data-ofedit` 补录均改用全屏，不再浮于底层库界面之上

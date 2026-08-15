@@ -3775,6 +3775,7 @@ function backfill(uid, taken, remain){
     cnt-=add;
   }
   s.remaining=remainV;
+  s.serv=Math.max(1, n+remainV);   // 总份数自动修正为「已服用 + 当前剩余」，保持份数/花费一致
   save(); closeSheet(); toast(t("backfilled")); setTab(curTab);
 }
 function openBackfill(uid){
