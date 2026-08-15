@@ -506,7 +506,7 @@
   .no-glass .dark .lib-search{ background:rgba(255,255,255,.1)!important; border-color:rgba(255,255,255,.16)!important; }
   .no-glass .dark .chip,.no-glass.dark .shape-opt,.no-glass.dark .detail-opt{ background:rgba(255,255,255,.12)!important; border-color:rgba(255,255,255,.18)!important; }
   /* 安卓背景球 blur(64px) 降为 24px（静态层仅首帧计算，省合成开销，与玻璃开关无关） */
-  .android .bg-orbs i{ filter:blur(24px)!important; }
+  .android .bg-orbs{ display:none!important; } /* 安卓 WebView 大模糊球持续合成开销大、易发烫，直接隐藏（玻璃感由卡片毛玻璃承担） */
   /* ============ 补剂库检索 ============ */
   .lib-bar{background:transparent;padding:10px 16px 6px}
   .lib-search{display:flex;align-items:center;gap:8px;background:rgba(0,122,255,.08);border:1px solid rgba(0,122,255,.18);border-radius:12px;padding:9px 12px;-webkit-backdrop-filter:blur(20px) saturate(200%);backdrop-filter:blur(20px) saturate(200%);transition:border-color .18s var(--ease),box-shadow .18s var(--ease);margin-bottom:10px}
@@ -3912,8 +3912,8 @@ const RDA = {
 const KEY = "gaichiyao_v5";
 
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
-const APP_VERSION = "1.0.6";
-const APP_VERSION_CODE = 7;
+const APP_VERSION = "1.0.7";
+  const APP_VERSION_CODE = 8;
 // 检查更新的 version.json 源，按顺序尝试，任一成功即用：
 // ① ghproxy.net 镜像代理：国内可达，代理 GitHub Release 资产，最新鲜，优先
 // ② testingcf.jsdelivr.net：国内友好的 jsDelivr 镜像，对 @main 有最多 12h 缓存，作兜底
@@ -4974,9 +4974,19 @@ function bottlePlaceholder(name){
 }
 
 /* ============ 补剂详情 + 服用设置 ============ */
+// 由补剂条目构造「评估视图对象」：元数据取 LIB，但成分表(ings)取实时编辑后的 s.ings，
+// 使详情/评分卡里的「真材实料」成分显示随编辑实时更新（不再读陈旧的 s.lib.ings）。
+function libViewOf(s){
+  const base = s.lib || byId(s.libId) || {};
+  const ings = (s.ings && s.ings.length) ? s.ings : (base.ings || (base.ing ? [base.ing] : []));
+  const m = Object.assign({}, base, { ings: ings, ing: ings[0] || null, name: s.name || base.name, brand: s.brand || base.brand });
+  delete m._score;   // 避免沿用 LIB 上缓存的旧评分
+  return m;
+}
 function openStackDetail(uid){
   const s = state.stack.find(x=>x.uid===uid); if(!s) return;
-  const l = s.lib || byId(s.libId);
+  const lib0 = s.lib || byId(s.libId);
+  const l = lib0 ? libViewOf(s) : null;
   const ingRows = (s.ings||[]).length
     ? `<div class="row"><div class="row-main"><div class="row-sub">${t("ingredient")}</div><div class="row-title" style="font-size:14px">${s.ings.map(g=>`${g.name} ${g.amt}${g.unit}`).join(" · ")} / ${t("servings")}</div></div></div>`
     : "";
@@ -5297,7 +5307,8 @@ function openConfig(libObj, prefillName, editItem, full){
   pickColor = editItem&&editItem.icon ? editItem.icon.color : "blue";
   pickDetail = editItem&&editItem.icon ? editItem.icon.detail : "none";
   let html = `<button class="x" data-x>×</button><h2>${currentEditUid ? t("edit")+"："+escapeHtml(name) : (l?l.name:t("manualAdd"))}</h2>`;
-  if(l) html += `<div style="margin-top:8px">${reportHTML(l,1)}</div>`;
+  const repLib = (currentEditUid && editItem) ? libViewOf(editItem) : l;
+  if(repLib) html += `<div id="cfgReport" style="margin-top:8px">${reportHTML(repLib,1)}</div>`;
   html += `
   <div class="form-group">
     <div class="sec-head">${t("grpBasic")}</div>
@@ -5332,6 +5343,23 @@ function openConfig(libObj, prefillName, editItem, full){
   <button class="btn block" style="margin-top:16px" data-save>${t("joinStack")}</button>`;
   if(full){ sheet.innerHTML = html; mask.classList.add("on"); sheet.classList.add("on","full"); refreshScrollLock(); }
   else openSheet(html);
+  const ingListEl = document.getElementById("ingList");
+  if(ingListEl) ingListEl.addEventListener("input", refreshCfgReport);
+}
+// 编辑表单内改动成分（名称/含量/形态）时，实时重算「真材实料」评分卡
+function refreshCfgReport(){
+  const el = document.getElementById("cfgReport"); if(!el) return;
+  const ings = [...document.querySelectorAll("#ingList .ing-row")].map(row=>{
+    const n = row.querySelector(".ing-name").value.trim();
+    const a = +(row.querySelector(".ing-amt").value)||0;
+    const u = row.querySelector(".ing-unit").value;
+    const fsel = row.querySelector(".ing-form"); const f = fsel && fsel.value ? fsel.value : "";
+    return {name:n, amt:a, unit:u, form:f, min:0, max:0};
+  }).filter(g=>g.name && g.amt>0);
+  const base = currentLib || (currentEditUid ? (state.stack.find(x=>x.uid===currentEditUid)||{}) : {});
+  const v = Object.assign({}, base, {ings, ing: ings[0]||null});
+  delete v._score;
+  el.innerHTML = reportHTML(v, 1);
 }
 function saveStack(){
   const l = currentLib;
@@ -5353,12 +5381,11 @@ function saveStack(){
   if(currentEditUid){
     const s = state.stack.find(x=>x.uid===currentEditUid);
     if(s){
-      const prevIngs = s.ings||[];   // 捕获旧成分，重算时用于撤销旧贡献
       const totalTaken = Object.values(s.history||{}).reduce((a,b)=>a+(+b||0),0);
       s.name=name; s.price=price; s.serv=serv; s.takes=takes; s.dose=dose;
       s.ings=ings; s.icon=icon; s.image=tmpPhoto; s.lib=l; s.libId=l?l.id:"custom"; s.brand=brand;
       s.remaining = Math.max(0, serv - totalTaken*(dose||1));
-      recomputeIntakeForItem(s, prevIngs);   // 改量/改名后重算每日摄入，今日/趋势/营养图/交互检查自动刷新
+      rebuildIntake();   // 改量/改名后整日重建每日摄入：今日/趋势/营养图/交互检查实时刷新，且无旧 key 残留
     }
   } else {
     state.stack.push({
@@ -5385,33 +5412,31 @@ function take(uid){
   });
   save(); viewToday();
 }
-// 重算某条补剂的每日摄入：按当前 s.ings 重放所有打卡日。
-// 先按旧成分撤销（改名/改量/删成分后旧 key 自然消失），再按新成分累加
-// → 解决「修改成分含量后其他视图不自动更新」「AI 误识别改名后不重新计算」。
-function recomputeIntakeForItem(s, prevIngs){
-  if(!s) return;
-  const days = Object.keys(s.history||{});
-  const perTake = (g)=> (g && g.name && g.amt>0) ? g.amt*(s.dose||1) : 0;
-  // 1) 撤销旧成分贡献（仅本条目之前写入的部分）
-  days.forEach(d=>{
-    const cnt = s.history[d]||0; if(cnt<=0) return;
-    (prevIngs||[]).forEach(g=>{
-      const v = perTake(g); if(!v || !state.intake[d]) return;
-      state.intake[d][g.name]=Math.max(0,(state.intake[d][g.name]||0)-v*cnt);
-      if(state.intake[d][g.name]<=0) delete state.intake[d][g.name];
-    });
-    if(state.intake[d] && Object.keys(state.intake[d]).length===0) delete state.intake[d];
+// 重新计算全部「每日摄入」：按各补剂的 s.history × 当前 s.ings 整日重建。
+// 采用整日重建而非增量加减，避免改名/改量/改剂量时旧 key 残留导致「今日」重复显示或错归类。
+// 仅重建有打卡记录的日期；无打卡记录的天（仅导入/手动记录）原样保留，不破坏。
+function rebuildIntake(){
+  const fresh = {};
+  const histDays = new Set();
+  state.stack.forEach(s=>{
+    if(!s.history) return;
+    Object.keys(s.history).forEach(d=>{ if((s.history[d]||0)>0) histDays.add(d); });
   });
-  // 2) 按当前 ings 累加新贡献
-  days.forEach(d=>{
-    const cnt = s.history[d]||0; if(cnt<=0) return;
-    if(!state.intake[d]) state.intake[d]={};
+  state.stack.forEach(s=>{
+    if(!s.history) return;
     (s.ings||[]).forEach(g=>{
-      const v = perTake(g); if(!v) return;
-      state.intake[d][g.name]=(state.intake[d][g.name]||0)+v*cnt;
+      if(!g || !g.name || !(g.amt>0)) return;
+      const per = g.amt*(s.dose||1);
+      Object.keys(s.history).forEach(d=>{
+        const cnt = s.history[d]||0; if(cnt<=0) return;
+        if(!fresh[d]) fresh[d]={};
+        fresh[d][g.name]=(fresh[d][g.name]||0)+per*cnt;
+      });
     });
-    if(Object.keys(state.intake[d]).length===0) delete state.intake[d];
   });
+  const old = state.intake||{};
+  Object.keys(old).forEach(d=>{ if(!histDays.has(d)) fresh[d]=old[d]; });
+  state.intake = fresh;
 }
 function remove(uid){state.stack=state.stack.filter(x=>x.uid!==uid);save();closeSheet();viewStack();}
 function archive(uid){ const s=state.stack.find(x=>x.uid===uid); if(!s) return; s.archived=true; save(); closeSheet(); toast(t("toBox")); viewStack(); }
@@ -5607,9 +5632,9 @@ document.addEventListener("click", e=>{
   const pickPhotoBtn = tgt.closest("[data-pickphoto]");
   if(pickPhotoBtn){ pickPhoto(); return; }
   const ingAdd = tgt.closest("[data-ingadd]");
-  if(ingAdd){ const list=document.getElementById("ingList"); if(list) list.insertAdjacentHTML("beforeend", ingRowHTML()); return; }
+  if(ingAdd){ const list=document.getElementById("ingList"); if(list) list.insertAdjacentHTML("beforeend", ingRowHTML()); refreshCfgReport(); return; }
   const ingDel = tgt.closest("[data-ingdel]");
-  if(ingDel){ const rows=document.querySelectorAll("#ingList .ing-row"); if(rows.length>1){ ingDel.closest(".ing-row").remove(); } else { const r=ingDel.closest(".ing-row"); r.querySelector(".ing-name").value=""; r.querySelector(".ing-amt").value=""; } return; }
+  if(ingDel){ const rows=document.querySelectorAll("#ingList .ing-row"); if(rows.length>1){ ingDel.closest(".ing-row").remove(); } else { const r=ingDel.closest(".ing-row"); r.querySelector(".ing-name").value=""; r.querySelector(".ing-amt").value=""; } refreshCfgReport(); return; }
   const saveBtn = tgt.closest("[data-save]");
   if(saveBtn){ saveStack(); return; }
   const start = tgt.closest("[data-start]");
@@ -6218,6 +6243,7 @@ checkUpdate(false);
 /* 背景光斑滚动视差（增强液态纵深） */
 (function(){
   if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if(document.documentElement.classList.contains("no-glass") || /Android/i.test(navigator.userAgent||"")) return; // 关闭玻璃/安卓下不做背景球视差，省合成
   const orbs = document.querySelectorAll(".bg-orbs i");
   if(!orbs.length) return;
   const factors = [.12,.08,.16,.06,.1];

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-15 23:52 · 修复 · 三项体验问题（重复显示 / 真材实料不刷新 / 安卓发烫）[待发 1.0.7/code8]
+- 文件清单：index.html（rebuildIntake 替换 recompute、libViewOf+详情/编辑卡实时刷新、安卓隐藏模糊背景球+关脉冲动画+视差守卫）；[前端]
+- **① 今日重复显示**：原 recomputeIntakeForItem 用「旧成分减、新成分加」增量法，改名+同日多次打卡+改剂量时旧名 key 欠减残留 → 同一成分出现两次。改为 rebuildIntake() 按 s.history×当前 s.ings 整日重建，旧 key 不可能残留；同名跨条目仍正确叠加。Node 单测 7/7 通过（含改名+剂量场景）。
+- **② 真材实料不刷新**：openStackDetail / 编辑卡 reportHTML 读的是 s.lib（原始 LIB），而非实时 s.ings。新增 libViewOf(s)（元数据取 LIB、成分取实时 s.ings、清 _score 缓存）；编辑卡成分输入/增删行时 refreshCfgReport() 实时重算评分卡。
+- **③ 安卓发烫**：.bg-orbs 的 filter:blur(64px→24px) 未被 .no-glass 关闭，5 个大模糊球在安卓 WebView 持续合成 + 滚动视差反复重模糊 → 发热。修复：安卓/.no-glass 下 display:none 隐藏背景球；.tag.red 的 tagPulse 由 infinite 改为有限次(3)；视差 scroll 监听在安卓/关玻璃下直接跳过。
+- 校验：JS node --check OK（5693 行）；rebuildIntake 离线单测 7/7
+- 部署标记：[前端]（改 index.html 即生效；需 npx cap sync android 重建 APK）
+
 ## 2026-08-15 23:08 · 修复 · 数据不实时更新：改成分含量/改名后每日摄入重新计算
 - 文件清单：index.html（新增 recomputeIntakeForItem、saveStack 调用）；[前端]
 - 用户反馈：① 修改补剂成分含量后，今日摄入/趋势/营养图/交互检查不自动更新；② AI 误识别成分名（如"维生素B5"识为"泛酸"）手动改对后，系统不重新计算每日摄入，旧错误名仍占用、正确名无累计。

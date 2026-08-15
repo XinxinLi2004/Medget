@@ -1,6 +1,6 @@
 {
-  "version": "1.0.6",
-  "versionCode": 7,
+  "version": "1.0.7",
+  "versionCode": 8,
   "apk": "https://ghproxy.net/https://github.com/XinxinLi2004/Medget/releases/download/latest/app-release.apk",
-  "notes": "新增：设置内「玻璃效果」开关（自动/开启/关闭，默认 iOS 开/安卓关以保流畅）。修复：修改补剂成分含量或 AI 误识别改名后，今日摄入/趋势/营养图/交互检查实时重新计算。"
+  "notes": "修复：① 改成分含量/改名后「今日」不再重复显示（整日重建每日摄入）；② 详情/编辑卡「真材实料」评分随成分编辑实时刷新；③ 安卓关闭模糊背景球、停无限脉冲与视差，解决手机发烫。"
 }
