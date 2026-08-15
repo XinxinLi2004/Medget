@@ -20,6 +20,9 @@
     --red:#ff3b30;   --red-soft:rgba(255,59,48,.12);
     --orange:#ff9500;--orange-soft:rgba(255,149,0,.14);
     --seg-bg:rgba(118,118,128,.12);
+    --text:#1c1c1e;
+    --purple:#af52de; --purple-soft:rgba(175,82,222,.16);
+    --indigo:#5856d6; --indigo-soft:rgba(88,86,214,.16);
     --r:16px;
     --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
     --font-num:'Manrope',-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
@@ -34,6 +37,9 @@
     --red:#ff453a;   --red-soft:rgba(255,69,58,.26);
     --orange:#ff9f0a;--orange-soft:rgba(255,159,10,.26);
     --seg-bg:rgba(118,118,128,.24);
+    --text:#fff;
+    --purple:#bf5af2; --purple-soft:rgba(191,90,242,.24);
+    --indigo:#5e5ce6; --indigo-soft:rgba(94,92,230,.24);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html{scroll-behavior:smooth}
@@ -354,7 +360,7 @@
   .dark .cal-day{background:rgba(255,255,255,.06)}
   .cal-day.done{background:var(--green-soft);color:var(--green)}
   .cal-day.partial{background:var(--orange-soft);color:var(--orange)}
-  .cal-day.today{box-shadow:inset 0 0 0 2px var(--blue)}
+  .cal-day.today{box-shadow:inset 0 0 0 2px var(--blue), 0 0 0 4px var(--blue-soft)}
   .cal-day.future{opacity:.4}
   .cal-day.blank{background:transparent}
   .cal-day[data-calday]{cursor:pointer}
@@ -362,11 +368,13 @@
   .cal-bar{display:flex;align-items:center;gap:8px;padding:12px 16px 6px}
   .cal-title{font-size:16px;font-weight:700;letter-spacing:-.01em;flex:1;text-align:center;font-variant-numeric:tabular-nums}
   .cal-nav{width:32px;height:32px;border-radius:50%;border:0;background:rgba(60,60,67,.08);color:var(--label);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
     font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:opacity .15s}
   .dark .cal-nav{background:rgba(255,255,255,.1)}
   .cal-nav:active{opacity:.5}
   .cal-today{border:0;background:var(--blue-soft);color:var(--blue);font-size:13px;font-weight:600;
-    padding:6px 12px;border-radius:100px;cursor:pointer;font-family:var(--font);transition:opacity .15s;white-space:nowrap}
+    padding:6px 12px;border-radius:100px;cursor:pointer;font-family:var(--font);transition:opacity .15s;white-space:nowrap;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
   .cal-today:active{opacity:.5}
   .cal-daylist{margin:4px 0 2px}
   .cal-daylist .row{padding:10px 16px}
@@ -377,7 +385,8 @@
   /* ============ 7 天趋势柱状图 ============ */
   .trend-row{display:flex;align-items:flex-end;gap:8px;padding:8px 16px 14px;height:90px}
   .trend-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
-  .trend-bar .bar{width:100%;border-radius:6px 6px 2px 2px;min-height:4px;transition:height .5s var(--ease)}
+  .trend-bar .bar{width:100%;border-radius:7px 7px 4px 4px;min-height:4px;transition:height .5s var(--ease);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
   .trend-bar .bar.full{background:var(--green)}
   .trend-bar .bar.partial{background:var(--orange)}
   .trend-bar .bar.none{background:rgba(60,60,67,.12)}
@@ -385,11 +394,16 @@
   .trend-bar .lbl{font-size:10px;color:var(--label3);font-weight:600}
   .trend-bar .pct{font-size:10px;color:var(--label2);font-variant-numeric:tabular-nums}
 
-  /* ============ 相互作用卡片 ============ */
-  .ia-card{padding:12px 16px;border-radius:12px;margin:8px 16px 0;display:flex;gap:10px;align-items:flex-start}
-  .ia-card.warn{background:var(--orange-soft)}
-  .ia-card.good{background:var(--green-soft)}
-  .ia-card.info{background:var(--blue-soft)}
+  /* ============ 相互作用卡片（液态玻璃 callout） ============ */
+  .ia-card{position:relative;padding:12px 15px;border-radius:var(--r);margin:8px 16px 0;display:flex;gap:10px;align-items:flex-start;
+    -webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 4px 16px rgba(0,0,0,.05)}
+  .ia-card.warn{background:rgba(255,149,0,.14);border:1px solid rgba(255,149,0,.28)}
+  .ia-card.good{background:rgba(52,199,89,.14);border:1px solid rgba(52,199,89,.28)}
+  .ia-card.info{background:rgba(0,122,255,.14);border:1px solid rgba(0,122,255,.28)}
+  .dark .ia-card.warn{background:rgba(255,159,10,.22);border-color:rgba(255,159,10,.42)}
+  .dark .ia-card.good{background:rgba(48,209,88,.22);border-color:rgba(48,209,88,.42)}
+  .dark .ia-card.info{background:rgba(10,132,255,.22);border-color:rgba(10,132,255,.42)}
   .ia-ico{font-size:18px;flex:0 0 auto;line-height:1.2}
   .ia-body{flex:1;min-width:0}
   .ia-title{font-size:13px;font-weight:700;margin-bottom:2px}
@@ -409,7 +423,7 @@
   .slot-head .slot-cnt{font-size:12px;color:var(--label3);margin-left:auto}
 
   @media (prefers-reduced-transparency: reduce){
-    .nav,.tabbar,.sheet,.card{backdrop-filter:none;-webkit-backdrop-filter:none}
+    .nav,.tabbar,.sheet,.card,.ia-card{backdrop-filter:none;-webkit-backdrop-filter:none}
     .nav{background:#f2f2f7}.tabbar{background:#f9f9f9}.sheet{background:#f8f8fa}.card{background:#fff}
     .dark .nav{background:#161618}.dark .tabbar{background:#161618}.dark .sheet{background:#1c1c1e}.dark .card{background:#2c2c2e}
   }
@@ -481,7 +495,7 @@ const I18N = {
     aiPhotoPrompt:"请根据图片中的补剂包装或成分表，返回评估 JSON。", aiOffPrompt:"以下是 Open Food Facts 查到的产品信息，据此生成 JSON：", aiCodePrompt:"请根据条码给出最可能的补剂评估（条码通常无法精确反查，可基于常识推断；完全不确定则 name 填「未知补剂」）：",
     language:"语言", appearance:"外观", followSystem:"跟随系统", light:"浅色", dark:"深色",
     motion:"动效", motionDesc:"减少动态效果",
-    data:"数据", exportData:"导出数据", clearData:"清空数据", dataCleared:"数据已清空",
+    data:"数据", exportData:"导出数据", clearData:"清空数据", dataCleared:"数据已清空", exportInfo:"将导出以下数据（JSON 备份文件）：", exportStructStack:"我的补剂：名称、价格、份数、成分与真实原料形态、服用方式、提醒", exportStructHistory:"打卡与每日摄入记录", exportStructAI:"AI 服务商配置（不含密钥明文）", copyData:"复制到剪贴板", copyOk:"已复制到剪贴板", copyFail:"复制失败，请手动保存", downloadBackup:"下载备份文件", exported:"已导出备份文件", importDesc:"从备份文件恢复补剂与打卡记录",
     checkUpdate:"检查更新", updateChecking:"正在检查更新…", updateLatest:"已是最新版本", updateFound:"发现新版本", updateGet:"去更新", updateError:"检查更新失败", currentVer:"当前版本",
     about:"关于", disclaimer:"数据仅保存在本机；评分与 AI 结果为信息辅助，不构成医疗建议。API Key 仅存本机浏览器。",
     scoreParts:"评分构成", quality:"质量安全", efficacy:"功效循证", transparency:"透明度", value:"性价比",
@@ -537,7 +551,7 @@ const I18N = {
     aiPhotoPrompt:"Identify the supplement from this image and return the evaluation JSON.", aiOffPrompt:"Product info from Open Food Facts; generate the JSON accordingly:", aiCodePrompt:"Give the most likely supplement evaluation for this barcode (barcodes often can't be reverse-looked-up; infer from common sense if needed; if fully uncertain, set name to \"Unknown supplement\"):",
     language:"Language", appearance:"Appearance", followSystem:"System", light:"Light", dark:"Dark",
     motion:"Motion", motionDesc:"Reduce motion",
-    data:"Data", exportData:"Export data", clearData:"Clear data", dataCleared:"Data cleared",
+    data:"Data", exportData:"Export data", clearData:"Clear data", dataCleared:"Data cleared", exportInfo:"The following data will be exported (JSON backup file):", exportStructStack:"My supplements: name, price, servings, ingredients & real forms, usage, reminders", exportStructHistory:"Check-in & daily intake history", exportStructAI:"AI provider config (keys excluded)", copyData:"Copy to clipboard", copyOk:"Copied to clipboard", copyFail:"Copy failed, save manually", downloadBackup:"Download backup", exported:"Backup exported", importDesc:"Restore supplements & check-ins from a backup file",
     checkUpdate:"Check update", updateChecking:"Checking…", updateLatest:"Already up to date", updateFound:"New version available", updateGet:"Update now", updateError:"Update check failed", currentVer:"Current version",
     about:"About", disclaimer:"Data stays on this device. Scores and AI results are informational, not medical advice. Your API key is stored locally only.",
     scoreParts:"Score breakdown", quality:"Quality", efficacy:"Evidence", transparency:"Transparency", value:"Value",
@@ -3678,9 +3692,13 @@ document.addEventListener("click", e=>{
   const motionTgl = tgt.closest("[data-motion]");
   if(motionTgl){ toggleMotion(); return; }
   const exp = tgt.closest("[data-export]");
-  if(exp){ exportData(); return; }
+  if(exp){ openExportSheet(); return; }
   const imp = tgt.closest("[data-import]");
   if(imp){ importData(); return; }
+  const dl = tgt.closest("[data-downloadbackup]");
+  if(dl){ doDownloadBackup(); return; }
+  const cp = tgt.closest("[data-copydata]");
+  if(cp){ copyBackup(); return; }
   const clr = tgt.closest("[data-clear]");
   if(clr){ clearData(); return; }
   const cu = tgt.closest("[data-checkupdate]");
@@ -4095,11 +4113,47 @@ async function checkUpdate(manual){
     if(manual) toast(t("updateError"));
   }
 }
-function exportData(){
-  const blob = new Blob([JSON.stringify({state, settings, ai:getAIState()}, null, 2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "gaichiyao-backup-"+today()+".json"; a.click();
-  URL.revokeObjectURL(a.href);
+let lastBackupJSON = "";
+function openExportSheet(){
+  lastBackupJSON = JSON.stringify({state, settings, ai:getAIState()}, null, 2);
+  openSheet(`<button class="x" data-x>×</button><h2>${t("exportData")}</h2>
+    <div class="card" style="margin-top:8px">
+      <div class="row-sub" style="line-height:1.7">${t("exportInfo")}</div>
+      <ul style="margin:10px 0 2px;padding-left:18px;line-height:1.95;font-size:13px;color:var(--label2)">
+        <li>${t("exportStructStack")}</li>
+        <li>${t("exportStructHistory")}</li>
+        <li>${t("exportStructAI")}</li>
+      </ul>
+    </div>
+    <button class="btn block" style="margin-top:14px" data-downloadbackup>⬇ ${t("downloadBackup")}</button>
+    <button class="btn plain block" style="margin-top:8px" data-copydata>📋 ${t("copyData")}</button>`);
+}
+function doDownloadBackup(){
+  const json = lastBackupJSON || JSON.stringify({state, settings, ai:getAIState()}, null, 2);
+  try{
+    const blob = new Blob([json], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "gaichiyao-backup-"+today()+".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1500);
+    closeSheet(); toast(t("exported"));
+  }catch(err){ toast(t("copyFail")); }
+}
+async function copyBackup(){
+  const json = lastBackupJSON || "";
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(json); }
+    else { throw new Error("no clipboard api"); }
+    toast(t("copyOk"));
+  }catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = json; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try{ document.execCommand("copy"); toast(t("copyOk")); }
+    catch(_){ toast(t("copyFail")); }
+    ta.remove();
+  }
 }
 function importData(){
   const input = document.createElement("input");
@@ -4161,7 +4215,7 @@ function openSettings(){
     <div class="switch-row"><span>${t("motionDesc")}</span><div class="switch ${settings.reduceMotion?"":"on"}" data-motion></div></div>
     <div class="sec-head" style="padding:8px 0 6px">${t("data")}</div>
     <div class="card"><div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${t("exportData")}</div></div><button class="btn plain" data-export>${t("exportData")}</button></div>
-      <div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${t("importData")}</div><div class="row-sub" style="font-size:12px">${t("importData")}</div></div><button class="btn plain" data-import>${t("importData")}</button></div>
+      <div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${t("importData")}</div><div class="row-sub" style="font-size:12px">${t("importDesc")}</div></div><button class="btn plain" data-import>${t("importData")}</button></div>
       <div class="row"><div class="row-main"><div class="row-title" style="font-size:15px;color:var(--red)">${t("clearData")}</div></div><button class="btn plain" data-clear style="color:var(--red)">${t("clearData")}</button></div></div>
     <div class="sec-head" style="padding:8px 0 6px">${t("aiSection")}</div>
     <div class="ai-presets">${presets}</div>

@@ -1,5 +1,14 @@
 # CHANGELOG
 
+2026-08-15 14:57 · 修复 · 导出数据无反应（重写下载逻辑 + 增加导出说明弹窗与复制兜底）
+2026-08-15 12:45 · 样式 · 新功能视觉统一为 Liquid Glass（相互作用卡片/日历/趋势图玻璃化）
+- 文件清单：index.html、www/index.html（CSS 仅调整，布局结构不变）；已 cp index.html www/ 同步
+- 相互作用卡片 `.ia-card`：平涂 12px 色块 → 16px 液态玻璃 callout（saturate+blur、语义色描边、内高光+柔影），消除"彩盒"突兀感；补 `.dark` 深色描边适配
+- 趋势图 `.trend-bar .bar`：生硬 6/2px 圆角 → 7/4px 统一圆角 + 顶部内高光，更"液态"
+- 日历 `.cal-nav`/`.cal-today` 补内高光描边；`.cal-day.today` 加蓝色柔光外晕聚焦
+- token 闭环：`:root`/`.dark` 补全 `--text`/`--purple`/`--indigo`/`*-soft`，修复 `.ing-d-f b` 失效变量与时段点色深色不适配；`.ia-card` 纳入 `prefers-reduced-transparency` 降级
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
 2026-08-15 12:40 · 功能 · 软件更新机制（轻量版）：固定签名 + 检查更新
 - 文件清单：android/app/upload-keystore.jks（新增）、android/app/build.gradle（release 签名）、.github/workflows/android.yml（改打 release + 自动发 latest Release）、version.json（新增）、index.html（检查更新）
 - 部署标记：[需部署]（改了 android/ 原生工程 + CI；新 APK 需重装一次）
