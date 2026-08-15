@@ -19,9 +19,9 @@ android {
     signingConfigs {
         release {
             storeFile file("upload-keystore.jks")
-            storePassword "gaichiyao2026"
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "gaichiyao2026"
             keyAlias "upload"
-            keyPassword "gaichiyao2026"
+            keyPassword System.getenv("KEYSTORE_PASSWORD") ?: "gaichiyao2026"
         }
     }
     buildTypes {

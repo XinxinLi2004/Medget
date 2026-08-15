@@ -41,7 +41,14 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Restore signing keystore
+        run: echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
       - name: Build release APK (signed)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: cd android && chmod +x gradlew && ./gradlew assembleRelease
 
       - name: Upload APK artifact

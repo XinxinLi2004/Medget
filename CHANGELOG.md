@@ -1,5 +1,14 @@
 # CHANGELOG
 
+2026-08-15 15:10 · 安全 · 钥匙库移出公开仓库 + CI 改由 secret 注入签名（密钥不再明文入库）
+2026-08-15 15:05 · 样式 · 自定义添加表单（openConfig）Liquid Glass 化 + 输入框统一
+- 文件清单：index.html、www/index.html（CSS 仅调整，DOM 结构不变）；已 cp index.html www/ 同步
+- 表单输入框 `.field input` / `.ing-row input,select` / `.ing-form`：下划线平涂 → 圆角磨砂玻璃单元格（blur+saturate、内高光、聚焦蓝环），消除"老土"观感
+- 成分列表 `#ingList` 升级为玻璃面板（毛玻璃背景 + 内高光 + 柔影）；删除按钮 `.ing-del` 加内高光、按下变红
+- 选中态增强：`.shape-opt.on` 加蓝环柔光、`.color-opt.on` 加蓝色光晕
+- 副作用：设置页 / AI 服务商页共用的 `.field` 输入框随之统一为玻璃风（整体一致性提升）
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
 2026-08-15 14:57 · 修复 · 导出数据无反应（重写下载逻辑 + 增加导出说明弹窗与复制兜底）
 2026-08-15 12:45 · 样式 · 新功能视觉统一为 Liquid Glass（相互作用卡片/日历/趋势图玻璃化）
 - 文件清单：index.html、www/index.html（CSS 仅调整，布局结构不变）；已 cp index.html www/ 同步
