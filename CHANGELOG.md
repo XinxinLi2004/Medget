@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-15 20:26 · 修复 · 补剂库搜索区回滚恢复（蓝色圆角）+ 分类点击跳顶
+- 文件清单：index.html（www/ 被 .gitignore 忽略，CI 从 index.html 重新生成 www）；已提交 push 到 main（commit 8d46f64）
+- 现象：用户重装 APK 后搜索框变回白底、圆角丢失、点击分类自动跳到第一个
+- 根因①：index.html 被外部进程回滚成早期白底版本（git status 显示 M，非 checkout；www/ 同步成同一份白底）。已重新恢复蓝色圆角设计
+- 根因②：分类点击原调用 viewLib() 重建整个 view.innerHTML，滚动位置被重置到顶部。改为仅切换 chip.on 选中态 + renderLibList() 重渲染列表，保留滚动位置
+- 修复：搜索框淡蓝底 rgba(0,122,255,.08)+蓝边+蓝色图标、聚焦蓝环；分类未选透明灰边胶囊/选中实心蓝胶囊+按压反馈；@supports 兜底同步改蓝；空状态图标去白
+- 部署标记：[前端]（CI 已触发 assembleRelease，出包后覆盖安装即可；覆盖安装不丢 localStorage 数据）
+
 ## 2026-08-15 21:40 · 修复 · 补剂库白屏（数据模型不兼容致 scoreOf 崩溃）
 
 ### 背景
