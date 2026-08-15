@@ -7,13 +7,27 @@ android {
         applicationId "com.lixueyou.gaichiyao"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+        // 瘦身：原生库默认按 4 种架构全打包（含 x86/x86_64，仅模拟器用）。
+        // 真机只需 arm64-v8a(现代机) + armeabi-v7a(老机)，砍掉两套模拟器架构可显著减小体积。
+        ndk {
+            abiFilters "arm64-v8a", "armeabi-v7a"
+        }
+    }
+    // 按 ABI 拆分独立 APK（每架构一个），朋友按机型各取所需，单包更小；不再打 universal 包
+    splits {
+        abi {
+            enable true
+            reset()
+            include "arm64-v8a", "armeabi-v7a"
+            universalApk false
         }
     }
     signingConfigs {
@@ -27,7 +41,10 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled false
+            // 瘦身：R8 死代码消除 + 未使用资源裁剪。Capacitor Android AAR 自带 consumer ProGuard 规则，
+            // 会保留 WebView / JS 桥所需类，对"纯 WebView 壳 + 少量原生插件"的 App 安全。
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

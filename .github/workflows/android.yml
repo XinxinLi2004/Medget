@@ -51,11 +51,12 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: cd android && chmod +x gradlew && ./gradlew assembleRelease
 
+      # ABI 拆分后每个架构一个 APK（app-<abi>-release.apk），用 glob 收集，不再写死单文件路径
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: gaichiyao-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/app-*-release.apk
           if-no-files-found: error
 
       # 注意：这一步必须永不失败。首次构建时 latest release/tag 并不存在，
@@ -91,7 +92,7 @@ jobs:
           name: 最新版
           fail_on_unmatched_files: true
           files: |
-            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/apk/release/app-*-release.apk
             version.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
