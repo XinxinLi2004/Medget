@@ -1,5 +1,20 @@
 # CHANGELOG
 
+2026-08-15 16:30 · 修复 · 历史补录逻辑重写（消除重复累计 + 保证份数自洽）
+- 文件清单：index.html、www/index.html；已 cp index.html www/ 同步
+- 原 bug：旧 `backfill()` 把用户输入的「已服用总份数」当额外份数直接叠进 history，且 openBackfill 预填值=sum(history) → 原样保存即翻倍；serv=n+remainV 而 history 总和=inApp+n，inApp>0 时 history>serv（已服超过总份数，逻辑矛盾）。
+- 修法（重写 backfill）：① 新增 `s._bf` 记录每轮补录量；② 保存前先按 `_bf` 精确撤销上一轮补录部分（只扣补录量、应用内记录原样保留），避免重复累计与覆盖；③ 仅补录差额 `effectiveN - inAppTaken`，从昨天往前填空白日、跳过应用内已有记录日；④ `serv = effectiveN + remainV` 恒自洽；⑤ effectiveN=max(输入, 应用内已记录)，应用内已服不可撤销。
+- 配套：migrate 默认 `x._bf={}`；copyStack 清 `cp._bf={}`。
+- 验证：node 单测 11 项全过（A 原样不翻倍 / B 差额补录 / C 幂等 / D 不可撤销应用内 / E-F 摄入连续性幂等）。
+- 部署标记：[前端]（已 push，CI 自动出 APK；本机无 Android SDK）
+
+2026-08-15 16:24 · 修复 · 编辑界面列宽对齐 + 全局去白块
+- 文件清单：index.html、www/index.html（纯 CSS）；已 cp index.html www/ 同步
+- 列宽对齐（openConfig 各 `.form-group` 区块）：原表头 sec-head 左缘 16px、基础信息输入框 14px、成分区 `#ingList` 嵌套面板+`.ing-row` 16px 横向内距导致成分输入框缩进到 30px → 三处不一致；现 sec-head 横向内距改 0（对齐 14px）、`.ing-row` 横向内距 16px→0、`#ingList` 去边框/底色变透明容器，所有输入框左缘统一 14px
+- 成分输入框聚焦实心白：`.ing-row input:focus` 背景 `rgba(255,255,255,.9)`（近实心）→ `.55` 玻璃色，消除"实心白块"
+- 全局去白块：`:root --card` 由 `rgba(255,255,255,.66)` 下调到 `.5`，所有玻璃面（表单卡/输入框/卡片）更通透不再像白块；暗色 `--card` 未动
+- 部署标记：[前端]（需 `npx cap sync android` 重新构建 APK；本机无 Android SDK）
+
 2026-08-15 16:25 · 修复 · 历史补录时总份数(serv)未自动修正
 - 文件清单：index.html、www/index.html；已 cp index.html www/ 同步
 - 根因：`backfill()` 只回填 `history`/`intake` 与 `remaining`，未更新 `s.serv`（整瓶总份数）；而花费页「每份¥/每日¥」与编辑保存的 `remaining=serv-已服用` 都以 `serv` 为准，导致补录后份数与花费对不上

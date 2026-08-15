@@ -10,7 +10,7 @@
     src:url('https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/latin-wght-normal.woff2') format('woff2')}
   :root{
     --bg:#f2f2f7;
-    --card:rgba(255,255,255,.66);
+    --card:rgba(255,255,255,.5);
     --sep:rgba(60,60,67,.12);
     --label:#1c1c1e;
     --label2:rgba(60,60,67,.6);
@@ -228,7 +228,7 @@
     -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 6px 20px rgba(0,0,0,.04)}
   .dark .form-group{border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 6px 20px rgba(0,0,0,.25)}
-  .form-group > .sec-head{padding:14px 2px 8px;font-size:13px;font-weight:600;color:var(--label2);text-transform:none;letter-spacing:0}
+  .form-group > .sec-head{padding:14px 0 8px;font-size:13px;font-weight:600;color:var(--label2);text-transform:none;letter-spacing:0}
   .form-group .field{margin:0}
   .form-group .field label{margin:14px 0 4px}
   .form-group .field:first-child label{margin-top:2px}
@@ -236,7 +236,7 @@
   .form-group .photo-row{padding:0}
   .form-group #ingList{margin:2px 0 0}
 
-  .ing-row{display:flex;flex-direction:column;gap:6px;padding:8px 16px;border-top:1px solid rgba(60,60,67,.08)}
+  .ing-row{display:flex;flex-direction:column;gap:6px;padding:8px 0;border-top:1px solid rgba(60,60,67,.08)}
   .ing-row:first-child{border-top:0}
   .ing-line1,.ing-line2{display:flex;gap:8px;align-items:center;width:100%}
   .ing-row input,.ing-row select{border:1px solid var(--sep);border-radius:10px;padding:11px 10px;
@@ -250,18 +250,14 @@
   .ing-row .ing-form{font-size:13px;color:var(--label);padding:9px 10px;border:1px solid var(--sep);border-radius:10px;
     background:var(--card);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
   .dark .ing-row .ing-form{background:var(--card)}
-  .ing-row input:focus,.ing-row select:focus{outline:none;background:rgba(255,255,255,.9)}
+  .ing-row input:focus,.ing-row select:focus{outline:none;background:rgba(255,255,255,.55)}
   .dark .ing-row input:focus,.dark .ing-row select:focus{background:rgba(60,60,67,.5)}
   .ing-row .ing-del{flex:0 0 28px;height:28px;border:none;background:rgba(60,60,67,.08);color:var(--label2);
     border-radius:14px;font-size:16px;line-height:1;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.4);
     transition:background .15s var(--ease),color .15s var(--ease)}
   .dark .ing-row .ing-del{background:rgba(255,255,255,.12)}
   .ing-row .ing-del:active{background:var(--red-soft);color:var(--red)}
-  #ingList{max-height:46vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-    border:1px solid var(--sep);border-radius:14px;margin:2px 16px 0;
-    background:var(--card);-webkit-backdrop-filter:blur(12px) saturate(180%);backdrop-filter:blur(12px) saturate(180%);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 16px rgba(0,0,0,.04)}
-  .dark #ingList{background:var(--card)}
+  #ingList{max-height:46vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:2px 0 0}
 
   .pill-preview{display:flex;justify-content:center;padding:8px 0 2px}
   .pill-preview svg{width:72px;height:72px}
@@ -2648,6 +2644,7 @@ function migrate(s){
     if(x.usage===undefined)x.usage="any";
     if(x.remindAt===undefined)x.remindAt="";
     if(x.archived===undefined)x.archived=false;
+    if(x._bf===undefined)x._bf={};
     if(!x.icon)x.icon={shape:"capsule",color:"blue",detail:"none"};
     if(!x.ings){
       if(x.ingName){ x.ings=[{name:x.ingName, amt:x.amt, unit:x.unit||"mg", min:x.ingMin||0, max:x.ingMax||0}]; }
@@ -3754,28 +3751,40 @@ function unarchive(uid){ const s=state.stack.find(x=>x.uid===uid); if(!s) return
 function removeArchived(uid){ state.stack=state.stack.filter(x=>x.uid!==uid); save(); viewBox(); }
 function copyStack(uid){
   const s=state.stack.find(x=>x.uid===uid); if(!s) return;
-  const cp={...s}; delete cp.uid; cp.remaining=cp.serv; cp.history={}; cp.archived=false;
+  const cp={...s}; delete cp.uid; cp.remaining=cp.serv; cp.history={}; cp._bf={}; cp.archived=false;
   closeSheet();
   openConfig(s.lib||null, null, cp);
 }
 function backfill(uid, taken, remain){
   const s=state.stack.find(x=>x.uid===uid); if(!s) return;
-  const n=Math.max(0,Math.floor(taken||0));
-  const remainV=Math.max(0,Math.floor(remain||0));
-  let cnt=n;
-  for(let i=0; cnt>0; i++){
-    const d=new Date(); d.setDate(d.getDate()-i); const key=d.toISOString().slice(0,10);
-    const day=s.history[key]||0;
-    const add=Math.max(0, Math.min(s.takes - day, cnt));
-    if(add>0){
-      s.history[key]=day+add;
-      if(!state.intake[key]) state.intake[key]={};
-      (s.ings||[]).forEach(g=>{ if(g&&g.name&&g.amt>0) state.intake[key][g.name]=((state.intake[key][g.name]||0)+g.amt*s.dose*add); });
+  if(!s._bf) s._bf={};
+  // 1) 先撤销上一轮补录：只扣掉「补录部分」，应用内已记录原样保留（避免重复累计）
+  Object.keys(s._bf).forEach(k=>{
+    const bf=s._bf[k]; if(!bf) return;
+    s.history[k]=Math.max(0,(s.history[k]||0)-bf); if(s.history[k]===0) delete s.history[k];
+    if(state.intake[k]){
+      (s.ings||[]).forEach(g=>{ if(g&&g.name&&g.amt>0){ const nm=g.name; state.intake[k][nm]=Math.max(0,(state.intake[k][nm]||0)-g.amt*s.dose*bf); if(state.intake[k][nm]===0) delete state.intake[k][nm]; } });
+      if(Object.keys(state.intake[k]).length===0) delete state.intake[k];
     }
-    cnt-=add;
+  });
+  s._bf={};
+  // 2) 纯应用内已记录份数（此时 history 已不含补录）
+  const inAppTaken = Object.values(s.history||{}).reduce((a,b)=>a+(+b||0),0);
+  const n=Math.max(0,Math.floor(taken||0));
+  const effectiveN=Math.max(n, inAppTaken);     // 应用内已服不可撤销，总数不低于已记录
+  const remainV=Math.max(0,Math.floor(remain||0));
+  // 3) 仅补录差额：从昨天往前填空白日，跳过应用内已有记录的日子
+  let cnt=Math.max(0, effectiveN-inAppTaken);
+  for(let i=1; cnt>0; i++){
+    const d=new Date(); d.setDate(d.getDate()-i); const key=d.toISOString().slice(0,10);
+    if(s.history[key]) continue;                // 该日已有应用内记录，跳过避免覆盖
+    s.history[key]=(s.history[key]||0)+1; s._bf[key]=(s._bf[key]||0)+1;
+    if(!state.intake[key]) state.intake[key]={};
+    (s.ings||[]).forEach(g=>{ if(g&&g.name&&g.amt>0) state.intake[key][g.name]=((state.intake[key][g.name]||0)+g.amt*s.dose); });
+    cnt--;
   }
   s.remaining=remainV;
-  s.serv=Math.max(1, n+remainV);   // 总份数自动修正为「已服用 + 当前剩余」，保持份数/花费一致
+  s.serv=Math.max(1, effectiveN+remainV);       // 总份数 = 已服用(含补录) + 当前剩余，保持份数/花费自洽
   save(); closeSheet(); toast(t("backfilled")); setTab(curTab);
 }
 function openBackfill(uid){
