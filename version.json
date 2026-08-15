@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "versionCode": 1,
+  "apk": "https://github.com/XinxinLi2004/Medget/releases/download/latest/app-release.apk",
+  "notes": "首个对外分发版：修复拍照/扫码 AI 识别加载动画、打卡日历可翻月、已添加补剂可编辑。"
+}

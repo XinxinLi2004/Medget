@@ -482,6 +482,7 @@ const I18N = {
     language:"语言", appearance:"外观", followSystem:"跟随系统", light:"浅色", dark:"深色",
     motion:"动效", motionDesc:"减少动态效果",
     data:"数据", exportData:"导出数据", clearData:"清空数据", dataCleared:"数据已清空",
+    checkUpdate:"检查更新", updateChecking:"正在检查更新…", updateLatest:"已是最新版本", updateFound:"发现新版本", updateGet:"去更新", updateError:"检查更新失败", currentVer:"当前版本",
     about:"关于", disclaimer:"数据仅保存在本机；评分与 AI 结果为信息辅助，不构成医疗建议。API Key 仅存本机浏览器。",
     scoreParts:"评分构成", quality:"质量安全", efficacy:"功效循证", transparency:"透明度", value:"性价比",
     ingredient:"成分", effRange:"有效范围", intakeNow:"本次摄入",
@@ -537,6 +538,7 @@ const I18N = {
     language:"Language", appearance:"Appearance", followSystem:"System", light:"Light", dark:"Dark",
     motion:"Motion", motionDesc:"Reduce motion",
     data:"Data", exportData:"Export data", clearData:"Clear data", dataCleared:"Data cleared",
+    checkUpdate:"Check update", updateChecking:"Checking…", updateLatest:"Already up to date", updateFound:"New version available", updateGet:"Update now", updateError:"Update check failed", currentVer:"Current version",
     about:"About", disclaimer:"Data stays on this device. Scores and AI results are informational, not medical advice. Your API key is stored locally only.",
     scoreParts:"Score breakdown", quality:"Quality", efficacy:"Evidence", transparency:"Transparency", value:"Value",
     ingredient:"Ingredient", effRange:"Effective range", intakeNow:"Your intake",
@@ -2565,6 +2567,11 @@ const RDA = {
 
 /* ============ 状态与存储 ============ */
 const KEY = "gaichiyao_v5";
+
+// 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
+const APP_VERSION = "1.0.0";
+const APP_VERSION_CODE = 1;
+const UPDATE_BASE = "https://raw.githubusercontent.com/XinxinLi2004/Medget/main/version.json";
 function migrate(s){
   (s.stack||[]).forEach(x=>{
     if(x.usage===undefined)x.usage="any";
@@ -3676,6 +3683,10 @@ document.addEventListener("click", e=>{
   if(imp){ importData(); return; }
   const clr = tgt.closest("[data-clear]");
   if(clr){ clearData(); return; }
+  const cu = tgt.closest("[data-checkupdate]");
+  if(cu){ checkUpdate(true); return; }
+  const upBtn = tgt.closest("[data-updateurl]");
+  if(upBtn){ const u = decodeURIComponent(upBtn.dataset.updateurl); if(u) openExternal(u); return; }
   const del = tgt.closest("[data-del]");
   if(del){ remove(del.dataset.del); return; }
   const takeBtn = tgt.closest("[data-take]");
@@ -4060,6 +4071,30 @@ function selectSeg(btn){
   seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b===btn));
   positionSegThumb(seg);
 }
+function openExternal(url){
+  const a = document.createElement("a");
+  a.href = url; a.target = "_blank"; a.rel = "noopener";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function checkUpdate(manual){
+  if(manual) toast(t("updateChecking"));
+  try{
+    const res = await fetch(UPDATE_BASE, {cache:"no-store"});
+    if(!res.ok) throw new Error("http "+res.status);
+    const info = await res.json();
+    if(!info || !info.versionCode) throw new Error("bad payload");
+    if(info.versionCode > APP_VERSION_CODE){
+      const notes = escapeHtml(info.notes || "");
+      openSheet(`<button class="x" data-x>×</button><h2>${t("updateFound")} v${escapeHtml(info.version||"")}</h2>`+
+        `<div class="card" style="margin-top:6px"><div class="row-sub" style="line-height:1.6;white-space:pre-wrap">${notes}</div></div>`+
+        `<button class="btn block" style="margin-top:14px" data-updateurl="${encodeURIComponent(info.apk||"")}">${t("updateGet")}</button>`);
+    } else if(manual){
+      toast(t("updateLatest"));
+    }
+  }catch(err){
+    if(manual) toast(t("updateError"));
+  }
+}
 function exportData(){
   const blob = new Blob([JSON.stringify({state, settings, ai:getAIState()}, null, 2)], {type:"application/json"});
   const a = document.createElement("a");
@@ -4145,6 +4180,8 @@ function openSettings(){
     <div class="row-sub" style="padding:0 2px 6px;line-height:1.5">${t("sysPromptDesc")}</div>
     <textarea id="ai_sys" rows="9" spellcheck="false" style="width:100%;box-sizing:border-box;border:1px solid var(--sep, rgba(0,0,0,.12));border-radius:10px;padding:10px;font-size:13px;line-height:1.5;background:var(--bg);color:var(--text);font-family:inherit;resize:vertical">${escapeHtml(ai.sysPrompt||AI_SCHEMA)}</textarea>
     <button class="btn block" style="margin-top:8px" data-aisaveprompt>${t("savePrompt")}</button>
+    <div class="sec-head" style="padding:18px 0 6px">${t("checkUpdate")}</div>
+    <div class="card"><div class="row"><div class="row-main"><div class="row-title" style="font-size:15px">${t("currentVer")} v${APP_VERSION}</div></div><button class="btn plain" data-checkupdate>${t("checkUpdate")}</button></div></div>
     <div class="sec-head" style="padding:18px 0 6px">${t("about")}</div>
     <div class="card"><div class="row"><div class="row-main"><div class="row-sub" style="line-height:1.6">${t("disclaimer")}</div></div></div></div>`);
   requestAnimationFrame(()=>document.querySelectorAll(".seg").forEach(positionSegThumb));
@@ -4155,6 +4192,7 @@ applyReduceMotion();
 applyLang();
 viewToday();
 startReminderCheck();
+checkUpdate(false);
 </script>
 </body>
 </html>

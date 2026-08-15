@@ -1,5 +1,11 @@
 # CHANGELOG
 
+2026-08-15 12:40 · 功能 · 软件更新机制（轻量版）：固定签名 + 检查更新
+- 文件清单：android/app/upload-keystore.jks（新增）、android/app/build.gradle（release 签名）、.github/workflows/android.yml（改打 release + 自动发 latest Release）、version.json（新增）、index.html（检查更新）
+- 部署标记：[需部署]（改了 android/ 原生工程 + CI；新 APK 需重装一次）
+- 说明：原 debug 包用临时 keystore，朋友无法覆盖升级；现提交固定 keystore（alias=upload）并配 release 签名，每次 push main 自动打 release 包并发到 GitHub `latest` 预发布（稳定下载 URL）。App 内新增「检查更新」（设置页手动 + 启动静默检测），比 versionCode 发现新版弹窗引导去下载。已分发旧包需朋友卸载重装一次新签名壳，之后即可覆盖升级。
+- 安全提示：keystore 已提交仓库（含固定密码），若仓库公开建议后续改为 CI secret；国内下载走 GitHub Releases，后续可换 CloudBase/OSS 提速。
+
 2026-08-14 22:55 · 修复 · 打卡日历改为可翻月月份视图（含回到今天、点击看当日明细）
 - 文件清单：index.html（calendarHTML 重写为月份网格 + calY/calM 状态 + renderCal + openCalDay + 导航/日详情点击；CSS 新增 .cal-bar/.cal-nav/.cal-title/.cal-today/.cal-day.blank/.cal-daylist；i18n calBackToday/calDayTitle/calTaken/calMiss/calFuture）
 - 原问题：日历是固定 35 天窗口、今天被强制排在最后一个格子、无法翻看其它月份。现改为标准月份网格（周一起始），顶部 ‹ 月份 › + 「回到今天」可自由翻月；默认显示当月、今天蓝框高亮、落在网格中部而非边缘；点击任意日期弹出当日打卡明细（已服/未服 + 份数）。
