@@ -2656,7 +2656,15 @@ const KEY = "gaichiyao_v5";
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
 const APP_VERSION = "1.0.1";
 const APP_VERSION_CODE = 2;
-const UPDATE_BASE = "https://raw.githubusercontent.com/XinxinLi2004/Medget/main/version.json";
+// 检查更新的 version.json 源，按顺序尝试，任一成功即用：
+// ① release 资产：每次 CI 构建都会重新发布，最新鲜，且与 APK 下载走同一条链路
+// ② jsDelivr CDN：国内通常更快，但对 @main 有最多 12h 缓存，故放第二
+// ③ raw.githubusercontent.com：国内常被墙，仅作最后兜底
+const UPDATE_URLS = [
+  "https://github.com/XinxinLi2004/Medget/releases/download/latest/version.json",
+  "https://cdn.jsdelivr.net/gh/XinxinLi2004/Medget@main/version.json",
+  "https://raw.githubusercontent.com/XinxinLi2004/Medget/main/version.json"
+];
 function migrate(s){
   (s.stack||[]).forEach(x=>{
     if(x.usage===undefined)x.usage="any";
@@ -4367,13 +4375,27 @@ function openExternal(url){
   a.href = url; a.target = "_blank"; a.rel = "noopener";
   document.body.appendChild(a); a.click(); a.remove();
 }
+// 逐个源尝试拉取 version.json；每个源单独限时，避免被墙的域名把整次检查挂死
+async function fetchVersionInfo(perTryMs){
+  let lastErr = null;
+  for(const url of UPDATE_URLS){
+    const ac = typeof AbortController!=="undefined" ? new AbortController() : null;
+    const timer = setTimeout(()=>{ try{ ac && ac.abort(); }catch(e){} }, perTryMs||6000);
+    try{
+      const res = await fetch(url, {cache:"no-store", signal: ac?ac.signal:undefined});
+      if(!res.ok) throw new Error("http "+res.status);
+      const info = await res.json();
+      if(!info || !info.versionCode) throw new Error("bad payload");
+      return info;
+    }catch(err){ lastErr = err; }
+    finally{ clearTimeout(timer); }
+  }
+  throw lastErr || new Error("no source reachable");
+}
 async function checkUpdate(manual){
   if(manual) toast(t("updateChecking"));
   try{
-    const res = await fetch(UPDATE_BASE, {cache:"no-store"});
-    if(!res.ok) throw new Error("http "+res.status);
-    const info = await res.json();
-    if(!info || !info.versionCode) throw new Error("bad payload");
+    const info = await fetchVersionInfo(manual?8000:5000);
     if(info.versionCode > APP_VERSION_CODE){
       const notes = escapeHtml(info.notes || "");
       openSheet(`<button class="x" data-x>×</button><h2>${t("updateFound")} v${escapeHtml(info.version||"")}</h2>`+

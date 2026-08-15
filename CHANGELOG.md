@@ -1,5 +1,13 @@
 # CHANGELOG
 
+2026-08-15 17:05 · 修复 · 检查更新多源兜底（raw.githubusercontent 国内被墙导致更新检查失效）
+- 文件清单：index.html、www/index.html；已 cp index.html www/ 同步
+- 问题：`UPDATE_BASE` 单点指向 `raw.githubusercontent.com`，实测本机 45s 超时不可达（国内常态），且 `fetch` 无超时 → 「检查更新」会长时间挂死，最终只弹一个通用失败 toast
+- 修法：`UPDATE_BASE` 改为 `UPDATE_URLS` 数组，新增 `fetchVersionInfo(perTryMs)` 逐源尝试、每源用 AbortController 单独限时（手动检查 8s/自动 5s），任一成功即返回
+- 源顺序（新鲜度 + 国内可达性权衡）：① release 资产（每次 CI 重新发布，最新鲜，与 APK 下载同链路）→ ② jsDelivr CDN（国内快，但 @main 有最多 12h 缓存）→ ③ raw（仅兜底）
+- 实测：jsDelivr 2.09s HTTP 200 且已返回最新 1.0.1，兜底链路国内可用
+- 部署标记：[前端]
+
 2026-08-15 16:55 · 修复 · CI 发布环节死锁（exit code 1）+ 版本号推进 1.0.1
 - 文件清单：.github/workflows/android.yml、version.json、android/app/build.gradle、index.html
 - 现象：连续 7 次 CI 全部失败（b449fc3 起），报 `Error: Process completed with exit code 1`
