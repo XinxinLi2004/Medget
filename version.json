@@ -1,6 +1,6 @@
 {
-  "version": "1.0.3",
-  "versionCode": 4,
-  "apk": "https://github.com/XinxinLi2004/Medget/releases/download/latest/app-release.apk",
-  "notes": "修复：① 扫码界面锁底层，不再漏出 Tab Bar / 其他页面；② AI 识别与 Open Food Facts 条码查询加超时保护（超时提示网络超时）。"
+  "version": "1.0.4",
+  "versionCode": 5,
+  "apk": "https://ghproxy.net/https://github.com/XinxinLi2004/Medget/releases/download/latest/app-release.apk",
+  "notes": "优化：更新检测与 APK 下载改走国内可达镜像（ghproxy.net 优先），解决国内网络下「检查更新超时 / 下载失败」的问题。"
 }

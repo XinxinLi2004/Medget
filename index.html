@@ -3886,15 +3886,17 @@ const RDA = {
 const KEY = "gaichiyao_v5";
 
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
-const APP_VERSION = "1.0.3";
-const APP_VERSION_CODE = 4;
+const APP_VERSION = "1.0.4";
+const APP_VERSION_CODE = 5;
 // 检查更新的 version.json 源，按顺序尝试，任一成功即用：
-// ① release 资产：每次 CI 构建都会重新发布，最新鲜，且与 APK 下载走同一条链路
-// ② jsDelivr CDN：国内通常更快，但对 @main 有最多 12h 缓存，故放第二
-// ③ raw.githubusercontent.com：国内常被墙，仅作最后兜底
+// ① ghproxy.net 镜像代理：国内可达，代理 GitHub Release 资产，最新鲜，优先
+// ② testingcf.jsdelivr.net：国内友好的 jsDelivr 镜像，对 @main 有最多 12h 缓存，作兜底
+// ③ github.com Release 原链：直连，国内慢/间歇阻断
+// ④ raw.githubusercontent.com：国内常被墙，仅最后兜底
 const UPDATE_URLS = [
+  "https://ghproxy.net/https://github.com/XinxinLi2004/Medget/releases/download/latest/version.json",
+  "https://testingcf.jsdelivr.net/gh/XinxinLi2004/Medget@main/version.json",
   "https://github.com/XinxinLi2004/Medget/releases/download/latest/version.json",
-  "https://cdn.jsdelivr.net/gh/XinxinLi2004/Medget@main/version.json",
   "https://raw.githubusercontent.com/XinxinLi2004/Medget/main/version.json"
 ];
 function migrate(s){

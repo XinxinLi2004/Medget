@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-08-15 21:11 · 配置 · 更新检测与 APK 下载改走国内可达镜像（版本 1.0.4 / code 5）
+- 文件清单：index.html（UPDATE_URLS 顺序）、android/app/build.gradle（versionCode/Name）、version.json（apk 链接 + notes）、www/index.html（CI 同步）
+- 部署标记：[前端] 改 index.html 即生效；[需部署] CI 重新发布 APK 与 version.json 到 latest release
+- 改动要点：
+  - UPDATE_URLS 由「github → cdn.jsdelivr → raw」改为「ghproxy.net 代理优先 → testingcf.jsdelivr 国内镜像 → github 原链 → raw」，解决国内网络下检查更新超时/失败
+  - version.json.apk 改为 ghproxy.net 代理 URL，APK 下载也走国内可达链路；验证 ghproxy.net 取 version.json 返回 200、取 APK 返回 206（支持断点续传）
+  - 弃用 ghproxy.com（实测 000 不可达）
+  - 版本号三处同步 1.0.4 / code 5，确保已装 1.0.3 用户能收到更新提示并拿到修复后的检测逻辑
+- 注意：旧版（≤1.0.3）APK 内硬编码的 UPDATE_URLS 无法更新；若老用户仍检测不到，请直接分享 ghproxy.net 的 APK 直链重装。生产级更稳方案建议接 Gitee 或 CloudBase/OSS 静态托管（尚未部署）
+
 ## 2026-08-15 20:55 · 修复 · 扫码锁底层不漏界面 + AI/条码查询 fetch 超时（版本 1.0.3 / code 4）
 - 文件清单：index.html、android/app/build.gradle、version.json（www/ 由 CI 从 index.html 重新生成，已 .gitignore）
 - 现象：① 原生扫码（Capacitor BarcodeScanner）路径下，body 透明透出相机预览的同时，#view/#tabbar/弹层自带背景未隐藏，Tab Bar 与其他页面漏在相机预览上方；② AI 识别、Open Food Facts 条码查询无超时，弱网/挂起会永久挂起。
