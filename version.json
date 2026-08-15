@@ -1,6 +1,6 @@
 {
-  "version": "1.0.5",
-  "versionCode": 6,
+  "version": "1.0.6",
+  "versionCode": 7,
   "apk": "https://ghproxy.net/https://github.com/XinxinLi2004/Medget/releases/download/latest/app-release.apk",
-  "notes": "优化：安卓端关闭毛玻璃模糊（Tab Bar/弹层退化为实色表面），修复滚动掉帧卡顿；背景球模糊降档以省合成开销。"
+  "notes": "新增：设置内「玻璃效果」开关（自动/开启/关闭，默认 iOS 开/安卓关以保流畅）。修复：修改补剂成分含量或 AI 误识别改名后，今日摄入/趋势/营养图/交互检查实时重新计算。"
 }

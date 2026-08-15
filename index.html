@@ -5353,10 +5353,12 @@ function saveStack(){
   if(currentEditUid){
     const s = state.stack.find(x=>x.uid===currentEditUid);
     if(s){
+      const prevIngs = s.ings||[];   // 捕获旧成分，重算时用于撤销旧贡献
       const totalTaken = Object.values(s.history||{}).reduce((a,b)=>a+(+b||0),0);
       s.name=name; s.price=price; s.serv=serv; s.takes=takes; s.dose=dose;
       s.ings=ings; s.icon=icon; s.image=tmpPhoto; s.lib=l; s.libId=l?l.id:"custom"; s.brand=brand;
       s.remaining = Math.max(0, serv - totalTaken*(dose||1));
+      recomputeIntakeForItem(s, prevIngs);   // 改量/改名后重算每日摄入，今日/趋势/营养图/交互检查自动刷新
     }
   } else {
     state.stack.push({
@@ -5382,6 +5384,34 @@ function take(uid){
     }
   });
   save(); viewToday();
+}
+// 重算某条补剂的每日摄入：按当前 s.ings 重放所有打卡日。
+// 先按旧成分撤销（改名/改量/删成分后旧 key 自然消失），再按新成分累加
+// → 解决「修改成分含量后其他视图不自动更新」「AI 误识别改名后不重新计算」。
+function recomputeIntakeForItem(s, prevIngs){
+  if(!s) return;
+  const days = Object.keys(s.history||{});
+  const perTake = (g)=> (g && g.name && g.amt>0) ? g.amt*(s.dose||1) : 0;
+  // 1) 撤销旧成分贡献（仅本条目之前写入的部分）
+  days.forEach(d=>{
+    const cnt = s.history[d]||0; if(cnt<=0) return;
+    (prevIngs||[]).forEach(g=>{
+      const v = perTake(g); if(!v || !state.intake[d]) return;
+      state.intake[d][g.name]=Math.max(0,(state.intake[d][g.name]||0)-v*cnt);
+      if(state.intake[d][g.name]<=0) delete state.intake[d][g.name];
+    });
+    if(state.intake[d] && Object.keys(state.intake[d]).length===0) delete state.intake[d];
+  });
+  // 2) 按当前 ings 累加新贡献
+  days.forEach(d=>{
+    const cnt = s.history[d]||0; if(cnt<=0) return;
+    if(!state.intake[d]) state.intake[d]={};
+    (s.ings||[]).forEach(g=>{
+      const v = perTake(g); if(!v) return;
+      state.intake[d][g.name]=(state.intake[d][g.name]||0)+v*cnt;
+    });
+    if(Object.keys(state.intake[d]).length===0) delete state.intake[d];
+  });
 }
 function remove(uid){state.stack=state.stack.filter(x=>x.uid!==uid);save();closeSheet();viewStack();}
 function archive(uid){ const s=state.stack.find(x=>x.uid===uid); if(!s) return; s.archived=true; save(); closeSheet(); toast(t("toBox")); viewStack(); }

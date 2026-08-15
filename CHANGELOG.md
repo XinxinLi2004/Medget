@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-15 23:08 · 修复 · 数据不实时更新：改成分含量/改名后每日摄入重新计算
+- 文件清单：index.html（新增 recomputeIntakeForItem、saveStack 调用）；[前端]
+- 用户反馈：① 修改补剂成分含量后，今日摄入/趋势/营养图/交互检查不自动更新；② AI 误识别成分名（如"维生素B5"识为"泛酸"）手动改对后，系统不重新计算每日摄入，旧错误名仍占用、正确名无累计。
+- 根因：state.intake 是 take/backfill 时刻对 s.ings 的"物化快照"，saveStack（编辑保存）只覆盖 s.ings 而不回溯已写历史摄入，导致成分改量/改名与历史摄入失同步。
+- 修复：新增 recomputeIntakeForItem(s, prevIngs)，在 saveStack 覆盖 s.ings 前捕获 prevIngs，保存后按 s.history 各日重放：(1) 先用旧成分按"本条目原贡献"逐日撤销（改名/删成分后旧 key 自然消失）；(2) 再按当前 s.ings 累加新贡献。仅触碰本条目相关成分 key，同名跨条目数据不受影响。
+- 校验：Node 离线单测 6/6 通过（改量、改名、跨条目同名安全、删成分、连续编辑幂等）
+- 部署标记：[前端]（改 index.html 即生效；需 npx cap sync android 重建 APK 方能进原生壳）
+
 ## 2026-08-15 22:55 · 修复 · 编辑表单"手动填写区块"加宽对齐评分卡宽度
 - 文件清单：index.html、www/index.html（已 cp 同步）；[前端]
 - 现象：扫码/自动添加后顶部"评分区块"（reportHTML 的 .card，margin:0）铺满 sheet 内容区，但下方"自己填补剂信息"的 .form-group 明显窄一圈
