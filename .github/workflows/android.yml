@@ -69,8 +69,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          prerelease: true
-          name: 最新版（预发布）
+          prerelease: false
+          name: 最新版
           files: |
             android/app/build/outputs/apk/release/app-release.apk
             version.json
