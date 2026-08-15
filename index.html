@@ -223,7 +223,7 @@
   .dark .field input:focus{background:var(--card)}
   .field:first-child label{margin-top:0}
 
-  .form-group{margin:14px 16px 0;padding:6px 14px 14px;border-radius:var(--r);
+  .form-group{margin:14px 0 0;padding:6px 16px 14px;border-radius:var(--r);
     background:var(--card);border:1px solid rgba(255,255,255,.55);
     -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 6px 20px rgba(0,0,0,.04)}
@@ -481,31 +481,31 @@
     .dark .lib-search{ background:rgba(255,255,255,.1)!important; border-color:rgba(255,255,255,.16)!important; }
     .dark .chip,.dark .shape-opt,.dark .detail-opt{ background:rgba(255,255,255,.12)!important; border-color:rgba(255,255,255,.18)!important; }
   }
-  /* 安卓 WebView：backdrop-filter 虽被支持但合成代价极高（内容在 Tab Bar 下滚动时每帧重算模糊→掉帧）。
-     实测 prefers-reduced-transparency / @supports not 在安卓上均不触发，故用 UA 检测显式加 .android 类，
-     退化为实色表面（与上方 @supports 降级等价），iOS 仍保留玻璃质感。 */
-  .android{ --card: rgba(228,228,233,1); }
-  .android.dark{ --card: rgba(28,28,30,.96); }
-  .android *{ -webkit-backdrop-filter:none!important; backdrop-filter:none!important; }
-  .android .card,.android .stack-card,.android .ing-d,.android .field,.android .field input,.android .ing-row input,.android .ing-row select{ border-color:rgba(60,60,67,.14)!important; }
-  .android .card,.android .stack-card,.android .ing-d{ box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05)!important; }
-  .android .lib-search{ background:rgba(0,122,255,.1)!important; border-color:rgba(0,122,255,.2)!important; }
-  .android .chip{ background:transparent!important; border-color:rgba(60,60,67,.14)!important; }
-  .android .chip.on{ background:var(--blue)!important; color:#fff!important; border-color:var(--blue)!important; }
-  .android .shape-opt{ background:rgba(216,216,221,1); }
-  .android .detail-opt{ background:rgba(216,216,221,1); }
-  .android .nav{ box-shadow:inset 0 -1px 0 rgba(60,60,67,.18)!important; background:#f2f2f7; }
-  .android.dark .nav{ background:#161618; }
-  .android .tabbar{ background:#f9f9f9; }
-  .android.dark .tabbar{ background:#161618; }
-  .android .sheet{ background:#f8f8fa; }
-  .android.dark .sheet{ background:#1c1c1e; }
-  .android .card{ background:#fff; }
-  .android.dark .card{ background:#2c2c2e; }
-  .android .dark .card,.android.dark .stack-card,.android.dark .ing-d,.android.dark .field,.android.dark .field input,.android.dark .ing-row input,.android.dark .ing-row select{ border-color:rgba(255,255,255,.12)!important; }
-  .android .dark .lib-search{ background:rgba(255,255,255,.1)!important; border-color:rgba(255,255,255,.16)!important; }
-  .android .dark .chip,.android.dark .shape-opt,.android.dark .detail-opt{ background:rgba(255,255,255,.12)!important; border-color:rgba(255,255,255,.18)!important; }
-  /* 全屏 blur(64px) 背景球在安卓上同样昂贵，降到 24px 既保柔和又大幅省合成开销（静态层，仅首帧计算） */
+  /* 玻璃效果可切换：默认 auto（iOS 开 / 安卓关以保流畅），用户在设置里可强制开/关。
+     .no-glass 类控制降级为实色表面；.android 仅作标记（含背景球模糊降档）。
+     注意：后续新增毛玻璃元素须同步在 .no-glass 块里加对应降级，否则开关关不掉。 */
+  .no-glass{ --card: rgba(228,228,233,1); }
+  .no-glass.dark{ --card: rgba(28,28,30,.96); }
+  .no-glass *{ -webkit-backdrop-filter:none!important; backdrop-filter:none!important; }
+  .no-glass .card,.no-glass .stack-card,.no-glass .ing-d,.no-glass .field,.no-glass .field input,.no-glass .ing-row input,.no-glass .ing-row select{ border-color:rgba(60,60,67,.14)!important; }
+  .no-glass .card,.no-glass .stack-card,.no-glass .ing-d{ box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05)!important; }
+  .no-glass .lib-search{ background:rgba(0,122,255,.1)!important; border-color:rgba(0,122,255,.2)!important; }
+  .no-glass .chip{ background:transparent!important; border-color:rgba(60,60,67,.14)!important; }
+  .no-glass .chip.on{ background:var(--blue)!important; color:#fff!important; border-color:var(--blue)!important; }
+  .no-glass .shape-opt{ background:rgba(216,216,221,1); }
+  .no-glass .detail-opt{ background:rgba(216,216,221,1); }
+  .no-glass .nav{ box-shadow:inset 0 -1px 0 rgba(60,60,67,.18)!important; background:#f2f2f7; }
+  .no-glass.dark .nav{ background:#161618; }
+  .no-glass .tabbar{ background:#f9f9f9; }
+  .no-glass.dark .tabbar{ background:#161618; }
+  .no-glass .sheet{ background:#f8f8fa; }
+  .no-glass.dark .sheet{ background:#1c1c1e; }
+  .no-glass .card{ background:#fff; }
+  .no-glass.dark .card{ background:#2c2c2e; }
+  .no-glass .dark .card,.no-glass.dark .stack-card,.no-glass.dark .ing-d,.no-glass.dark .field,.no-glass.dark .field input,.no-glass.dark .ing-row input,.no-glass.dark .ing-row select{ border-color:rgba(255,255,255,.12)!important; }
+  .no-glass .dark .lib-search{ background:rgba(255,255,255,.1)!important; border-color:rgba(255,255,255,.16)!important; }
+  .no-glass .dark .chip,.no-glass.dark .shape-opt,.no-glass.dark .detail-opt{ background:rgba(255,255,255,.12)!important; border-color:rgba(255,255,255,.18)!important; }
+  /* 安卓背景球 blur(64px) 降为 24px（静态层仅首帧计算，省合成开销，与玻璃开关无关） */
   .android .bg-orbs i{ filter:blur(24px)!important; }
   /* ============ 补剂库检索 ============ */
   .lib-bar{background:transparent;padding:10px 16px 6px}
@@ -581,7 +581,7 @@ const I18N = {
     sysPrompt:"识别提示词（系统角色）", sysPromptDesc:"自定义 AI 识别补剂时的角色设定与输出格式；留空则用默认专家提示词。", savePrompt:"保存提示词",
     noProvider:"尚未配置任何 AI 服务商，点击下方添加。", cancel:"取消", confirmDel:"确定删除该服务商？",
     aiPhotoPrompt:"请根据图片中的补剂包装或成分表，返回评估 JSON。", aiOffPrompt:"以下是 Open Food Facts 查到的产品信息，据此生成 JSON：", aiCodePrompt:"请根据条码给出最可能的补剂评估（条码通常无法精确反查，可基于常识推断；完全不确定则 name 填「未知补剂」）：",
-    language:"语言", appearance:"外观", followSystem:"跟随系统", light:"浅色", dark:"深色",
+    language:"语言", appearance:"外观", followSystem:"跟随系统", light:"浅色", dark:"深色", glass:"玻璃效果", glassDesc:"开启后中低端安卓可能滑动掉帧，由你自行决定", glass_auto:"自动", glass_on:"开启", glass_off:"关闭",
     motion:"动效", motionDesc:"减少动态效果",
     data:"数据", exportData:"导出数据", clearData:"清空数据", dataCleared:"数据已清空", exportInfo:"将导出以下数据（JSON 备份文件）：", exportStructStack:"我的补剂：名称、品牌、价格、份数、成分与真实原料形态、服用方式、提醒", exportStructHistory:"打卡与每日摄入记录", exportStructAI:"AI 服务商配置（不含密钥明文）", copyData:"复制到剪贴板", copyOk:"已复制到剪贴板", copyFail:"复制失败，请手动保存", downloadBackup:"下载备份文件", exported:"已导出备份文件", importDesc:"从备份文件恢复补剂与打卡记录",
     checkUpdate:"检查更新", updateChecking:"正在检查更新…", updateLatest:"已是最新版本", updateFound:"发现新版本", updateGet:"去更新", updateError:"检查更新失败", currentVer:"当前版本",
@@ -647,7 +647,7 @@ const I18N = {
     sysPrompt:"Recognition prompt (system role)", sysPromptDesc:"Customize the AI's role and output format for supplement recognition. Leave blank to use the default expert prompt.", savePrompt:"Save prompt",
     noProvider:"No AI provider configured yet. Tap below to add one.", cancel:"Cancel", confirmDel:"Delete this provider?",
     aiPhotoPrompt:"Identify the supplement from this image and return the evaluation JSON.", aiOffPrompt:"Product info from Open Food Facts; generate the JSON accordingly:", aiCodePrompt:"Give the most likely supplement evaluation for this barcode (barcodes often can't be reverse-looked-up; infer from common sense if needed; if fully uncertain, set name to \"Unknown supplement\"):",
-    language:"Language", appearance:"Appearance", followSystem:"System", light:"Light", dark:"Dark",
+    language:"Language", appearance:"Appearance", followSystem:"System", light:"Light", dark:"Dark", glass:"Glass effect", glassDesc:"On low-end Android, enabling may cause scroll lag — your choice", glass_auto:"Auto", glass_on:"On", glass_off:"Off",
     motion:"Motion", motionDesc:"Reduce motion",
     data:"Data", exportData:"Export data", clearData:"Clear data", dataCleared:"Data cleared", exportInfo:"The following data will be exported (JSON backup file):", exportStructStack:"My supplements: name, price, servings, ingredients & real forms, usage, reminders", exportStructHistory:"Check-in & daily intake history", exportStructAI:"AI provider config (keys excluded)", copyData:"Copy to clipboard", copyOk:"Copied to clipboard", copyFail:"Copy failed, save manually", downloadBackup:"Download backup", exported:"Backup exported", importDesc:"Restore supplements & check-ins from a backup file",
     checkUpdate:"Check update", updateChecking:"Checking…", updateLatest:"Already up to date", updateFound:"New version available", updateGet:"Update now", updateError:"Update check failed", currentVer:"Current version",
@@ -700,7 +700,7 @@ const I18N = {
   }
 };
 const SET_KEY = "gaichiyao_settings";
-let settings = {lang:"zh", theme:"auto", reduceMotion:false};
+let settings = {lang:"zh", theme:"auto", reduceMotion:false, glass:"auto"};
 try{const s=JSON.parse(localStorage.getItem(SET_KEY)); if(s) settings=Object.assign(settings,s);}catch(e){}
 function saveSettings(){localStorage.setItem(SET_KEY, JSON.stringify(settings));}
 let lang = settings.lang;
@@ -3912,8 +3912,8 @@ const RDA = {
 const KEY = "gaichiyao_v5";
 
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
-const APP_VERSION = "1.0.5";
-const APP_VERSION_CODE = 6;
+const APP_VERSION = "1.0.6";
+const APP_VERSION_CODE = 7;
 // 检查更新的 version.json 源，按顺序尝试，任一成功即用：
 // ① ghproxy.net 镜像代理：国内可达，代理 GitHub Release 资产，最新鲜，优先
 // ② testingcf.jsdelivr.net：国内友好的 jsDelivr 镜像，对 @main 有最多 12h 缓存，作兜底
@@ -4597,12 +4597,13 @@ function formQualityOf(s){
 /* ============ 评分引擎 ============ */
 function median(a){const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
 const vp = l => l.price/l.serv;
+const _libGroups = (()=>{ const g={}; LIB.forEach(l=>{(g[l.cat]||(g[l.cat]=[])).push(l);}); return g; })();
 function scoreOf(l, dosePerTake=1){
   if(dosePerTake===1 && l._score) return l._score;
   const quality = ({优:90,良:75,中:65,差:40}[l.form]) ?? 65;
   const efficacy = ({强:90,中:68,弱:45}[l.ev]) ?? 68;
   const transparency = l.trans ? 85 : 50;
-  const group = LIB.filter(x=>x.cat===l.cat);
+  const group = _libGroups[l.cat] || LIB;
   const base = group.length>1 ? group : LIB;
   const v = vp(l), med = median(base.map(vp));
   const value = v<=med ? 90 : v<=med*1.6 ? 65 : 45;
@@ -5063,13 +5064,26 @@ function viewLib(){
   const inp = document.getElementById("libSearch");
   if(inp) inp.addEventListener("input", debounce(e=>{ libQuery = e.target.value; renderLibList(); }, 120));
 }
+let _libChunkToken = 0;
 function renderLibList(){
   const box = document.getElementById("libList");
   if(!box) return;
   const list = libFiltered(libQuery, libCat);
+  const token = ++_libChunkToken;
   if(!list.length){ box.innerHTML = `<div class="empty" style="padding:40px 0">${t("noResult")}</div>`; return; }
-  box.innerHTML = `<div class="lib-count">${list.length} ${t("resultCount")}</div><div class="card first">` +
-    list.map(libRowHTML).join("") + `</div>`;
+  box.innerHTML = `<div class="lib-count">${list.length} ${t("resultCount")}</div><div class="card first"></div>`;
+  const card = box.querySelector(".card");
+  const CHUNK = 24;
+  let i = 0;
+  const step = ()=>{
+    if(token !== _libChunkToken) return;
+    const end = Math.min(i+CHUNK, list.length);
+    const frag = document.createDocumentFragment();
+    for(; i<end; i++){ const div=document.createElement("div"); div.innerHTML=libRowHTML(list[i]); frag.appendChild(div.firstElementChild); }
+    card.appendChild(frag);
+    if(i < list.length) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 /* ============ 页面：花费 ============ */
@@ -5484,7 +5498,8 @@ function setTab(v){
   document.querySelectorAll("#tabbar button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
   $("#navTitle").textContent = t(TITLES[v]);
   views[v]();
-  view.classList.remove("view-enter"); void view.offsetWidth; view.classList.add("view-enter");
+  view.classList.remove("view-enter");
+  requestAnimationFrame(()=>view.classList.add("view-enter"));
   window.scrollTo({top:0});
 }
 $("#tabbar").addEventListener("click", e=>{const b=e.target.closest("button");if(b)setTab(b.dataset.v);});
@@ -5531,6 +5546,8 @@ document.addEventListener("click", e=>{
   if(langBtn){ selectSeg(langBtn); setLang(langBtn.dataset.lang); return; }
   const themeBtn = tgt.closest("[data-theme]");
   if(themeBtn){ selectSeg(themeBtn); setTheme(themeBtn.dataset.theme); return; }
+  const glassBtn = tgt.closest("[data-glass]");
+  if(glassBtn){ selectSeg(glassBtn); setGlass(glassBtn.dataset.glass); return; }
   const motionTgl = tgt.closest("[data-motion]");
   if(motionTgl){ toggleMotion(); return; }
   const exp = tgt.closest("[data-export]");
@@ -5965,6 +5982,14 @@ function saveSysPrompt(){
 function setLang(l){ settings.lang=l; lang=l; saveSettings(); applyLang(); views[curTab](); }
 function setTheme(m){ settings.theme=m; saveSettings(); applyTheme(); }
 function toggleMotion(){ settings.reduceMotion=!settings.reduceMotion; saveSettings(); applyReduceMotion(); }
+function applyGlass(){
+  const g = settings.glass || "auto";
+  const isAndroid = /Android/i.test(navigator.userAgent||"");
+  // auto：iOS 开、安卓关（保流畅）；on/off：用户强制
+  const on = g==="on" ? true : g==="off" ? false : !isAndroid;
+  document.documentElement.classList.toggle("no-glass", !on);
+}
+function setGlass(m){ settings.glass=m; saveSettings(); applyGlass(); }
 function positionSegThumb(seg){
   const btns = seg.querySelectorAll("button");
   const thumb = seg.querySelector(".seg-thumb");
@@ -6118,6 +6143,8 @@ function openSettings(){
   openSheet(`<button class="x" data-x>×</button><h2>${t("settings")}</h2>
     <div class="sec-head" style="padding:12px 0 6px">${t("language")}</div><div class="seg">${segLang}<span class="seg-thumb"></span></div>
     <div class="sec-head" style="padding:8px 0 6px">${t("appearance")}</div><div class="seg">${segTheme}<span class="seg-thumb"></span></div>
+    <div class="sec-head" style="padding:12px 0 6px">${t("glass")}</div><div class="seg">${["auto","on","off"].map(m=>`<button data-glass="${m}" class="${(settings.glass||"auto")===m?"on":""}">${t("glass_"+m)}</button>`).join("")}<span class="seg-thumb"></span></div>
+    <div class="row-sub" style="padding:2px 2px 4px;line-height:1.5">${t("glassDesc")}</div>
     <div class="sec-head" style="padding:8px 0 0">${t("motion")}</div>
     <div class="switch-row"><span>${t("motionDesc")}</span><div class="switch ${settings.reduceMotion?"":"on"}" data-motion></div></div>
     <div class="sec-head" style="padding:8px 0 6px">${t("data")}</div>
@@ -6150,8 +6177,9 @@ function openSettings(){
 
 applyTheme();
 applyReduceMotion();
-// 安卓 WebView 下关闭玻璃模糊（见 .android 样式块），避免 Tab Bar 每帧重算模糊掉帧
+// 安卓 WebView 标记（背景球降模糊）；玻璃效果由 applyGlass 按设置/平台决定
 if(/Android/i.test(navigator.userAgent||"")) document.documentElement.classList.add("android");
+applyGlass();
 applyLang();
 viewToday();
 startReminderCheck();

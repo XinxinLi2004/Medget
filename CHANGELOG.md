@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-08-15 22:55 · 修复 · 编辑表单"手动填写区块"加宽对齐评分卡宽度
+- 文件清单：index.html、www/index.html（已 cp 同步）；[前端]
+- 现象：扫码/自动添加后顶部"评分区块"（reportHTML 的 .card，margin:0）铺满 sheet 内容区，但下方"自己填补剂信息"的 .form-group 明显窄一圈
+- 根因：.sheet 自带 16px 内边距，.form-group 再叠加 16px 左右外边距 + 14px 内边距，被双重缩进，比同容器内 margin:0 的评分卡窄
+- 修复：.form-group 左右外边距 16px→0、内边距 14px→16px，使其与评分卡同宽同对齐（影响所有 sheet 内表单，含回填页）
+- 校验：CSS 357/357 平衡、JS node --check OK、www 已 cp 同步
+- 部署标记：[前端]（npx cap sync android 重新构建 APK；本机无 Android SDK）
+
+## 2026-08-15 22:50 · 性能 · 补剂库渲染卡顿/残缺修复
+- 文件清单：index.html、www/index.html（已 cp 同步）；[前端]
+- 用户反馈：切到补剂页卡顿 + 页面残缺"要反应一下才完整显示"
+- 根因三连：(1) scoreOf() 内每次 `LIB.filter(x=>x.cat===l.cat)` 全库遍历，131 条 × 每条 3-4 次 = O(n²)；(2) renderLibList() 一次性拼接 131 条巨型字符串注入 innerHTML，主线程同步解析/布局/绘制被阻塞 → 首帧残缺；(3) setTab() 里 `void view.offsetWidth` 强制同步 reflow
+- 修复：
+  1. `_libGroups` 分类分组缓存（一次性构建，scoreOf 改查缓存，O(n²)→O(n)）
+  2. renderLibList() 改分块渲染：`_libChunkToken` 防竞态 + requestAnimationFrame 每帧插 24 条 + DocumentFragment 批量 append，首帧先出计数和骨架
+  3. setTab() 去 `void view.offsetWidth` 强制 reflow，改用 rAF 触发 view-enter 动画
+- 校验：JS node --check OK、www 已同步
+- 部署标记：[前端]
+
 ## 2026-08-15 22:44 · 性能 · 安卓端关闭毛玻璃模糊修复滚动卡顿（版本 1.0.5 / code 6）
 - 文件清单：index.html（新增 .android 降级样式块 + UA 检测加 .android 类）、android/app/build.gradle（versionCode/Name）、version.json（notes）、www/index.html（CI 同步）
 - 部署标记：[需部署] CI 重新发布 APK；[前端] 改 index.html 即生效
