@@ -1,6 +1,13 @@
 # CHANGELOG
 
-## 2026-08-15 23:52 · 修复 · 三项体验问题（重复显示 / 真材实料不刷新 / 安卓发烫）[待发 1.0.7/code8]
+## 2026-08-16 09:20 · 修复 · 更新检测不提示新版本（1.0.8/code9）
+- 文件清单：index.html（fetchVersionInfo 改取多源最大 versionCode + 「已是最新」显示检测版本号）；android/app/build.gradle；version.json；[前端]
+- **根因**：更新检测「第一个成功源即用」，兜底源 testingcf.jsdelivr.net @main 缓存陈旧（实测返回 1.0.3/code4，落后真实最新 4 个版本）。手机上若主源 ghproxy.net 慢/超时（8s abort）即落到该陈旧源，`4 > 手机版本` 为 false → 误判「已是最新」，表现「检查更新没反应」。
+- **修复**：fetchVersionInfo 改为取所有可达源中 versionCode 最大者（任一源返回高于当前版本即立即返回；仅确认无更新才遍历全部兜底）。陈旧镜像不再能压制新鲜源。另：「已是最新」提示附检测到的版本号，便于排查是否撞陈旧镜像。
+- 实测：ghproxy=1.0.7 + jsDelivr=1.0.3 模拟下，结果正确取 1.0.7。
+- 注意：本修复在 web 包内，老版本（≤1.0.7）的破损检查器无法自更新到本版，需经 ghproxy 直链覆盖安装（见对话）。
+
+## 2026-08-15 23:52 · 修复 · 三项体验问题（重复显示 / 真材实料不刷新 / 安卓发烫）[已发 1.0.7/code8]
 - 文件清单：index.html（rebuildIntake 替换 recompute、libViewOf+详情/编辑卡实时刷新、安卓隐藏模糊背景球+关脉冲动画+视差守卫）；[前端]
 - **① 今日重复显示**：原 recomputeIntakeForItem 用「旧成分减、新成分加」增量法，改名+同日多次打卡+改剂量时旧名 key 欠减残留 → 同一成分出现两次。改为 rebuildIntake() 按 s.history×当前 s.ings 整日重建，旧 key 不可能残留；同名跨条目仍正确叠加。Node 单测 7/7 通过（含改名+剂量场景）。
 - **② 真材实料不刷新**：openStackDetail / 编辑卡 reportHTML 读的是 s.lib（原始 LIB），而非实时 s.ings。新增 libViewOf(s)（元数据取 LIB、成分取实时 s.ings、清 _score 缓存）；编辑卡成分输入/增删行时 refreshCfgReport() 实时重算评分卡。
