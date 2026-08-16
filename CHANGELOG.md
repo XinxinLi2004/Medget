@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2026-08-16 09:35 · 视觉 · 关闭玻璃后 surface 由灰改白（1.0.9/code10）
+- 文件清单：index.html（`.no-glass` 亮色 `--card` 改为 #fff）；[前端]
+- **问题**：关玻璃后 `.no-glass` 把 `--card` 设成灰 `rgba(228,228,233,1)`，而 `.card` 单独被覆盖成白；`.stack-card`/`.ing-d`/`.field`/输入框等直接读 `var(--card)` → 全灰，观感发闷。
+- **修复**：`.no-glass` 亮色 `--card` 改 `#fff`，所有读 `--card` 的 surface 一次性变白（页面 #f2f2f7 浅灰，标准 iOS 白卡浮起）；深色模式本就近黑不受影响。仅动 no-glass 相关 CSS，未碰其他功能。
+
 ## 2026-08-16 09:20 · 修复 · 更新检测不提示新版本（1.0.8/code9）
 - 文件清单：index.html（fetchVersionInfo 改取多源最大 versionCode + 「已是最新」显示检测版本号）；android/app/build.gradle；version.json；[前端]
 - **根因**：更新检测「第一个成功源即用」，兜底源 testingcf.jsdelivr.net @main 缓存陈旧（实测返回 1.0.3/code4，落后真实最新 4 个版本）。手机上若主源 ghproxy.net 慢/超时（8s abort）即落到该陈旧源，`4 > 手机版本` 为 false → 误判「已是最新」，表现「检查更新没反应」。

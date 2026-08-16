@@ -1,6 +1,6 @@
 {
-  "version": "1.0.8",
-  "versionCode": 9,
+  "version": "1.0.9",
+  "versionCode": 10,
   "apk": "https://ghproxy.net/https://github.com/XinxinLi2004/Medget/releases/download/latest/app-release.apk",
-  "notes": "修复：更新检测健壮性——取所有镜像源中 versionCode 最大者，避免 jsDelivr @main 陈旧缓存（曾返回 1.0.3）误判「已是最新」；「已是最新」提示现在显示检测到的版本号，便于排查。含 1.0.7 全部修复：今日重复显示/真材实料实时刷新/安卓发烫。"
+  "notes": "视觉优化：关闭玻璃效果后，补剂列表卡/成分卡/输入框等 surface 由灰色改为白色（页面底色 #f2f2f7 浅灰，白卡浮起为标准 iOS 观感，不再发灰）。深色模式不受影响。含 1.0.8 更新检测健壮性修复。"
 }

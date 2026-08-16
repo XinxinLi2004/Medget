@@ -484,7 +484,7 @@
   /* 玻璃效果可切换：默认 auto（iOS 开 / 安卓关以保流畅），用户在设置里可强制开/关。
      .no-glass 类控制降级为实色表面；.android 仅作标记（含背景球模糊降档）。
      注意：后续新增毛玻璃元素须同步在 .no-glass 块里加对应降级，否则开关关不掉。 */
-  .no-glass{ --card: rgba(228,228,233,1); }
+  .no-glass{ --card:#fff; }
   .no-glass.dark{ --card: rgba(28,28,30,.96); }
   .no-glass *{ -webkit-backdrop-filter:none!important; backdrop-filter:none!important; }
   .no-glass .card,.no-glass .stack-card,.no-glass .ing-d,.no-glass .field,.no-glass .field input,.no-glass .ing-row input,.no-glass .ing-row select{ border-color:rgba(60,60,67,.14)!important; }
@@ -3912,8 +3912,8 @@ const RDA = {
 const KEY = "gaichiyao_v5";
 
 // 版本与更新（与 android/app/build.gradle 的 versionCode/versionName 保持一致）
-const APP_VERSION = "1.0.8";
-  const APP_VERSION_CODE = 9;
+const APP_VERSION = "1.0.9";
+  const APP_VERSION_CODE = 10;
 // 检查更新的 version.json 源，按顺序尝试，任一成功即用：
 // ① ghproxy.net 镜像代理：国内可达，代理 GitHub Release 资产，最新鲜，优先
 // ② testingcf.jsdelivr.net：国内友好的 jsDelivr 镜像，对 @main 有最多 12h 缓存，作兜底
